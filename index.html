@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>isHere Barcelona — Prototipo</title>
+<style>
+  .setup-banner{
+    background: var(--bg-panel, #123449);
+    border: 1px solid rgba(217,164,65,0.3);
+    color: #F2E9D8;
+    font-size: 0.78rem;
+    padding: 12px 16px;
+    margin: 14px 20px 0;
+    border-radius: 10px;
+    line-height: 1.5;
+  }
+  .setup-banner b{ color: #D9A441; }
+  .setup-banner.hide{ display: none; }
+  :root{
+    --bg-deep: #0D2B3E;
+    --bg-panel: #123449;
+    --bg-panel-raise: #17415A;
+    --teal: #1E7F76;
+    --teal-light: #2EA89C;
+    --gold: #D9A441;
+    --terracotta: #B8482F;
+    --cream: #F2E9D8;
+    --cream-dim: #B9C7CE;
+    --success: #4CAF7D;
+    --danger: #C1443A;
+    --radius-lg: 22px;
+    --radius-sm: 10px;
+    font-size: 16px;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  @font-face{
+    font-family: 'Fraunces';
+    src: local('Fraunces');
+  }
+
+  body{
+    background: var(--bg-deep);
+    color: var(--cream);
+    font-family: 'Work Sans', -apple-system, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(135deg, rgba(30,127,118,0.10) 0%, transparent 35%),
+      linear-gradient(315deg, rgba(217,164,65,0.06) 0%, transparent 40%),
+      repeating-conic-gradient(from 0deg, rgba(255,255,255,0.015) 0deg 6deg, transparent 6deg 24deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .device{
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 20px 14px;
+  }
+
+  .wordmark{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+  .wordmark svg{ flex-shrink: 0; }
+  .wordmark b{ color: var(--gold); font-weight: 600; }
+
+  .business-link{
+    margin-top: 10px;
+  }
+  .business-link a{
+    color: var(--cream-dim);
+    font-size: 0.76rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(242,233,216,0.3);
+  }
+
+  .back-link{
+    background: none;
+    border: none;
+    color: var(--cream-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0;
+    margin-bottom: 4px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+
+  main{ flex: 1; display: flex; flex-direction: column; }
+
+  #view-turista{ display: flex; flex-direction: column; flex: 1; padding: 0 20px 28px; }
+
+  .zone-picker{
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--cream-dim);
+    font-size: 0.82rem;
+    margin-top: 6px;
+    margin-bottom: auto;
+  }
+  .zone-picker select{
+    background: var(--bg-panel);
+    color: var(--cream);
+    border: 1px solid rgba(242,233,216,0.12);
+    border-radius: var(--radius-sm);
+    padding: 5px 9px;
+    font-family: inherit;
+    font-size: 0.82rem;
+  }
+  #btn-locate{
+    background: var(--teal);
+    border: none;
+    color: var(--cream);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .locate-status{
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--teal-light);
+    margin-top: 4px;
+    min-height: 14px;
+  }
+
+  .manual-search{
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .manual-search input{
+    flex: 1;
+    background: var(--bg-panel);
+    border: 1px solid rgba(242,233,216,0.14);
+    color: var(--cream);
+    padding: 11px 13px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .manual-search input::placeholder{ color: rgba(242,233,216,0.35); }
+  .manual-search button{
+    background: var(--teal);
+    color: var(--cream);
+    border: none;
+    padding: 0 16px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .listen-stage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    padding: 40px 0 20px;
+  }
+
+  .mic-wrap{ position: relative; width: 168px; height: 168px; display:flex; align-items:center; justify-content:center; }
+
+  .ring{
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--teal-light);
+    opacity: 0;
+  }
+  .mic-wrap.listening .ring{ animation: pulse-ring 1.8s ease-out infinite; }
+  .mic-wrap.listening .ring:nth-child(2){ animation-delay: 0.5s; }
+  .mic-wrap.listening .ring:nth-child(3){ animation-delay: 1s; }
+
+  @keyframes pulse-ring{
+    0%{ transform: scale(0.72); opacity: 0.7; }
+    100%{ transform: scale(1.35); opacity: 0; }
+  }
+
+  #btn-mic{
+    width: 108px; height: 108px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(160deg, var(--teal-light), var(--teal));
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(30,127,118,0.35);
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+  }
+  #btn-mic:active{ transform: scale(0.94); }
+  #btn-mic.listening{
+    background: linear-gradient(160deg, var(--terracotta), #963823);
+    box-shadow: 0 10px 34px rgba(184,72,47,0.45);
+  }
+  #btn-mic svg{ width: 40px; height: 40px; }
+
+  .listen-status{
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--cream-dim);
+    min-height: 44px;
+    max-width: 280px;
+    line-height: 1.4;
+  }
+  .listen-status b{ color: var(--cream); font-weight: 500; }
+  .listen-status.pocket-mode{
+    color: var(--gold);
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.05rem;
+    font-style: italic;
+  }
+
+  .transcript{
+    font-size: 0.82rem;
+    color: var(--teal-light);
+    text-align: center;
+    min-height: 18px;
+  }
+
+  .result-card{
+    display: none;
+    background: var(--bg-panel);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    gap: 16px;
+    align-items: center;
+    border: 1px solid rgba(217,164,65,0.18);
+    margin-top: 10px;
+  }
+  .result-card.show{ display: flex; animation: rise 0.4s ease; }
+  @keyframes rise{ from{ opacity:0; transform: translateY(14px);} to{ opacity:1; transform: translateY(0);} }
+
+  .product-thumb{
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: var(--terracotta);
+    background-size: cover;
+    background-position: center;
+    color: var(--cream);
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .info-pyme{ flex: 1; min-width: 0; }
+  .info-pyme h3{ font-family: 'Fraunces', Georgia, serif; font-size: 1.08rem; font-weight: 500; margin-bottom: 2px; }
+  .info-pyme p{ font-size: 0.84rem; color: var(--cream-dim); }
+  .info-pyme .distance{ color: var(--success); font-weight: 500; margin-top: 3px; }
+  .info-pyme .badge{
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.68rem;
+    background: rgba(217,164,65,0.15);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .direction-indicator{
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--teal-light);
+    flex-shrink: 0;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .direction-indicator svg{ width: 26px; height: 26px; }
+  .direction-indicator span{ font-size: 0.62rem; color: var(--cream-dim); letter-spacing: 0.03em; }
+
+  .voice-guide-btn{
+    width: 100%;
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid rgba(242,233,216,0.18);
+    color: var(--cream);
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.86rem;
+    cursor: pointer;
+    display: none;
+  }
+  .voice-guide-btn.show{ display: block; }
+
+  footer.hint{
+    text-align: center;
+    color: var(--cream-dim);
+    font-size: 0.76rem;
+    padding-top: 18px;
+  }
+
+  #view-comercio{ display: none; flex-direction: column; padding: 6px 20px 40px; gap: 22px; }
+
+  .section-title{
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+  .section-sub{ color: var(--cream-dim); font-size: 0.85rem; margin-top: 3px; }
+
+  .field{ display: flex; flex-direction: column; gap: 6px; }
+  .field label{ font-size: 0.78rem; color: var(--cream-dim); }
+  .field input, .field select{
+    background: var(--bg-panel);
+    border: 1px solid rgba(242,233,216,0.12);
+    color: var(--cream);
+    padding: 12px 13px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.92rem;
+  }
+  .field input::placeholder{ color: rgba(242,233,216,0.3); }
+  .field-row{ display: flex; gap: 10px; }
+  .field-row .field{ flex: 1; }
+
+  .price-card{
+    background: var(--bg-panel-raise);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid rgba(217,164,65,0.18);
+  }
+  .price-line{
+    display: flex; justify-content: space-between;
+    font-size: 0.87rem;
+    color: var(--cream-dim);
+    padding: 7px 0;
+  }
+  .price-line.total{
+    border-top: 1px solid rgba(242,233,216,0.14);
+    margin-top: 6px;
+    padding-top: 12px;
+    color: var(--cream);
+    font-size: 1.02rem;
+    font-weight: 500;
+  }
+  .price-line.total span:last-child{ color: var(--gold); }
+  .price-note{ font-size: 0.72rem; color: var(--cream-dim); margin-top: 8px; line-height: 1.4; }
+
+  .pay-btn{
+    width: 100%;
+    padding: 15px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: linear-gradient(160deg, var(--gold), #B7822C);
+    color: #26180A;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.2s ease;
+  }
+  .pay-btn:disabled{ opacity: 0.6; cursor: default; }
+
+  .pay-methods{
+    display: flex; gap: 8px; justify-content: center;
+    font-size: 0.7rem; color: var(--cream-dim);
+    margin-top: 10px;
+  }
+
+  .status-banner{
+    display: none;
+    background: rgba(76,175,125,0.12);
+    border: 1px solid rgba(76,175,125,0.35);
+    color: var(--success);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.86rem;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-banner.show{ display: flex; }
+
+  @media (max-width: 380px){
+    :root{ font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="device">
+
+  <header>
+    <div class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="#D9A441" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="#D9A441" stroke-width="1.6"/></svg>
+      <span>is<b>Here</b> Barcelona</span>
+    </div>
+  </header>
+
+  <div class="setup-banner" id="setup-banner">
+    Falta conectar Supabase: pegá tu <b>SUPABASE_URL</b> y <b>SUPABASE_ANON_KEY</b> al final del archivo (líneas marcadas con <b>TODO</b>) para que las búsquedas y altas de pymes sean reales.
+  </div>
+
+  <main>
+
+    <section id="view-turista">
+
+      <div class="zone-picker">
+        <span>Estás en</span>
+        <select id="zone-select">
+          <option value="Gràcia">Gràcia</option>
+          <option value="Gòtic">Gòtic</option>
+          <option value="Eixample">Eixample</option>
+          <option value="El Raval">El Raval</option>
+          <option value="Sagrada Familia">Sagrada Familia</option>
+        </select>
+        <button id="btn-locate" aria-label="Detectar mi ubicación" title="Detectar mi ubicación">📍</button>
+      </div>
+      <p class="locate-status" id="locate-status"></p>
+
+      <div class="manual-search">
+        <input type="text" id="manual-input" placeholder="O escribí qué buscás (ej: costura, botones)">
+        <button id="btn-manual-search">Buscar</button>
+      </div>
+
+      <div class="listen-stage">
+        <div class="mic-wrap" id="mic-wrap">
+          <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+          <button id="btn-mic" aria-label="Buscar por voz">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F2E9D8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
+              <path d="M6.5 11a5.5 5.5 0 0 0 11 0"/>
+              <path d="M12 16.5V20M9 20h6"/>
+            </svg>
+          </button>
+        </div>
+
+        <p class="listen-status" id="listen-status">Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.</p>
+        <p class="transcript" id="transcript"></p>
+      </div>
+
+      <div class="result-card" id="result-card">
+        <div class="product-thumb" id="result-thumb"></div>
+        <div class="info-pyme">
+          <h3 id="result-name">—</h3>
+          <p id="result-product">—</p>
+          <p class="distance" id="result-distance">—</p>
+          <span class="badge" id="result-badge" style="display:none;">producto estrella</span>
+        </div>
+        <a class="direction-indicator" id="result-maps-link" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <span>MAPA</span>
+        </a>
+      </div>
+      <button class="voice-guide-btn" id="voice-guide-btn">Guiarme por voz →</button>
+
+      <footer class="hint">
+        Puedes guardar el móvil mientras te guiamos por voz.
+        <div class="business-link"><a href="#" id="link-to-comercio">¿Tienes un comercio? →</a></div>
+      </footer>
+    </section>
+
+    <section id="view-comercio">
+
+      <button class="back-link" id="link-to-turista">← Volver a la búsqueda</button>
+
+      <div>
+        <h2 class="section-title">Da de alta tu comercio</h2>
+        <p class="section-sub">Aparece cuando un turista cerca de ti busque justo lo que vendes.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-name">Nombre del negocio</label>
+        <input id="f-name" type="text" placeholder="Mercería Trini">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-zone">Barrio</label>
+          <select id="f-zone">
+            <option>Gràcia</option>
+            <option>Gòtic</option>
+            <option>Eixample</option>
+            <option>El Raval</option>
+            <option>Sagrada Familia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-price">Precio producto</label>
+          <input id="f-price" type="text" placeholder="2,50 €">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-product">Producto estrella</label>
+        <input id="f-product" type="text" placeholder="Kit de costura urgente">
+      </div>
+
+      <div class="field">
+        <label for="f-logo">Foto o logo del negocio (enlace a una imagen)</label>
+        <input id="f-logo" type="text" placeholder="https://...">
+      </div>
+
+      <div class="field">
+        <label for="f-address">Dirección exacta (calle y número)</label>
+        <input id="f-address" type="text" placeholder="Carrer de Verdi 23, Gràcia">
+      </div>
+
+      <div class="field">
+        <label for="f-tags">Palabras clave (separadas por comas)</label>
+        <input id="f-tags" type="text" placeholder="aguja, hilo, coser, botón">
+      </div>
+
+      <div class="price-card">
+        <div class="price-line"><span>Suscripción inicial</span><span>10,00 €</span></div>
+        <div class="price-line total"><span>Duración</span><span>3 meses (90 días)</span></div>
+        <p class="price-note">Pasados los 3 meses, la suscripción se renueva sola a 10€/mes mientras sigas activo. <b>Por ahora estamos terminando de conectar el cobro real</b>: tu ficha se activa igual, sin que se te cargue nada todavía, y vas a recibir aviso antes de que el cobro automático empiece a funcionar. Si no se renueva, la ficha se desactiva sola y podés reactivarla cuando quieras.</p>
+      </div>
+
+      <button class="pay-btn" id="btn-pay">Activar mi ficha — 10€/3 meses</button>
+      <div class="pay-methods">Stripe · Apple Pay · Bizum (próximamente)</div>
+
+      <div class="status-banner" id="status-banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+        <span id="status-text">Ficha activa. Ya apareces en las búsquedas de isHere.</span>
+      </div>
+
+      <div style="text-align:center; margin-top:4px;">
+        <a href="#" id="link-negocio-estrella" style="color:var(--cream-dim); font-size:0.7rem; text-decoration:underline; text-decoration-color:rgba(242,233,216,0.25);">★ Alta como negocio estrella</a>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('No se pudo cargar Supabase desde el CDN — la app sigue funcionando con datos de respaldo')"></script>
+<script>
+const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
+
+const supabaseReady = !SUPABASE_URL.includes("TU_PROJECT_URL") && !SUPABASE_ANON_KEY.includes("TU_ANON_KEY");
+
+let supabaseClient = null;
+try {
+  if (supabaseReady && window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (err) {
+  console.error('No se pudo conectar a Supabase, la app sigue funcionando sin base de datos remota:', err);
+}
+
+const fallbackPymesDatabase = [
+  {
+    id: "pyme_001",
+    name: "Mercería Trini",
+    zone: "Gràcia",
+    star_product: { name: "Kit de costura urgente (Aguja e Hilo)", price: 2.50 },
+    tags: ["aguja", "hilo", "coser", "boton", "merceria", "ropa", "costura"],
+    status: "beta_active",
+    distance_m: 45
+  },
+  {
+    id: "pyme_002",
+    name: "Retoucherie Eixample",
+    zone: "Eixample",
+    star_product: { name: "Arreglo exprés de bajos", price: 8 },
+    tags: ["arreglo", "costura", "bajos", "ropa", "sastre"],
+    status: "inactive",
+    distance_m: 210
+  },
+  {
+    id: "pyme_003",
+    name: "Vinoteca El Petit Celler",
+    zone: "Gòtic",
+    star_product: { name: "Copa de vino chileno", price: 4 },
+    tags: ["vino", "vino chileno", "copa", "enoteca", "bar"],
+    status: "beta_active",
+    distance_m: 90
+  },
+  {
+    id: "pyme_004",
+    name: "Farmàcia Raval",
+    zone: "El Raval",
+    star_product: { name: "Kit primeros auxilios viaje", price: 6.5 },
+    tags: ["farmacia", "tirita", "dolor", "sol", "protector"],
+    status: "beta_active",
+    distance_m: 130
+  },
+  {
+    id: "pyme_005",
+    name: "Bany de Platja Sagrada",
+    zone: "Sagrada Familia",
+    star_product: { name: "Traje de baño talla única", price: 22 },
+    tags: ["traje de bano", "bikini", "playa", "bano"],
+    status: "inactive",
+    distance_m: 300
+  }
+];
+
+function normalize(str){
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
+async function searchNearestProduct(userSpeech, userZone){
+  const words = normalize(userSpeech).split(/[^a-z0-9]+/).filter(Boolean);
+  let pool = fallbackPymesDatabase;
+
+  if (supabaseReady && supabaseClient){
+    const { data, error } = await supabaseClient
+      .from('pymes')
+      .select('*')
+      .eq('zone', userZone);
+
+    if (error){
+      console.error('Error consultando Supabase:', error.message);
+    } else {
+      pool = (data || []).map(row => ({
+        id: row.id,
+        name: row.name,
+        zone: row.zone,
+        star_product: { name: row.star_product_name, price: row.star_product_price },
+        tags: (row.tags || '').split(',').map(t => t.trim()).filter(Boolean),
+        status: row.status,
+        plan_type: row.plan_type || 'paid',
+        distance_m: row.distance_m || 0,
+        logo_url: row.logo_url || '',
+        address: row.address || '',
+        expires_at: row.expires_at || null
+      }));
+    }
+  }
+
+  // Una ficha sin expires_at nunca vence (así no rompemos los ejemplos de demostración).
+  // Una ficha con expires_at pasado se trata como vencida, sin ningún proceso corriendo aparte:
+  // el chequeo pasa cada vez que alguien busca.
+  const isExpired = (p) => p.expires_at && new Date(p.expires_at).getTime() < Date.now();
+
+  const vencidasEnSupabase = pool.filter(p => isExpired(p) && p.status === 'beta_active' && supabaseReady && supabaseClient);
+  if (vencidasEnSupabase.length){
+    // Se marcan como inactivas en segundo plano (no bloquea la búsqueda del turista actual).
+    vencidasEnSupabase.forEach(p => {
+      supabaseClient.from('pymes').update({ status: 'inactive' }).eq('id', p.id)
+        .then(() => {})
+        .catch(() => {});
+    });
+  }
+
+  const candidates = pool
+    .filter(p => p.zone === userZone && !isExpired(p))
+    .map(p => {
+      const tagHits = p.tags.filter(tag => words.some(w => normalize(tag).includes(w) || w.includes(normalize(tag))));
+      return { pyme: p, score: tagHits.length };
+    })
+    .filter(c => c.score > 0)
+    .sort((a, b) => {
+      const priority = (c) => c.pyme.status === "beta_active" ? 1 : 0;
+      if (priority(b) !== priority(a)) return priority(b) - priority(a);
+      return b.score - a.score;
+    });
+
+  return candidates.length ? candidates[0].pyme : null;
+}
+
+const micWrap = document.getElementById('mic-wrap');
+const btnMic = document.getElementById('btn-mic');
+const listenStatus = document.getElementById('listen-status');
+const transcriptEl = document.getElementById('transcript');
+const resultCard = document.getElementById('result-card');
+const voiceGuideBtn = document.getElementById('voice-guide-btn');
+const zoneSelect = document.getElementById('zone-select');
+const btnLocate = document.getElementById('btn-locate');
+const locateStatus = document.getElementById('locate-status');
+
+// Coordenadas aproximadas del centro de cada barrio, para calcular cuál está más cerca del turista.
+const zoneCoords = {
+  'Gràcia': { lat: 41.4036, lng: 2.1527 },
+  'Gòtic': { lat: 41.3833, lng: 2.1765 },
+  'Eixample': { lat: 41.3888, lng: 2.1590 },
+  'El Raval': { lat: 41.3801, lng: 2.1686 },
+  'Sagrada Familia': { lat: 41.4036, lng: 2.1744 }
+};
+
+function distanceKm(lat1, lng1, lat2, lng2){
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function nearestZoneWithDistance(lat, lng){
+  let best = null, bestDist = Infinity;
+  for (const [zone, coord] of Object.entries(zoneCoords)){
+    const d = distanceKm(lat, lng, coord.lat, coord.lng);
+    if (d < bestDist){ bestDist = d; best = zone; }
+  }
+  return { zone: best, distanceKm: bestDist };
+}
+
+function detectLocation(auto){
+  if (!navigator.geolocation){
+    if (!auto) locateStatus.textContent = 'Tu navegador no soporta ubicación. Elegí el barrio a mano.';
+    return;
+  }
+  if (!auto) locateStatus.textContent = 'Detectando tu ubicación…';
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const { zone, distanceKm: dist } = nearestZoneWithDistance(pos.coords.latitude, pos.coords.longitude);
+      // Si está a más de 5km de cualquier barrio conocido, probablemente no está en Barcelona todavía
+      // (ej: recién llegando, en el aeropuerto, o en otra ciudad) — no forzamos el barrio.
+      if (dist > 5){
+        if (!auto) locateStatus.textContent = 'Estás lejos de las zonas activas. Elegí el barrio a mano.';
+        return;
+      }
+      zoneSelect.value = zone;
+      locateStatus.textContent = auto ? `Ubicación detectada: ${zone}` : `Detectado: ${zone}`;
+    },
+    (err) => {
+      if (!auto) locateStatus.textContent = 'No se pudo detectar tu ubicación. Elegí el barrio a mano.';
+      // En modo automático fallamos en silencio: el turista puede no haber decidido dar permiso todavía,
+      // y no queremos asustarlo con un error al abrir la app.
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+}
+
+btnLocate.addEventListener('click', () => detectLocation(false));
+
+// Al abrir la app, intentamos detectar el barrio solos (el navegador pedirá permiso).
+// Si el turista ya lo había autorizado antes, esto detecta el barrio sin que tenga que tocar nada.
+detectLocation(true);
+
+async function handleSpeechResult(speech){
+  transcriptEl.textContent = `"${speech}"`;
+  listenStatus.textContent = 'Buscando cerca de ti…';
+  const zone = zoneSelect.value;
+  const match = await searchNearestProduct(speech, zone);
+
+  if (match){
+    const thumb = document.getElementById('result-thumb');
+    if (match.logo_url){
+      thumb.style.backgroundImage = `url('${match.logo_url}')`;
+      thumb.textContent = '';
+    } else {
+      thumb.style.backgroundImage = 'none';
+      thumb.textContent = match.name.charAt(0);
+    }
+    document.getElementById('result-name').textContent = match.name;
+    document.getElementById('result-product').textContent = match.star_product.name;
+    document.getElementById('result-distance').textContent = `A ${match.distance_m} metros · ${match.zone}`;
+    document.getElementById('result-badge').style.display = match.status === 'beta_active' ? 'inline-block' : 'none';
+
+    const mapsLink = document.getElementById('result-maps-link');
+    const query = match.address ? `${match.name}, ${match.address}` : `${match.name}, ${match.zone}, Barcelona`;
+    mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+    resultCard.classList.add('show');
+    voiceGuideBtn.classList.add('show');
+    listenStatus.classList.add('pocket-mode');
+    listenStatus.innerHTML = `Puedes guardar tu móvil. Te guío por voz hasta <b>${match.name}</b>.`;
+  } else {
+    resultCard.classList.remove('show');
+    voiceGuideBtn.classList.remove('show');
+    listenStatus.classList.remove('pocket-mode');
+    listenStatus.innerHTML = `No encontré nada para "<b>${speech}</b>" en ${zone} todavía. Prueba con otro barrio o busca otra cosa.`;
+  }
+}
+
+function startListening(){
+  micWrap.classList.add('listening');
+  btnMic.classList.add('listening');
+  listenStatus.classList.remove('pocket-mode');
+  listenStatus.textContent = 'Escuchando…';
+  transcriptEl.textContent = '';
+  resultCard.classList.remove('show');
+  voiceGuideBtn.classList.remove('show');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!window.isSecureContext){
+    stopListeningUI();
+    listenStatus.textContent = 'El micrófono necesita conexión segura (https). Usá el campo de texto de arriba mientras tanto.';
+    return;
+  }
+
+  if (SpeechRecognition){
+    const rec = new SpeechRecognition();
+    rec.lang = 'es-ES';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+
+    // Seguro: si en 10 segundos no pasó nada (ni resultado, ni error, ni fin),
+    // se resetea solo en vez de quedar "Escuchando…" para siempre.
+    const safetyTimeout = setTimeout(() => {
+      try { rec.abort(); } catch(e){}
+      stopListeningUI();
+      listenStatus.textContent = 'No detecté nada. Tocá el círculo e intentá de nuevo, más cerca del micrófono.';
+    }, 10000);
+
+    rec.onresult = (e) => {
+      clearTimeout(safetyTimeout);
+      stopListeningUI();
+      handleSpeechResult(e.results[0][0].transcript);
+    };
+    rec.onerror = (e) => {
+      clearTimeout(safetyTimeout);
+      stopListeningUI();
+      const mensajes = {
+        'not-allowed': 'Bloqueaste el permiso del micrófono. Habilitalo en los ajustes del navegador y tocá de nuevo.',
+        'no-speech': 'No te escuché. Tocá el círculo e intentá otra vez.',
+        'audio-capture': 'No encontré un micrófono disponible en este dispositivo.',
+        'network': 'Fallo de conexión al reconocer la voz. Probá con el campo de texto de arriba.'
+      };
+      listenStatus.textContent = mensajes[e.error] || `No se pudo usar el micrófono (${e.error}). Probá con el campo de texto de arriba.`;
+    };
+    rec.onend = () => {
+      clearTimeout(safetyTimeout);
+      stopListeningUI();
+    };
+    try {
+      rec.start();
+    } catch (err){
+      clearTimeout(safetyTimeout);
+      stopListeningUI();
+      listenStatus.textContent = 'No se pudo iniciar el micrófono. Probá con el campo de texto de arriba.';
+    }
+  } else {
+    stopListeningUI();
+    listenStatus.textContent = 'Este navegador no soporta reconocimiento de voz. Usá el campo de texto de arriba.';
+  }
+}
+
+function stopListeningUI(){
+  micWrap.classList.remove('listening');
+  btnMic.classList.remove('listening');
+}
+
+btnMic.addEventListener('click', startListening);
+
+document.getElementById('btn-manual-search').addEventListener('click', () => {
+  const text = document.getElementById('manual-input').value.trim();
+  if (text) handleSpeechResult(text);
+});
+document.getElementById('manual-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter'){
+    const text = e.target.value.trim();
+    if (text) handleSpeechResult(text);
+  }
+});
+
+voiceGuideBtn.addEventListener('click', () => {
+  listenStatus.classList.add('pocket-mode');
+  listenStatus.textContent = 'Camina recto dos calles y gira a la derecha.';
+});
+
+async function activarFicha(planType){
+  const name = document.getElementById('f-name').value.trim();
+  const zone = document.getElementById('f-zone').value;
+  const product = document.getElementById('f-product').value.trim();
+  const priceRaw = document.getElementById('f-price').value.trim();
+  const logoUrl = document.getElementById('f-logo').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const tagsRaw = document.getElementById('f-tags').value.trim();
+
+  if (!name || !product || !tagsRaw){
+    alert('Completa nombre del negocio, producto estrella y etiquetas antes de activar.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-pay');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Activando…';
+
+  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+  // Ambos caminos (pago o cortesía de negocio estrella) vencen a los 90 días exactos.
+  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+
+  return new Promise((resolve) => {
+    setTimeout(async () => {
+      if (supabaseReady && supabaseClient){
+        const { error } = await supabaseClient.from('pymes').insert([{
+          name, zone,
+          star_product_name: product,
+          star_product_price: priceRaw,
+          tags: tags.join(', '),
+          logo_url: logoUrl,
+          address: address,
+          status: 'beta_active',
+          expires_at: expiresAt,
+          plan_type: planType
+        }]);
+
+        if (error){
+          alert('No se pudo guardar en Supabase: ' + error.message);
+          btn.textContent = textoOriginal;
+          btn.disabled = false;
+          resolve();
+          return;
+        }
+      } else {
+        fallbackPymesDatabase.push({
+          id: 'pyme_' + Date.now(),
+          name, zone,
+          star_product: { name: product, price: priceRaw },
+          tags, status: 'beta_active', distance_m: 0, logo_url: logoUrl, address: address,
+          expires_at: expiresAt, plan_type: planType
+        });
+      }
+
+      btn.textContent = textoOriginal;
+      btn.disabled = false;
+      const fechaVencimiento = new Date(expiresAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+      const mensaje = planType === 'free_promo'
+        ? `Cortesía de negocio estrella activada para "${name}" en ${zone}, 3 meses gratis hasta el ${fechaVencimiento}.`
+        : `Ficha de "${name}" activa en ${zone} hasta el ${fechaVencimiento}. Ya apareces en las búsquedas de isHere.`;
+      document.getElementById('status-text').textContent = mensaje;
+      document.getElementById('status-banner').classList.add('show');
+      resolve();
+    }, 1300);
+  });
+}
+
+document.getElementById('btn-pay').addEventListener('click', () => activarFicha('paid'));
+
+document.getElementById('link-negocio-estrella').addEventListener('click', (e) => {
+  e.preventDefault();
+  const pin = prompt('Clave de administradora para dar de alta un negocio estrella:');
+  if (pin === null) return;
+  if (pin.trim() !== '9999'){
+    alert('Clave incorrecta.');
+    return;
+  }
+  activarFicha('free_promo');
+});
+
+if (supabaseReady){
+  document.getElementById('setup-banner').classList.add('hide');
+}
+
+document.getElementById('link-to-comercio').addEventListener('click', (e) => {
+  e.preventDefault();
+  const pin = prompt('Ingresá la clave de acceso para comercios:');
+  if (pin === null) return;
+  if (pin.trim() !== '1234'){
+    alert('Clave incorrecta.');
+    return;
+  }
+  document.getElementById('view-turista').style.display = 'none';
+  document.getElementById('view-comercio').style.display = 'flex';
+});
+document.getElementById('link-to-turista').addEventListener('click', () => {
+  document.getElementById('view-comercio').style.display = 'none';
+  document.getElementById('view-turista').style.display = 'flex';
+});
+</script>
+</body>
+</html>
