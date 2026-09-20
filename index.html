@@ -557,6 +557,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('No se pudo cargar Supabase desde el CDN — la app sigue funcionando con datos de respaldo')"></script>
 <script>
+window.onerror = function(msg, url, line, col, error){
+  document.body.insertAdjacentHTML('afterbegin', '<div style="background:black;color:#0f0;font-size:14px;padding:14px;white-space:pre-wrap;">ERROR JS: ' + msg + ' (línea ' + line + ')</div>');
+  return false;
+};
+</script>
+<script>
 const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
