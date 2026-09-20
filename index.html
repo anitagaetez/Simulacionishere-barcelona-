@@ -198,6 +198,7 @@
     border-radius: 50%;
     border: 1.5px solid var(--teal-light);
     opacity: 0;
+    pointer-events: none;
   }
   .mic-wrap.listening .ring{ animation: pulse-ring 1.8s ease-out infinite; }
   .mic-wrap.listening .ring:nth-child(2){ animation-delay: 0.5s; }
@@ -417,7 +418,6 @@
     </div>
   </header>
 
-  <div style="background:red;color:white;font-size:20px;font-weight:bold;text-align:center;padding:20px;">VERSION DEBUG 3</div>
   <div class="setup-banner" id="setup-banner">
     Falta conectar Supabase: pegá tu <b>SUPABASE_URL</b> y <b>SUPABASE_ANON_KEY</b> al final del archivo (líneas marcadas con <b>TODO</b>) para que las búsquedas y altas de pymes sean reales.
   </div>
@@ -447,7 +447,7 @@
       <div class="listen-stage">
         <div class="mic-wrap" id="mic-wrap">
           <div class="ring"></div><div class="ring"></div><div class="ring"></div>
-          <button id="btn-mic" aria-label="Buscar por voz" onclick="alert('INLINE FUNCIONA')">
+          <button id="btn-mic" aria-label="Buscar por voz">
             <svg viewBox="0 0 24 24" fill="none" stroke="#F2E9D8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
               <path d="M6.5 11a5.5 5.5 0 0 0 11 0"/>
@@ -556,12 +556,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('No se pudo cargar Supabase desde el CDN — la app sigue funcionando con datos de respaldo')"></script>
-<script>
-window.onerror = function(msg, url, line, col, error){
-  document.body.insertAdjacentHTML('afterbegin', '<div style="background:black;color:#0f0;font-size:14px;padding:14px;white-space:pre-wrap;">ERROR JS: ' + msg + ' (línea ' + line + ')</div>');
-  return false;
-};
-</script>
 <script>
 const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
@@ -795,7 +789,6 @@ async function handleSpeechResult(speech){
 }
 
 function startListening(){
-  alert('DEBUG: el clic llegó al botón del micrófono');
   micWrap.classList.add('listening');
   btnMic.classList.add('listening');
   listenStatus.classList.remove('pocket-mode');
