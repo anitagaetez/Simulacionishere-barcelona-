@@ -1509,6 +1509,7 @@ function renderLluvia(){
 }
 
 function refrescarDinamicos(){
+  if (ultimaDeteccion) locateStatus.textContent = t(ultimaDeteccion.auto ? "detected_auto" : "detected", { z: ultimaDeteccion.zone });
   renderPortada();
   renderNube();
   renderLluvia();
@@ -1608,6 +1609,7 @@ function nearestZoneWithDistance(lat, lng){
   }
   return { zone: best, distanceKm: bestDist };
 }
+let ultimaDeteccion = null; // para volver a escribir el aviso si cambia el idioma
 function detectLocation(auto){
   if (!navigator.geolocation){
     if (!auto) locateStatus.textContent = t("locate_unsupported");
@@ -1623,6 +1625,7 @@ function detectLocation(auto){
         return;
       }
       zoneSelect.value = zone;
+      ultimaDeteccion = { auto, zone };
       locateStatus.textContent = t(auto ? "detected_auto" : "detected", { z: zone });
     },
     () => { if (!auto) locateStatus.textContent = t("locate_fail"); },
