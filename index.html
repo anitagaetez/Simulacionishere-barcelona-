@@ -142,6 +142,14 @@
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
   }
+  .flags{ display: flex; gap: 8px; }
+  .flag-btn{
+    width: 34px; height: 24px; padding: 0; border-radius: 5px; overflow: hidden;
+    border: 2px solid transparent; background: none; cursor: pointer; opacity: 0.55;
+    transition: opacity .15s, border-color .15s;
+  }
+  .flag-btn svg{ display: block; width: 100%; height: 100%; }
+  .flag-btn[aria-pressed="true"]{ opacity: 1; border-color: var(--gold); }
   #btn-lang{
     background: var(--bg-panel-raise);
     border: 1px solid var(--teal-light);
@@ -482,6 +490,17 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="#D9A441" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="#D9A441" stroke-width="1.6"/></svg>
       <span>is<b>Here</b> Barcelona</span>
     </div>
+    <div class="flags" role="group" aria-label="Idioma / Language">
+      <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català">
+        <svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="es" aria-label="Español" title="Español">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="2" fill="#C60B1E"/><rect y="0.5" width="3" height="1" fill="#FFC400"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="en" aria-label="English" title="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>
+      </button>
+    </div>
   </header>
 
   <div class="aviso" id="aviso-global" role="status"></div>
@@ -492,7 +511,7 @@
     <section id="view-turista">
 
       <div class="zone-picker">
-        <span>Estás en</span>
+        <span data-i18n="zone_label">Estás en</span>
         <select id="zone-select" aria-label="Barrio">
           <option value="Gràcia">Gràcia</option>
           <option value="Gòtic">Gòtic</option>
@@ -500,14 +519,13 @@
           <option value="El Raval">El Raval</option>
           <option value="Sagrada Familia">Sagrada Familia</option>
         </select>
-        <button id="btn-locate" aria-label="Detectar mi ubicación" title="Detectar mi ubicación">📍</button>
-        <button id="btn-lang" aria-label="Cambiar idioma de voz" title="Cambiar idioma de voz">ES</button>
+        <button id="btn-locate" data-i18n-aria="locate_aria" aria-label="Detectar mi ubicación" title="Detectar mi ubicación">📍</button>
       </div>
       <p class="locate-status" id="locate-status"></p>
 
       <div class="manual-search">
-        <input type="text" id="manual-input" placeholder="O escribe qué buscas (ej: costura, botones)" aria-label="Qué buscas">
-        <button id="btn-manual-search">Buscar</button>
+        <input type="text" id="manual-input" data-i18n-ph="search_ph" placeholder="O escribe qué buscas (ej: costura, botones)" aria-label="Qué buscas">
+        <button id="btn-manual-search" data-i18n="search_btn">Buscar</button>
       </div>
 
       <div class="listen-stage">
@@ -523,7 +541,7 @@
           </button>
         </div>
 
-        <p class="listen-status" id="listen-status">Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.</p>
+        <p class="listen-status" id="listen-status" data-i18n-html="listen_idle">Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.</p>
         <p class="transcript" id="transcript"></p>
       </div>
 
@@ -533,45 +551,45 @@
           <h3 id="result-name">—</h3>
           <p id="result-product">—</p>
           <p class="distance" id="result-distance">—</p>
-          <span class="badge">producto estrella</span>
+          <span class="badge" data-i18n="badge">producto estrella</span>
         </div>
         <a class="direction-indicator" id="result-maps-link" href="#" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          <span>MAPA</span>
+          <span data-i18n="map">MAPA</span>
         </a>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
 
       <footer class="hint">
-        Google Maps te guía por voz hasta la puerta.
-        <div class="business-link"><a href="#" id="link-to-comercio">¿Tienes un comercio? Aparece en isHere</a></div>
+        <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
+        <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
       </footer>
     </section>
 
     <!-- ================= VISTA COMERCIO ================= -->
     <section id="view-comercio">
 
-      <button class="back-link" id="link-to-turista">← Volver a la búsqueda</button>
+      <button class="back-link" id="link-to-turista" data-i18n="back">← Volver a la búsqueda</button>
 
       <div>
-        <h2 class="section-title">Da de alta tu comercio</h2>
-        <p class="section-sub">Aparece cuando alguien cerca de ti busque justo lo que vendes.</p>
+        <h2 class="section-title" data-i18n="form_title">Da de alta tu comercio</h2>
+        <p class="section-sub" data-i18n="form_sub">Aparece cuando alguien cerca de ti busque justo lo que vendes.</p>
       </div>
 
       <div class="status-banner" id="status-banner" role="status"></div>
 
       <div id="form-alta" style="display:flex; flex-direction:column; gap:20px;">
 
-        <h3 class="form-group-title">Tu negocio</h3>
+        <h3 class="form-group-title" data-i18n="g_business">Tu negocio</h3>
 
         <div class="field">
-          <label for="f-name">Nombre del negocio <span class="req">*</span></label>
+          <label for="f-name"><span data-i18n="l_name">Nombre del negocio</span> <span class="req">*</span></label>
           <input id="f-name" type="text" placeholder="Mercería Trini" autocomplete="organization">
         </div>
 
         <div class="field-row">
           <div class="field">
-            <label for="f-zone">Barrio <span class="req">*</span></label>
+            <label for="f-zone"><span data-i18n="l_zone">Barrio</span> <span class="req">*</span></label>
             <select id="f-zone">
               <option>Gràcia</option>
               <option>Gòtic</option>
@@ -581,75 +599,75 @@
             </select>
           </div>
           <div class="field">
-            <label for="f-price">Precio del producto</label>
+            <label for="f-price" data-i18n="l_price">Precio del producto</label>
             <input id="f-price" type="text" placeholder="2,50 €">
           </div>
         </div>
 
         <div class="field">
-          <label for="f-product">Producto estrella <span class="req">*</span></label>
-          <input id="f-product" type="text" placeholder="Kit de costura urgente">
+          <label for="f-product"><span data-i18n="l_product">Producto estrella</span> <span class="req">*</span></label>
+          <input id="f-product" type="text" data-i18n-ph="ph_product" placeholder="Kit de costura urgente">
         </div>
 
         <div class="field">
-          <label for="f-tags">Palabras con las que te buscarían, separadas por comas <span class="req">*</span></label>
-          <input id="f-tags" type="text" placeholder="aguja, hilo, coser, botón">
+          <label for="f-tags"><span data-i18n="l_tags">Palabras con las que te buscarían, separadas por comas</span> <span class="req">*</span></label>
+          <input id="f-tags" type="text" placeholder="aguja, agulla, needle, hilo, fil, thread">
         </div>
 
         <div class="field">
-          <label for="f-address">Dirección exacta (calle y número) <span class="req">*</span></label>
+          <label for="f-address"><span data-i18n="l_address">Dirección exacta (calle y número)</span> <span class="req">*</span></label>
           <input id="f-address" type="text" placeholder="Carrer de Verdi 23, Gràcia" autocomplete="street-address">
         </div>
 
         <div class="field">
-          <label for="f-foto">Foto o logo del comercio</label>
+          <label for="f-foto" data-i18n="l_photo">Foto o logo del comercio</label>
           <input id="f-foto" type="file" accept="image/*" class="foto-input">
           <label for="f-foto" class="foto-btn" id="foto-btn">
             <img id="foto-preview" alt="" hidden>
-            <span id="foto-texto">Elegir foto de la galería o hacer una</span>
+            <span id="foto-texto" data-i18n="photo_pick">Elegir foto de la galería o hacer una</span>
           </label>
         </div>
 
         <div class="field">
-          <label for="f-web">Página web o Instagram</label>
+          <label for="f-web" data-i18n="l_web">Página web o Instagram</label>
           <input id="f-web" type="text" placeholder="https://...">
         </div>
 
-        <h3 class="form-group-title">Contacto</h3>
-        <p class="form-group-note">Solo lo ve isHere. No se muestra al público.</p>
+        <h3 class="form-group-title" data-i18n="g_contact">Contacto</h3>
+        <p class="form-group-note" data-i18n="contact_note">Solo lo ve isHere. No se muestra al público.</p>
 
         <div class="field">
-          <label for="f-contacto">Tu nombre <span class="req">*</span></label>
+          <label for="f-contacto"><span data-i18n="l_contact">Tu nombre</span> <span class="req">*</span></label>
           <input id="f-contacto" type="text" placeholder="Trini García" autocomplete="name">
         </div>
 
         <div class="field-row">
           <div class="field">
-            <label for="f-email">Email <span class="req">*</span></label>
+            <label for="f-email"><span data-i18n="l_email">Email</span> <span class="req">*</span></label>
             <input id="f-email" type="email" placeholder="hola@tunegocio.com" autocomplete="email">
           </div>
           <div class="field">
-            <label for="f-telefono">Teléfono <span class="req">*</span></label>
+            <label for="f-telefono"><span data-i18n="l_phone">Teléfono</span> <span class="req">*</span></label>
             <input id="f-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel">
           </div>
         </div>
 
         <div class="field">
-          <label for="f-ref">Código de quien te recomendó (si tienes)</label>
+          <label for="f-ref" data-i18n="l_ref">Código de quien te recomendó (si tienes)</label>
           <input id="f-ref" type="text" placeholder="ANA01" autocapitalize="characters">
         </div>
 
         <div class="price-card">
-          <div class="price-line"><span>Promoción de 3 meses</span><span>10,00 €</span></div>
-          <div class="price-line"><span>IVA (21 %)</span><span>2,10 €</span></div>
-          <div class="price-line total"><span>Pagas hoy</span><span>12,10 €</span></div>
-          <p class="price-note">A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
+          <div class="price-line"><span data-i18n="price_promo">Promoción de 3 meses</span><span>10,00 €</span></div>
+          <div class="price-line"><span data-i18n="price_vat">IVA (21 %)</span><span>2,10 €</span></div>
+          <div class="price-line total"><span data-i18n="price_today">Pagas hoy</span><span>12,10 €</span></div>
+          <p class="price-note" data-i18n="price_note">A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
         </div>
 
         <div class="form-error" id="form-error" role="alert"></div>
 
-        <button class="pay-btn" id="btn-pay">Pagar 12,10 € y activar mi ficha</button>
-        <div class="pay-methods">Pago seguro con tarjeta a través de Stripe</div>
+        <button class="pay-btn" id="btn-pay" data-i18n="pay_btn">Pagar 12,10 € y activar mi ficha</button>
+        <div class="pay-methods" data-i18n="pay_methods">Pago seguro con tarjeta a través de Stripe</div>
       </div>
 
     </section>
@@ -679,22 +697,376 @@ function esc(str){
 function normalize(str){
   return String(str).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 }
+/* ---------- idiomas: català, español, english ---------- */
+const I18N = {
+  es: {
+    zone_label: "Estás en",
+    locate_aria: "Detectar mi ubicación",
+    search_ph: "O escribe qué buscas (ej: costura, botones)",
+    search_btn: "Buscar",
+    listen_idle: 'Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.',
+    badge: "producto estrella",
+    map: "MAPA",
+    hint: "Google Maps te guía por voz hasta la puerta.",
+    biz_link: "¿Tienes un comercio? Aparece en isHere",
+    back: "← Volver a la búsqueda",
+    form_title: "Da de alta tu comercio",
+    form_sub: "Aparece cuando alguien cerca de ti busque justo lo que vendes.",
+    g_business: "Tu negocio",
+    l_name: "Nombre del negocio",
+    l_zone: "Barrio",
+    l_price: "Precio del producto",
+    l_product: "Producto estrella",
+    ph_product: "Kit de costura urgente",
+    l_tags: "Palabras con las que te buscarían (mejor en catalán, español e inglés), separadas por comas",
+    l_address: "Dirección exacta (calle y número)",
+    l_photo: "Foto o logo del comercio",
+    photo_pick: "Elegir foto de la galería o hacer una",
+    photo_prep: "Preparando foto…",
+    photo_ready: "Foto lista. Toca para cambiarla.",
+    photo_err: "La foto no se pudo cargar: {e}.",
+    err_photo_process: "no se pudo procesar la foto",
+    err_photo_format: "formato de foto no compatible, prueba con otra",
+    err_upload: "no se pudo subir la foto ({e})",
+    l_web: "Página web o Instagram",
+    g_contact: "Contacto",
+    contact_note: "Solo lo ve isHere. No se muestra al público.",
+    l_contact: "Tu nombre",
+    l_email: "Email",
+    l_phone: "Teléfono",
+    l_ref: "Código de quien te recomendó (si tienes)",
+    price_promo: "Promoción de 3 meses",
+    price_vat: "IVA (21 %)",
+    price_today: "Pagas hoy",
+    price_note: "A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.",
+    pay_btn: "Pagar 12,10 € y activar mi ficha",
+    pay_methods: "Pago seguro con tarjeta a través de Stripe",
+    searching: "Buscando cerca de ti…",
+    search_error: "No se pudo buscar ahora. Revisa tu conexión e inténtalo de nuevo.",
+    found: "Encontré ",
+    found_other: "En {zone} no hay, pero lo más cerca está en {other}: ",
+    btn_walk: "Guiarme caminando",
+    btn_transit: "Llévame en metro o bus",
+    tap_hint: 'Toca "{btn}" y Google Maps te lleva con voz.',
+    speak_found: "{aviso}{name}. Toca {btn} y te llevo.",
+    noresult_1: 'No encontré nada para "<b>{s}</b>" en Barcelona todavía. Prueba con otra palabra.',
+    noresult_2: 'Por ahora no hay nada para "<b>{s}</b>". ¿Probamos con otra búsqueda?',
+    open_walk: "Abriendo la ruta a pie.",
+    open_transit: "Abriendo la ruta en transporte público. Google Maps te dice qué línea tomar y dónde bajarte.",
+    listening: "Escuchando…",
+    mic_https: "El micrófono necesita conexión segura (https). Usa el campo de texto de arriba.",
+    mic_unsupported: "Este navegador no reconoce la voz. Usa el campo de texto de arriba.",
+    mic_timeout: "No detecté nada. Toca el círculo e inténtalo de nuevo, más cerca del micrófono.",
+    mic_notallowed: "El permiso del micrófono está bloqueado. Actívalo en los ajustes del navegador y toca de nuevo.",
+    mic_nospeech: "No te escuché. Toca el círculo e inténtalo otra vez.",
+    mic_audio: "No encontré un micrófono disponible en este dispositivo.",
+    mic_network: "Falló la conexión al reconocer la voz. Prueba con el campo de texto de arriba.",
+    mic_generic: "No se pudo usar el micrófono. Prueba con el campo de texto de arriba.",
+    mic_start: "No se pudo iniciar el micrófono. Prueba con el campo de texto de arriba.",
+    locate_unsupported: "Tu navegador no permite la ubicación. Elige el barrio a mano.",
+    locating: "Detectando tu ubicación…",
+    locate_far: "Estás lejos de las zonas activas. Elige el barrio a mano.",
+    detected_auto: "Ubicación detectada: {z}",
+    detected: "Detectado: {z}",
+    locate_fail: "No se pudo detectar tu ubicación. Elige el barrio a mano.",
+    err_required: "Completa todos los campos marcados con * para continuar.",
+    err_email: "El email no parece válido. Revísalo, ahí te llegarán las facturas.",
+    err_noconn: "No hay conexión con isHere en este momento. Revisa tu internet y vuelve a intentarlo.",
+    err_ref: 'El código "{ref}" no existe. Revísalo o deja ese campo vacío.',
+    err_ref_check: "no se pudo comprobar el código de recomendación",
+    err_pay: "No se pudo preparar el pago: {e}. Inténtalo de nuevo en unos minutos.",
+    err_no_link: "no se recibió el enlace de pago",
+    uploading_photo: "Subiendo foto…",
+    preparing_pay: "Preparando el pago…",
+    paid_generic: "¡Pago recibido! Tu ficha se activa en unos minutos. Te llegará la factura por email.",
+    paid_activating: '¡Pago recibido! Activando "{name}"…',
+    paid_ready: '¡Listo! "{name}" ya aparece en las búsquedas de isHere.',
+    paid_until: " Tu promoción dura hasta el {date}.",
+    invoice: " Te llegará la factura por email.",
+    paid_later: '¡Pago recibido! "{name}" se activará en unos minutos. Si en una hora no aparece en las búsquedas, escríbenos.',
+    pay_cancel: "El pago no se completó, así que tu ficha no se activó. Puedes intentarlo de nuevo cuando quieras.",
+    invite_opening: "Abriendo tu registro de reclutador en Stripe…",
+    invite_fail: "No se pudo abrir tu registro. Revisa que el enlace de invitación esté completo o pide uno nuevo a isHere.",
+    rec_ready: "¡Listo! Tu cuenta de reclutador quedó configurada. Ya puedes recibir tus comisiones.",
+    rec_retry: "El enlace de Stripe venció. Vuelve a abrir tu invitación para continuar donde quedaste."
+  },
+  ca: {
+    zone_label: "Ets a",
+    locate_aria: "Detectar la meva ubicació",
+    search_ph: "O escriu què busques (ex.: costura, botons)",
+    search_btn: "Cercar",
+    listen_idle: 'Toca el cercle i digues què necessites. Per exemple: <b>"busco agulla i fil"</b>.',
+    badge: "producte estrella",
+    map: "MAPA",
+    hint: "Google Maps et guia per veu fins a la porta.",
+    biz_link: "Tens un comerç? Apareix a isHere",
+    back: "← Tornar a la cerca",
+    form_title: "Dona d'alta el teu comerç",
+    form_sub: "Apareix quan algú a prop teu busqui just el que vens.",
+    g_business: "El teu negoci",
+    l_name: "Nom del negoci",
+    l_zone: "Barri",
+    l_price: "Preu del producte",
+    l_product: "Producte estrella",
+    ph_product: "Kit de costura d'urgència",
+    l_tags: "Paraules amb què et buscarien (millor en català, castellà i anglès), separades per comes",
+    l_address: "Adreça exacta (carrer i número)",
+    l_photo: "Foto o logotip del comerç",
+    photo_pick: "Tria una foto de la galeria o fes-ne una",
+    photo_prep: "Preparant la foto…",
+    photo_ready: "Foto a punt. Toca per canviar-la.",
+    photo_err: "No s'ha pogut carregar la foto: {e}.",
+    err_photo_process: "no s'ha pogut processar la foto",
+    err_photo_format: "format de foto no compatible, prova'n una altra",
+    err_upload: "no s'ha pogut pujar la foto ({e})",
+    l_web: "Pàgina web o Instagram",
+    g_contact: "Contacte",
+    contact_note: "Només ho veu isHere. No es mostra al públic.",
+    l_contact: "El teu nom",
+    l_email: "Correu electrònic",
+    l_phone: "Telèfon",
+    l_ref: "Codi de qui t'ha recomanat (si en tens)",
+    price_promo: "Promoció de 3 mesos",
+    price_vat: "IVA (21 %)",
+    price_today: "Pagues avui",
+    price_note: "A partir del quart mes, 10 € + IVA al mes (12,10 €), amb cobrament automàtic. Sense permanència: et pots donar de baixa quan vulguis i la teva fitxa continua visible fins al final del període pagat.",
+    pay_btn: "Paga 12,10 € i activa la meva fitxa",
+    pay_methods: "Pagament segur amb targeta a través de Stripe",
+    searching: "Cercant a prop teu…",
+    search_error: "Ara no s'ha pogut cercar. Revisa la connexió i torna-ho a provar.",
+    found: "He trobat ",
+    found_other: "A {zone} no n'hi ha, però el més a prop és a {other}: ",
+    btn_walk: "Guia'm a peu",
+    btn_transit: "Porta-m'hi en metro o bus",
+    tap_hint: 'Toca "{btn}" i Google Maps t\'hi porta amb veu.',
+    speak_found: "{aviso}{name}. Toca {btn} i t'hi porto.",
+    noresult_1: 'Encara no he trobat res per a "<b>{s}</b>" a Barcelona. Prova amb una altra paraula.',
+    noresult_2: 'De moment no hi ha res per a "<b>{s}</b>". Provem amb una altra cerca?',
+    open_walk: "Obrint la ruta a peu.",
+    open_transit: "Obrint la ruta en transport públic. Google Maps et diu quina línia agafar i on baixar.",
+    listening: "T'escolto…",
+    mic_https: "El micròfon necessita una connexió segura (https). Fes servir el camp de text de dalt.",
+    mic_unsupported: "Aquest navegador no reconeix la veu. Fes servir el camp de text de dalt.",
+    mic_timeout: "No he detectat res. Toca el cercle i torna-ho a provar, més a prop del micròfon.",
+    mic_notallowed: "El permís del micròfon està bloquejat. Activa'l a la configuració del navegador i torna a tocar.",
+    mic_nospeech: "No t'he sentit. Toca el cercle i torna-ho a provar.",
+    mic_audio: "No he trobat cap micròfon disponible en aquest dispositiu.",
+    mic_network: "Ha fallat la connexió en reconèixer la veu. Prova amb el camp de text de dalt.",
+    mic_generic: "No s'ha pogut fer servir el micròfon. Prova amb el camp de text de dalt.",
+    mic_start: "No s'ha pogut iniciar el micròfon. Prova amb el camp de text de dalt.",
+    locate_unsupported: "El teu navegador no permet la ubicació. Tria el barri a mà.",
+    locating: "Detectant la teva ubicació…",
+    locate_far: "Ets lluny de les zones actives. Tria el barri a mà.",
+    detected_auto: "Ubicació detectada: {z}",
+    detected: "Detectat: {z}",
+    locate_fail: "No s'ha pogut detectar la teva ubicació. Tria el barri a mà.",
+    err_required: "Omple tots els camps marcats amb * per continuar.",
+    err_email: "El correu no sembla vàlid. Revisa'l, hi rebràs les factures.",
+    err_noconn: "Ara mateix no hi ha connexió amb isHere. Revisa la connexió i torna-ho a provar.",
+    err_ref: 'El codi "{ref}" no existeix. Revisa\'l o deixa aquest camp buit.',
+    err_ref_check: "no s'ha pogut comprovar el codi de recomanació",
+    err_pay: "No s'ha pogut preparar el pagament: {e}. Torna-ho a provar d'aquí a uns minuts.",
+    err_no_link: "no s'ha rebut l'enllaç de pagament",
+    uploading_photo: "Pujant la foto…",
+    preparing_pay: "Preparant el pagament…",
+    paid_generic: "Pagament rebut! La teva fitxa s'activarà en uns minuts. Rebràs la factura per correu.",
+    paid_activating: 'Pagament rebut! Activant "{name}"…',
+    paid_ready: 'Fet! "{name}" ja apareix a les cerques d\'isHere.',
+    paid_until: " La teva promoció dura fins al {date}.",
+    invoice: " Rebràs la factura per correu.",
+    paid_later: 'Pagament rebut! "{name}" s\'activarà en uns minuts. Si d\'aquí a una hora no apareix a les cerques, escriu-nos.',
+    pay_cancel: "El pagament no s'ha completat, així que la teva fitxa no s'ha activat. Pots tornar-ho a provar quan vulguis.",
+    invite_opening: "Obrint el teu registre de reclutador a Stripe…",
+    invite_fail: "No s'ha pogut obrir el teu registre. Comprova que l'enllaç d'invitació sigui complet o demana'n un de nou a isHere.",
+    rec_ready: "Fet! El teu compte de reclutador ha quedat configurat. Ja pots rebre les teves comissions.",
+    rec_retry: "L'enllaç de Stripe ha caducat. Torna a obrir la teva invitació per continuar on ho vas deixar."
+  },
+  en: {
+    zone_label: "You're in",
+    locate_aria: "Detect my location",
+    search_ph: "Or type what you need (e.g. sewing, buttons)",
+    search_btn: "Search",
+    listen_idle: 'Tap the circle and say what you need. For example: <b>"I need a needle and thread"</b>.',
+    badge: "star product",
+    map: "MAP",
+    hint: "Google Maps guides you by voice to the door.",
+    biz_link: "Own a shop? Get listed on isHere",
+    back: "← Back to search",
+    form_title: "List your shop",
+    form_sub: "Show up when someone nearby searches for exactly what you sell.",
+    g_business: "Your business",
+    l_name: "Business name",
+    l_zone: "Neighbourhood",
+    l_price: "Product price",
+    l_product: "Star product",
+    ph_product: "Emergency sewing kit",
+    l_tags: "Words people would use to find you (ideally in Catalan, Spanish and English), separated by commas",
+    l_address: "Exact address (street and number)",
+    l_photo: "Shop photo or logo",
+    photo_pick: "Choose a photo from your gallery or take one",
+    photo_prep: "Preparing photo…",
+    photo_ready: "Photo ready. Tap to change it.",
+    photo_err: "The photo couldn't be loaded: {e}.",
+    err_photo_process: "the photo couldn't be processed",
+    err_photo_format: "unsupported photo format, try another one",
+    err_upload: "the photo couldn't be uploaded ({e})",
+    l_web: "Website or Instagram",
+    g_contact: "Contact",
+    contact_note: "Only isHere sees this. It's never shown publicly.",
+    l_contact: "Your name",
+    l_email: "Email",
+    l_phone: "Phone",
+    l_ref: "Referral code (if you have one)",
+    price_promo: "3-month promotion",
+    price_vat: "VAT (21%)",
+    price_today: "You pay today",
+    price_note: "From month four, €10 + VAT per month (€12.10), charged automatically. No commitment: cancel anytime and your listing stays visible until the end of the paid period.",
+    pay_btn: "Pay €12.10 and activate my listing",
+    pay_methods: "Secure card payment via Stripe",
+    searching: "Searching near you…",
+    search_error: "Couldn't search right now. Check your connection and try again.",
+    found: "I found ",
+    found_other: "Nothing in {zone}, but the closest is in {other}: ",
+    btn_walk: "Walk me there",
+    btn_transit: "Take me by metro or bus",
+    tap_hint: 'Tap "{btn}" and Google Maps will guide you by voice.',
+    speak_found: "{aviso}{name}. Tap {btn} and I'll take you there.",
+    noresult_1: 'Nothing for "<b>{s}</b>" in Barcelona yet. Try another word.',
+    noresult_2: 'No results for "<b>{s}</b>" for now. Shall we try another search?',
+    open_walk: "Opening walking directions.",
+    open_transit: "Opening public transport directions. Google Maps will tell you which line to take and where to get off.",
+    listening: "Listening…",
+    mic_https: "The microphone needs a secure connection (https). Use the text box above.",
+    mic_unsupported: "This browser doesn't support voice. Use the text box above.",
+    mic_timeout: "I didn't catch anything. Tap the circle and try again, closer to the microphone.",
+    mic_notallowed: "Microphone permission is blocked. Enable it in your browser settings and tap again.",
+    mic_nospeech: "I didn't hear you. Tap the circle and try again.",
+    mic_audio: "No microphone was found on this device.",
+    mic_network: "Voice recognition lost connection. Try the text box above.",
+    mic_generic: "The microphone couldn't be used. Try the text box above.",
+    mic_start: "The microphone couldn't start. Try the text box above.",
+    locate_unsupported: "Your browser doesn't allow location. Pick the neighbourhood manually.",
+    locating: "Detecting your location…",
+    locate_far: "You're far from the active areas. Pick the neighbourhood manually.",
+    detected_auto: "Location detected: {z}",
+    detected: "Detected: {z}",
+    locate_fail: "Your location couldn't be detected. Pick the neighbourhood manually.",
+    err_required: "Fill in all fields marked with * to continue.",
+    err_email: "That email doesn't look valid. Please check it: your invoices will be sent there.",
+    err_noconn: "isHere can't be reached right now. Check your internet and try again.",
+    err_ref: 'The code "{ref}" doesn\'t exist. Check it or leave the field empty.',
+    err_ref_check: "the referral code couldn't be checked",
+    err_pay: "The payment couldn't be prepared: {e}. Please try again in a few minutes.",
+    err_no_link: "no payment link was received",
+    uploading_photo: "Uploading photo…",
+    preparing_pay: "Preparing payment…",
+    paid_generic: "Payment received! Your listing will be active in a few minutes. Your invoice will arrive by email.",
+    paid_activating: 'Payment received! Activating "{name}"…',
+    paid_ready: 'Done! "{name}" now shows up in isHere searches.',
+    paid_until: " Your promotion runs until {date}.",
+    invoice: " Your invoice will arrive by email.",
+    paid_later: 'Payment received! "{name}" will be active in a few minutes. If it doesn\'t show up in searches within an hour, write to us.',
+    pay_cancel: "The payment wasn't completed, so your listing wasn't activated. You can try again whenever you like.",
+    invite_opening: "Opening your recruiter sign-up on Stripe…",
+    invite_fail: "Your sign-up couldn't be opened. Check that the invitation link is complete or ask isHere for a new one.",
+    rec_ready: "Done! Your recruiter account is set up. You can now receive your commissions.",
+    rec_retry: "The Stripe link expired. Open your invitation again to continue where you left off."
+  }
+};
+
+const VOZ = { ca: "ca-ES", es: "es-ES", en: "en-GB" };
+const LOCALE = { ca: "ca-ES", es: "es-ES", en: "en-GB" };
+
+function idiomaInicial(){
+  let guardado = null;
+  try { guardado = localStorage.getItem("ishere_lang"); } catch (e) {}
+  if (guardado && I18N[guardado]) return guardado;
+  const nav = (navigator.language || "es").toLowerCase();
+  if (nav.startsWith("ca")) return "ca";
+  if (nav.startsWith("es")) return "es";
+  return "en";
+}
+let lang = idiomaInicial();
+
+function t(clave, vars = {}, L = lang){
+  const txt = (I18N[L] && I18N[L][clave]) ?? I18N.es[clave] ?? clave;
+  return txt.replace(/\{(\w+)\}/g, (_, n) => vars[n] ?? "");
+}
+
+// Si el teléfono no tiene voz en catalán, se lee en español para no quedarse mudo.
+let hayVozCatalana = false;
+function revisarVoces(){
+  try { hayVozCatalana = window.speechSynthesis.getVoices().some(v => v.lang.toLowerCase().startsWith("ca")); } catch (e) {}
+}
+if ("speechSynthesis" in window){
+  revisarVoces();
+  window.speechSynthesis.onvoiceschanged = revisarVoces;
+}
+
+// Recibe una función (idioma) => texto, para poder repetir la frase en español si falta la voz catalana.
+function hablar(fraseEn){
+  if (!("speechSynthesis" in window)) return;
+  try {
+    const L = (lang === "ca" && !hayVozCatalana) ? "es" : lang;
+    const u = new SpeechSynthesisUtterance(fraseEn(L));
+    u.lang = VOZ[L];
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+function aplicarIdioma(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => {
+    el.setAttribute("aria-label", t(el.dataset.i18nAria));
+    el.title = t(el.dataset.i18nAria);
+  });
+  document.querySelectorAll(".flag-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+}
+
+function cambiarIdioma(nuevo){
+  if (!I18N[nuevo]) return;
+  lang = nuevo;
+  try { localStorage.setItem("ishere_lang", nuevo); } catch (e) {}
+  aplicarIdioma();
+  // Reinicia la búsqueda para que todo quede en el idioma nuevo.
+  const card = document.getElementById("result-card");
+  const guia = document.getElementById("voice-guide-btn");
+  const status = document.getElementById("listen-status");
+  if (card) card.classList.remove("show");
+  if (guia) guia.classList.remove("show");
+  if (status){ status.classList.remove("pocket-mode"); status.innerHTML = t("listen_idle"); }
+  const tr = document.getElementById("transcript");
+  if (tr) tr.textContent = "";
+  const ft = document.getElementById("foto-texto");
+  if (ft) ft.textContent = t(typeof fotoComprimida !== "undefined" && fotoComprimida ? "photo_ready" : "photo_pick");
+}
+document.querySelectorAll(".flag-btn").forEach(b => b.addEventListener("click", () => cambiarIdioma(b.dataset.lang)));
+
+// Palabras en catalán → español, para encontrar pymes con etiquetas en castellano.
+const caToEs = {
+  "agulla": "aguja", "fil": "hilo", "cosir": "coser", "boto": "boton", "botons": "boton",
+  "merceria": "merceria", "farmacia": "farmacia", "medicament": "farmacia", "tireta": "tirita",
+  "cafe": "cafe", "menjar": "comida", "dinar": "comida", "sopar": "cena", "forn": "panaderia",
+  "fleca": "panaderia", "pastisseria": "pasteleria", "pastis": "pastel", "empanades": "empanadas",
+  "empanada": "empanada", "vi": "vino", "vins": "vino", "xile": "chile", "xilena": "chilena",
+  "perruqueria": "peluqueria", "bugaderia": "lavanderia", "platja": "playa", "banyador": "bano",
+  "crema": "crema", "sabates": "zapatos", "roba": "ropa", "arranjament": "arreglo", "barat": "barato",
+  "millor": "mejor", "supermercat": "supermercado", "fruita": "fruta", "gelat": "helado", "gelats": "helado"
+};
+function palabrasCatalanas(speech){
+  return normalize(speech).split(/[^a-z0-9]+/).filter(w => caToEs[w]).map(w => caToEs[w]);
+}
+
 const avisoGlobal = document.getElementById("aviso-global");
 function mostrarAviso(texto, tipo){
   avisoGlobal.textContent = texto;
   avisoGlobal.className = "aviso show " + (tipo || "ok");
 }
 
-let searchLang = "es";
-function hablar(texto){
-  if (!("speechSynthesis" in window)) return;
-  try {
-    const u = new SpeechSynthesisUtterance(texto);
-    u.lang = searchLang === "es" ? "es-ES" : "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  } catch (e) {}
-}
 
 /* ---------- vistas ---------- */
 function mostrarVista(vista){
@@ -732,7 +1104,7 @@ function palabrasTraducidas(speech){
 }
 
 async function searchNearestProduct(userSpeech, userZone){
-  const words = normalize(userSpeech).split(/[^a-z0-9]+/).filter(w => w.length >= 3).concat(palabrasTraducidas(userSpeech));
+  const words = normalize(userSpeech).split(/[^a-z0-9]+/).filter(w => w.length >= 3).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
 
   const { data, error } = await supabaseClient
@@ -752,7 +1124,11 @@ async function searchNearestProduct(userSpeech, userZone){
     .map(p => {
       // Busca en etiquetas, nombre del negocio y producto estrella.
       const tags = [p.tags, p.name, p.star_product_name].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
-      const hits = tags.filter(tag => words.some(w => normalize(tag).includes(w) || w.includes(normalize(tag))));
+      // Coincide si una palabra contiene a la otra o comparten raíz (empanadas / empanades).
+      const hits = tags.filter(tag => {
+        const nt = normalize(tag);
+        return words.some(w => nt.includes(w) || w.includes(nt) || (w.length >= 5 && nt.length >= 5 && w.slice(0, 5) === nt.slice(0, 5)));
+      });
       return { pyme: p, score: hits.length };
     })
     .filter(c => c.score > 0)
@@ -775,18 +1151,10 @@ const resultCard = document.getElementById("result-card");
 const voiceGuideBtn = document.getElementById("voice-guide-btn");
 const zoneSelect = document.getElementById("zone-select");
 const btnLocate = document.getElementById("btn-locate");
-const btnLang = document.getElementById("btn-lang");
 const locateStatus = document.getElementById("locate-status");
 let rutaActual = "";
 let aPie = true;
 
-btnLang.addEventListener("click", () => {
-  searchLang = searchLang === "es" ? "en" : "es";
-  btnLang.textContent = searchLang === "es" ? "ES" : "EN";
-  document.getElementById("manual-input").placeholder = searchLang === "es"
-    ? "O escribe qué buscas (ej: costura, botones)"
-    : "Or type what you need (e.g. sewing, buttons)";
-});
 
 const zoneCoords = {
   "Gràcia": { lat: 41.4036, lng: 2.1527 },
@@ -825,44 +1193,40 @@ function nearestZoneWithDistance(lat, lng){
 }
 function detectLocation(auto){
   if (!navigator.geolocation){
-    if (!auto) locateStatus.textContent = "Tu navegador no permite la ubicación. Elige el barrio a mano.";
+    if (!auto) locateStatus.textContent = t("locate_unsupported");
     return;
   }
-  if (!auto) locateStatus.textContent = "Detectando tu ubicación…";
+  if (!auto) locateStatus.textContent = t("locating");
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       posicionUsuario = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       const { zone, distanceKm: dist } = nearestZoneWithDistance(pos.coords.latitude, pos.coords.longitude);
       if (dist > 5){
-        if (!auto) locateStatus.textContent = "Estás lejos de las zonas activas. Elige el barrio a mano.";
+        if (!auto) locateStatus.textContent = t("locate_far");
         return;
       }
       zoneSelect.value = zone;
-      locateStatus.textContent = auto ? `Ubicación detectada: ${zone}` : `Detectado: ${zone}`;
+      locateStatus.textContent = t(auto ? "detected_auto" : "detected", { z: zone });
     },
-    () => { if (!auto) locateStatus.textContent = "No se pudo detectar tu ubicación. Elige el barrio a mano."; },
+    () => { if (!auto) locateStatus.textContent = t("locate_fail"); },
     { enableHighAccuracy: true, timeout: 8000 }
   );
 }
 btnLocate.addEventListener("click", () => detectLocation(false));
 
-const frasesSinResultado = [
-  (s, z) => `No encontré nada para "<b>${s}</b>" en ${z} todavía. Prueba con otro barrio o busca otra cosa.`,
-  (s, z) => `Por ahora no hay nada para "<b>${s}</b>" cerca de ${z}. Intenta con otra palabra.`,
-  (s, z) => `Todavía no tengo resultados para "<b>${s}</b>" en ${z}. ¿Probamos con otra búsqueda?`
-];
+const frasesSinResultado = ["noresult_1", "noresult_2"];
 
 async function handleSpeechResult(speech){
   transcriptEl.textContent = `"${speech}"`;
   listenStatus.classList.remove("pocket-mode");
-  listenStatus.textContent = "Buscando cerca de ti…";
+  listenStatus.textContent = t("searching");
   const zone = zoneSelect.value;
   const res = await searchNearestProduct(speech, zone);
 
   if (res.error){
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
-    listenStatus.textContent = "No se pudo buscar ahora. Revisa tu conexión e inténtalo de nuevo.";
+    listenStatus.textContent = t("search_error");
     return;
   }
 
@@ -890,36 +1254,30 @@ async function handleSpeechResult(speech){
     rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=${aPie ? "walking" : "transit"}`;
     document.getElementById("result-maps-link").href = rutaActual;
 
-    const textoBoton = searchLang === "es"
-      ? (aPie ? "Guiarme caminando" : "Llévame en metro o bus")
-      : (aPie ? "Walk me there" : "Take me by metro or bus");
+    const claveBoton = aPie ? "btn_walk" : "btn_transit";
+    const textoBoton = t(claveBoton);
     voiceGuideBtn.textContent = textoBoton;
 
     const otraZona = match.zone !== zone;
-    const aviso = otraZona
-      ? (searchLang === "es" ? `En ${zone} no hay, pero lo más cerca está en ${match.zone}: ` : `Nothing in ${zone}, but the closest is in ${match.zone}: `)
-      : (searchLang === "es" ? "Encontré " : "I found ");
+    const avisoEn = (L) => otraZona ? t("found_other", { zone, other: match.zone }, L) : t("found", {}, L);
+    const aviso = avisoEn(lang);
 
     resultCard.classList.add("show");
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
-    listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. Toca "${esc(textoBoton)}" y Google Maps te lleva con voz.`;
-    hablar(searchLang === "es"
-      ? `${aviso}${match.name}. Toca ${textoBoton.toLowerCase()} y te llevo.`
-      : `${aviso}${match.name}. Tap ${textoBoton.toLowerCase()} and I will take you there.`);
+    listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. ` + esc(t("tap_hint", { btn: textoBoton }));
+    hablar(L => t("speak_found", { aviso: avisoEn(L), name: match.name, btn: t(claveBoton, {}, L).toLowerCase() }, L));
   } else {
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
-    const lista = frasesSinResultado;
-    listenStatus.innerHTML = lista[Math.floor(Math.random() * lista.length)](esc(speech), esc(zone));
+    const clave = frasesSinResultado[Math.floor(Math.random() * frasesSinResultado.length)];
+    listenStatus.innerHTML = t(clave, { s: esc(speech) });
   }
 }
 
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
-  hablar(searchLang === "es"
-    ? (aPie ? "Abriendo la ruta a pie." : "Abriendo la ruta en transporte público. Google Maps te dice qué línea tomar y dónde bajarte.")
-    : (aPie ? "Opening walking directions." : "Opening public transport directions. Google Maps will tell you which line to take and where to get off."));
+  hablar(L => t(aPie ? "open_walk" : "open_transit", {}, L));
   window.open(rutaActual, "_blank", "noopener");
 });
 
@@ -932,7 +1290,7 @@ function startListening(){
   micWrap.classList.add("listening");
   btnMic.classList.add("listening");
   listenStatus.classList.remove("pocket-mode");
-  listenStatus.textContent = "Escuchando…";
+  listenStatus.textContent = t("listening");
   transcriptEl.textContent = "";
   resultCard.classList.remove("show");
   voiceGuideBtn.classList.remove("show");
@@ -941,24 +1299,24 @@ function startListening(){
 
   if (!window.isSecureContext){
     stopListeningUI();
-    listenStatus.textContent = "El micrófono necesita conexión segura (https). Usa el campo de texto de arriba.";
+    listenStatus.textContent = t("mic_https");
     return;
   }
   if (!SpeechRecognition){
     stopListeningUI();
-    listenStatus.textContent = "Este navegador no reconoce la voz. Usa el campo de texto de arriba.";
+    listenStatus.textContent = t("mic_unsupported");
     return;
   }
 
   const rec = new SpeechRecognition();
-  rec.lang = searchLang === "es" ? "es-ES" : "en-US";
+  rec.lang = VOZ[lang];
   rec.interimResults = false;
   rec.maxAlternatives = 1;
 
   const safetyTimeout = setTimeout(() => {
     try { rec.abort(); } catch(e){}
     stopListeningUI();
-    listenStatus.textContent = "No detecté nada. Toca el círculo e inténtalo de nuevo, más cerca del micrófono.";
+    listenStatus.textContent = t("mic_timeout");
   }, 10000);
 
   rec.onresult = (e) => {
@@ -970,19 +1328,19 @@ function startListening(){
     clearTimeout(safetyTimeout);
     stopListeningUI();
     const mensajes = {
-      "not-allowed": "El permiso del micrófono está bloqueado. Actívalo en los ajustes del navegador y toca de nuevo.",
-      "no-speech": "No te escuché. Toca el círculo e inténtalo otra vez.",
-      "audio-capture": "No encontré un micrófono disponible en este dispositivo.",
-      "network": "Falló la conexión al reconocer la voz. Prueba con el campo de texto de arriba."
+      "not-allowed": t("mic_notallowed"),
+      "no-speech": t("mic_nospeech"),
+      "audio-capture": t("mic_audio"),
+      "network": t("mic_network")
     };
-    listenStatus.textContent = mensajes[e.error] || "No se pudo usar el micrófono. Prueba con el campo de texto de arriba.";
+    listenStatus.textContent = mensajes[e.error] || t("mic_generic");
   };
   rec.onend = () => { clearTimeout(safetyTimeout); stopListeningUI(); };
   try { rec.start(); }
   catch (err){
     clearTimeout(safetyTimeout);
     stopListeningUI();
-    listenStatus.textContent = "No se pudo iniciar el micrófono. Prueba con el campo de texto de arriba.";
+    listenStatus.textContent = t("mic_start");
   }
 }
 
@@ -1002,7 +1360,6 @@ document.getElementById("manual-input").addEventListener("keydown", (e) => {
 const formError = document.getElementById("form-error");
 const statusBanner = document.getElementById("status-banner");
 const btnPay = document.getElementById("btn-pay");
-const TEXTO_BOTON_PAGO = btnPay.textContent;
 
 function mostrarErrorForm(texto){
   formError.textContent = texto;
@@ -1033,9 +1390,9 @@ function comprimirFoto(file){
       canvas.height = Math.round(img.height * escala);
       canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error("no se pudo procesar la foto")), "image/jpeg", 0.82);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t("err_photo_process"))), "image/jpeg", 0.82);
     };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("formato de foto no compatible, prueba con otra")); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error(t("err_photo_format"))); };
     img.src = url;
   });
 }
@@ -1044,16 +1401,16 @@ fotoInput.addEventListener("change", async () => {
   fotoComprimida = null;
   const file = fotoInput.files && fotoInput.files[0];
   if (!file) return;
-  fotoTexto.textContent = "Preparando foto…";
+  fotoTexto.textContent = t("photo_prep");
   try {
     fotoComprimida = await comprimirFoto(file);
     fotoPreview.src = URL.createObjectURL(fotoComprimida);
     fotoPreview.hidden = false;
-    fotoTexto.textContent = "Foto lista. Toca para cambiarla.";
+    fotoTexto.textContent = t("photo_ready");
   } catch (e){
     fotoPreview.hidden = true;
-    fotoTexto.textContent = "Elegir foto de la galería o hacer una";
-    mostrarErrorForm("La foto no se pudo cargar: " + e.message + ".");
+    fotoTexto.textContent = t("photo_pick");
+    mostrarErrorForm(t("photo_err", { e: e.message }));
   }
 });
 
@@ -1062,13 +1419,13 @@ async function subirFoto(id){
   const ruta = `${id}.jpg`;
   const { error } = await supabaseClient.storage.from("fotos-pymes")
     .upload(ruta, fotoComprimida, { contentType: "image/jpeg", upsert: false });
-  if (error) throw new Error("no se pudo subir la foto (" + error.message + ")");
+  if (error) throw new Error(t("err_upload", { e: error.message }));
   return supabaseClient.storage.from("fotos-pymes").getPublicUrl(ruta).data.publicUrl;
 }
 
 async function codigoReclutadorValido(cod){
   const { data, error } = await supabaseClient.rpc("codigo_reclutador_valido", { p_codigo: cod });
-  if (error) throw new Error("no se pudo comprobar el código de recomendación");
+  if (error) throw new Error(t("err_ref_check"));
   return data === true;
 }
 
@@ -1090,31 +1447,31 @@ async function enviarAlta(){
   };
 
   if (!datos.name || !datos.product || !datos.tagsRaw || !datos.address || !datos.contacto || !datos.email || !datos.telefono){
-    mostrarErrorForm("Completa todos los campos marcados con * para continuar.");
+    mostrarErrorForm(t("err_required"));
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)){
-    mostrarErrorForm("El email no parece válido. Revísalo, ahí te llegarán las facturas.");
+    mostrarErrorForm(t("err_email"));
     return;
   }
   if (!supabaseClient){
-    mostrarErrorForm("No hay conexión con isHere en este momento. Revisa tu internet y vuelve a intentarlo.");
+    mostrarErrorForm(t("err_noconn"));
     return;
   }
 
   btnPay.disabled = true;
-  btnPay.textContent = "Preparando el pago…";
+  btnPay.textContent = t("preparing_pay");
 
   try {
     if (datos.ref && !(await codigoReclutadorValido(datos.ref))){
-      mostrarErrorForm(`El código "${datos.ref}" no existe. Revísalo o deja ese campo vacío.`);
+      mostrarErrorForm(t("err_ref", { ref: datos.ref }));
       return;
     }
 
     const id = crypto.randomUUID();
-    btnPay.textContent = fotoComprimida ? "Subiendo foto…" : "Preparando el pago…";
+    btnPay.textContent = fotoComprimida ? t("uploading_photo") : t("preparing_pay");
     const logoUrl = await subirFoto(id);
-    btnPay.textContent = "Preparando el pago…";
+    btnPay.textContent = t("preparing_pay");
     const tags = datos.tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
 
     const { error } = await supabaseClient.from("pymes").insert([{
@@ -1138,16 +1495,16 @@ async function enviarAlta(){
 
     localStorage.setItem("ishere_ultima_pyme", JSON.stringify({ id, name: datos.name }));
 
-    const { data, error: errPago } = await supabaseClient.functions.invoke("crear-pago", { body: { pyme_id: id } });
-    if (errPago || !data || !data.url) throw new Error((data && data.error) || (errPago && errPago.message) || "no se recibió el enlace de pago");
+    const { data, error: errPago } = await supabaseClient.functions.invoke("crear-pago", { body: { pyme_id: id, idioma: lang } });
+    if (errPago || !data || !data.url) throw new Error((data && data.error) || (errPago && errPago.message) || t("err_no_link"));
 
     window.location.href = data.url;
   } catch (e){
     console.error(e);
-    mostrarErrorForm("No se pudo preparar el pago: " + e.message + ". Inténtalo de nuevo en unos minutos.");
+    mostrarErrorForm(t("err_pay", { e: e.message }));
   } finally {
     btnPay.disabled = false;
-    btnPay.textContent = TEXTO_BOTON_PAGO;
+    btnPay.textContent = t("pay_btn");
   }
 }
 btnPay.addEventListener("click", enviarAlta);
@@ -1159,30 +1516,30 @@ async function confirmarActivacion(){
   document.getElementById("form-alta").style.display = "none";
 
   if (!ultima || !supabaseClient){
-    mostrarEstado("¡Pago recibido! Tu ficha se activa en unos minutos. Te llegará la factura por email.", "ok");
+    mostrarEstado(t("paid_generic"), "ok");
     return;
   }
 
-  mostrarEstado(`¡Pago recibido! Activando "${ultima.name}"…`, "ok");
+  mostrarEstado(t("paid_activating", { name: ultima.name }), "ok");
 
   for (let i = 0; i < 10; i++){
     const { data } = await supabaseClient.from("pymes").select("id, name, expires_at").eq("id", ultima.id).maybeSingle();
     if (data){
       const fecha = data.expires_at
-        ? new Date(data.expires_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+        ? new Date(data.expires_at).toLocaleDateString(LOCALE[lang], { day: "numeric", month: "long", year: "numeric" })
         : null;
-      mostrarEstado(`¡Listo! "${data.name}" ya aparece en las búsquedas de isHere.` + (fecha ? ` Tu promoción dura hasta el ${fecha}.` : "") + " Te llegará la factura por email.", "ok");
+      mostrarEstado(t("paid_ready", { name: data.name }) + (fecha ? t("paid_until", { date: fecha }) : "") + t("invoice"), "ok");
       localStorage.removeItem("ishere_ultima_pyme");
       return;
     }
     await new Promise(r => setTimeout(r, 3000));
   }
-  mostrarEstado(`¡Pago recibido! "${ultima.name}" se activará en unos minutos. Si en una hora no aparece en las búsquedas, escríbenos.`, "ok");
+  mostrarEstado(t("paid_later", { name: ultima.name }), "ok");
 }
 
 /* ---------- invitaciones de reclutadores ---------- */
 async function abrirInvitacion(token){
-  mostrarAviso("Abriendo tu registro de reclutador en Stripe…", "ok");
+  mostrarAviso(t("invite_opening"), "ok");
   try {
     if (!supabaseClient) throw new Error("sin conexión");
     const { data, error } = await supabaseClient.functions.invoke("onboarding-reclutador", { body: { invitacion: token } });
@@ -1190,7 +1547,7 @@ async function abrirInvitacion(token){
     window.location.href = data.url;
   } catch (e){
     console.error(e);
-    mostrarAviso("No se pudo abrir tu registro. Revisa que el enlace de invitación esté completo o pide uno nuevo a isHere.", "warn");
+    mostrarAviso(t("invite_fail"), "warn");
   }
 }
 
@@ -1202,8 +1559,8 @@ async function manejarRetorno(){
   if (invitacion){ await abrirInvitacion(invitacion); return; }
 
   const reclutador = params.get("reclutador");
-  if (reclutador === "listo") mostrarAviso("¡Listo! Tu cuenta de reclutador quedó configurada. Ya puedes recibir tus comisiones.", "ok");
-  if (reclutador === "reintentar") mostrarAviso("El enlace de Stripe venció. Vuelve a abrir tu invitación para continuar donde quedaste.", "warn");
+  if (reclutador === "listo") mostrarAviso(t("rec_ready"), "ok");
+  if (reclutador === "reintentar") mostrarAviso(t("rec_retry"), "warn");
 
   const ref = params.get("ref");
   if (ref){
@@ -1215,7 +1572,7 @@ async function manejarRetorno(){
   const pago = params.get("pago");
   if (pago === "cancelado"){
     mostrarVista("comercio");
-    mostrarEstado("El pago no se completó, así que tu ficha no se activó. Puedes intentarlo de nuevo cuando quieras.", "warn");
+    mostrarEstado(t("pay_cancel"), "warn");
   }
   if (pago === "ok"){
     mostrarVista("comercio");
@@ -1225,6 +1582,7 @@ async function manejarRetorno(){
   if ([...params.keys()].length) history.replaceState(null, "", window.location.pathname);
 }
 
+aplicarIdioma();
 detectLocation(true);
 manejarRetorno();
 </script>
