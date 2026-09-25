@@ -738,7 +738,6 @@ async function searchNearestProduct(userSpeech, userZone){
   const { data, error } = await supabaseClient
     .from("pymes")
     .select(COLUMNAS_PUBLICAS)
-    .eq("zone", userZone)
     .eq("status", "beta_active");
 
   if (error){
@@ -756,9 +755,15 @@ async function searchNearestProduct(userSpeech, userZone){
       return { pyme: p, score: hits.length };
     })
     .filter(c => c.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .map(c => ({ ...c, km: kmDesdeUsuario(c.pyme, userZone) }))
+    // Primero la zona del usuario, luego la más cercana; a igual distancia, más coincidencias y con foto.
+    .sort((a, b) =>
+      (a.pyme.zone === userZone ? 0 : 1) - (b.pyme.zone === userZone ? 0 : 1) ||
+      a.km - b.km ||
+      b.score - a.score ||
+      (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
-  return { match: candidates.length ? candidates[0].pyme : null };
+  return { match: candidates.length ? candidates[0].pyme : null, km: candidates.length ? candidates[0].km : null };
 }
 
 const micWrap = document.getElementById("mic-wrap");
@@ -772,6 +777,7 @@ const btnLocate = document.getElementById("btn-locate");
 const btnLang = document.getElementById("btn-lang");
 const locateStatus = document.getElementById("locate-status");
 let rutaActual = "";
+let aPie = true;
 
 btnLang.addEventListener("click", () => {
   searchLang = searchLang === "es" ? "en" : "es";
@@ -788,6 +794,19 @@ const zoneCoords = {
   "El Raval": { lat: 41.3801, lng: 2.1686 },
   "Sagrada Familia": { lat: 41.4036, lng: 2.1744 }
 };
+let posicionUsuario = null; // { lat, lng } si el GPS respondió
+
+function coordsPyme(p){
+  if (p.lat != null && p.lng != null) return { lat: Number(p.lat), lng: Number(p.lng) };
+  return zoneCoords[p.zone] || null;
+}
+function kmDesdeUsuario(p, userZone){
+  const destino = coordsPyme(p);
+  const origen = posicionUsuario || zoneCoords[userZone];
+  if (!destino || !origen) return 999;
+  return distanceKm(origen.lat, origen.lng, destino.lat, destino.lng);
+}
+
 function distanceKm(lat1, lng1, lat2, lng2){
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -811,6 +830,7 @@ function detectLocation(auto){
   if (!auto) locateStatus.textContent = "Detectando tu ubicación…";
   navigator.geolocation.getCurrentPosition(
     (pos) => {
+      posicionUsuario = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       const { zone, distanceKm: dist } = nearestZoneWithDistance(pos.coords.latitude, pos.coords.longitude);
       if (dist > 5){
         if (!auto) locateStatus.textContent = "Estás lejos de las zonas activas. Elige el barrio a mano.";
@@ -862,16 +882,28 @@ async function handleSpeechResult(speech){
       match.distance_m > 0 ? `A ${match.distance_m} metros · ${match.zone}` : `En ${match.zone}`;
 
     const destino = match.address ? `${match.name}, ${match.address}, Barcelona` : `${match.name}, ${match.zone}, Barcelona`;
-    rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=walking`;
+    // A pie solo si está a menos de 2,5 km; si no, Google Maps elige transporte público o coche.
+    aPie = res.km != null && res.km <= 2.5;
+    rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}` + (aPie ? "&travelmode=walking" : "");
     document.getElementById("result-maps-link").href = rutaActual;
+
+    const textoBoton = searchLang === "es"
+      ? (aPie ? "Guiarme caminando" : "Cómo llegar")
+      : (aPie ? "Walk me there" : "Get directions");
+    voiceGuideBtn.textContent = textoBoton;
+
+    const otraZona = match.zone !== zone;
+    const aviso = otraZona
+      ? (searchLang === "es" ? `En ${zone} no hay, pero lo más cerca está en ${match.zone}: ` : `Nothing in ${zone}, but the closest is in ${match.zone}: `)
+      : (searchLang === "es" ? "Encontré " : "I found ");
 
     resultCard.classList.add("show");
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
-    listenStatus.innerHTML = `Encontré <b>${esc(match.name)}</b>. Toca "Guiarme caminando" y Google Maps te lleva con voz.`;
+    listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. Toca "${esc(textoBoton)}" y Google Maps te lleva con voz.`;
     hablar(searchLang === "es"
-      ? `Encontré ${match.name}. Toca guiarme caminando y te llevo.`
-      : `I found ${match.name}. Tap guide me and I will take you there.`);
+      ? `${aviso}${match.name}. Toca ${textoBoton.toLowerCase()} y te llevo.`
+      : `${aviso}${match.name}. Tap ${textoBoton.toLowerCase()} and I will take you there.`);
   } else {
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
@@ -882,7 +914,9 @@ async function handleSpeechResult(speech){
 
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
-  hablar(searchLang === "es" ? "Abriendo la ruta a pie." : "Opening walking directions.");
+  hablar(searchLang === "es"
+    ? (aPie ? "Abriendo la ruta a pie." : "Abriendo la ruta.")
+    : (aPie ? "Opening walking directions." : "Opening directions."));
   window.open(rutaActual, "_blank", "noopener");
 });
 
