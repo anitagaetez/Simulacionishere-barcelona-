@@ -881,15 +881,17 @@ async function handleSpeechResult(speech){
     document.getElementById("result-distance").textContent =
       match.distance_m > 0 ? `A ${match.distance_m} metros · ${match.zone}` : `En ${match.zone}`;
 
-    const destino = match.address ? `${match.name}, ${match.address}, Barcelona` : `${match.name}, ${match.zone}, Barcelona`;
-    // A pie solo si está a menos de 2,5 km; si no, Google Maps elige transporte público o coche.
+    // Destino: coordenadas si las hay; si no, solo la dirección (el nombre del negocio confunde a Google Maps).
+    const c = (match.lat != null && match.lng != null) ? `${match.lat},${match.lng}` : null;
+    const destino = c || (match.address ? `${match.address}, Barcelona, España` : `${match.zone}, Barcelona, España`);
+    // A pie hasta 2,5 km; más lejos, transporte público (metro y bus con líneas y paradas).
     aPie = res.km != null && res.km <= 2.5;
-    rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}` + (aPie ? "&travelmode=walking" : "");
+    rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=${aPie ? "walking" : "transit"}`;
     document.getElementById("result-maps-link").href = rutaActual;
 
     const textoBoton = searchLang === "es"
-      ? (aPie ? "Guiarme caminando" : "Cómo llegar")
-      : (aPie ? "Walk me there" : "Get directions");
+      ? (aPie ? "Guiarme caminando" : "Llévame en metro o bus")
+      : (aPie ? "Walk me there" : "Take me by metro or bus");
     voiceGuideBtn.textContent = textoBoton;
 
     const otraZona = match.zone !== zone;
@@ -915,8 +917,8 @@ async function handleSpeechResult(speech){
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
   hablar(searchLang === "es"
-    ? (aPie ? "Abriendo la ruta a pie." : "Abriendo la ruta.")
-    : (aPie ? "Opening walking directions." : "Opening directions."));
+    ? (aPie ? "Abriendo la ruta a pie." : "Abriendo la ruta en transporte público. Google Maps te dice qué línea tomar y dónde bajarte.")
+    : (aPie ? "Opening walking directions." : "Opening public transport directions. Google Maps will tell you which line to take and where to get off."));
   window.open(rutaActual, "_blank", "noopener");
 });
 
