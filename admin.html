@@ -356,18 +356,25 @@ $("btn-reclutador").addEventListener("click", async (e) => {
   };
   if (!body.codigo || !body.nombre){ msg("m-reclutador", "Pon al menos el código y el nombre."); return; }
   e.target.disabled = true;
-  const { data, error } = await sb.functions.invoke("crear-reclutador", { body });
+  // Se manda el token de sesión explícitamente para que la función reconozca a la administradora.
+  const { data: { session } } = await sb.auth.getSession();
+  let data = {}, status = 0;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/crear-reclutador`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + (session ? session.access_token : "")
+      },
+      body: JSON.stringify(body)
+    });
+    status = res.status;
+    data = await res.json().catch(() => ({}));
+  } catch (err) { data = { error: err.message }; }
   e.target.disabled = false;
-  if (error || data?.error){
-    // Lee el mensaje real que devolvió la función.
-    let detalle = data?.error || error?.message || "";
-    try {
-      if (error?.context){
-        const txt = await error.context.text();
-        detalle = `(${error.context.status}) ` + (txt || detalle);
-      }
-    } catch (err) {}
-    msg("m-reclutador", "No se pudo crear: " + detalle);
+  if (status < 200 || status >= 300 || data.error){
+    msg("m-reclutador", `No se pudo crear: (${status}) ` + (data.error || JSON.stringify(data)));
     return;
   }
   const enlace = data.enlace || data.invitacion || data.invite_url || data.link || data.url
