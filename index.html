@@ -200,6 +200,21 @@
   @keyframes flotar{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-4px); } }
   @media (prefers-reduced-motion: reduce){ .idea{ animation: none; } }
 
+  /* Lluvia de palabras en los laterales (decorativa, dentro del margen para no tapar nada) */
+  .lluvia{ position: fixed; top: 0; bottom: 0; width: 16px; overflow: hidden; z-index: 0; pointer-events: none; opacity: 0.6;
+           -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+                   mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent); }
+  .lluvia.izq{ left: max(2px, calc(50% - 213px)); }
+  .lluvia.der{ right: max(2px, calc(50% - 213px)); }
+  .pista{ writing-mode: vertical-rl; white-space: nowrap; font-size: 11px; letter-spacing: 0.04em; line-height: 16px;
+          animation: llover 60s linear infinite; }
+  .lluvia.der .pista{ animation-duration: 75s; animation-delay: -20s; }
+  .pista span{ display: inline-block; padding-inline-end: 18px; }
+  .pista .c1{ color: #D9A441; } .pista .c2{ color: #2EA89C; } .pista .c3{ color: #E88A7E; }
+  .pista .c4{ color: #9CC7E8; } .pista .c5{ color: #F2E9D8; } .pista .c6{ color: #C9A7E0; }
+  @keyframes llover{ from{ transform: translateY(-50%); } to{ transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce){ .pista{ animation: none; } }
+
   /* Catálogo en el alta */
   .cat-list{ display: flex; flex-direction: column; gap: 6px; }
   .cat-opt{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
@@ -524,6 +539,8 @@
 </style>
 </head>
 <body>
+<div class="lluvia izq" aria-hidden="true"><div class="pista" id="pista-izq"></div></div>
+<div class="lluvia der" aria-hidden="true"><div class="pista" id="pista-der"></div></div>
 <div class="device">
 
   <header>
@@ -1476,9 +1493,25 @@ function renderNube(){
   });
 }
 
+function renderLluvia(){
+  const nombres = [...new Set(NUBE.concat(catalogo.filter(p => p.destacado).map(p => p.id)))]
+    .map(id => catalogo.find(p => p.id === id)).filter(Boolean).map(p => nombreProducto(p));
+  if (!nombres.length) return;
+  const llenar = (id, lista) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const html = lista.map((n, i) => `<span class="c${(i % 6) + 1}">${esc(n)}</span>`).join("");
+    el.innerHTML = html + html; // duplicado para que la lluvia sea continua
+  };
+  const mezcla = [...nombres].sort(() => Math.random() - 0.5);
+  llenar("pista-izq", mezcla);
+  llenar("pista-der", [...mezcla].reverse());
+}
+
 function refrescarDinamicos(){
   renderPortada();
   renderNube();
+  renderLluvia();
   renderElegidos();
   renderSugerenciasCat();
 }
