@@ -750,7 +750,8 @@ async function searchNearestProduct(userSpeech, userZone){
   const candidates = (data || [])
     .filter(p => !p.expires_at || new Date(p.expires_at).getTime() >= limite)
     .map(p => {
-      const tags = String(p.tags || "").split(",").map(t => t.trim()).filter(Boolean);
+      // Busca en etiquetas, nombre del negocio y producto estrella.
+      const tags = [p.tags, p.name, p.star_product_name].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
       const hits = tags.filter(tag => words.some(w => normalize(tag).includes(w) || w.includes(normalize(tag))));
       return { pyme: p, score: hits.length };
     })
