@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>isHere · Administración</title>
+<style>
+  :root{
+    --bg-deep:#0D2B3E; --bg-panel:#123449; --bg-raise:#17415A;
+    --teal:#1E7F76; --teal-light:#2EA89C; --gold:#D9A441; --terracotta:#B8482F;
+    --cream:#F2E9D8; --cream-dim:#B9C7CE; --success:#4CAF7D; --danger:#E0685E;
+    --r:14px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg-deep); color:var(--cream); font-family:'Work Sans',-apple-system,'Segoe UI',sans-serif;
+        min-height:100vh; -webkit-font-smoothing:antialiased; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .wrap{ max-width:720px; margin:0 auto; padding:20px 16px 60px; display:flex; flex-direction:column; gap:22px; }
+  header{ display:flex; align-items:center; justify-content:space-between; }
+  .wordmark{ font-family:'Fraunces',Georgia,serif; font-size:1.25rem; }
+  .wordmark b{ color:var(--gold); font-weight:600; }
+  .wordmark small{ font-family:inherit; font-size:.8rem; color:var(--cream-dim); margin-left:6px; }
+  h2{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:1.15rem; margin-bottom:10px; }
+  .card{ background:var(--bg-panel); border:1px solid rgba(242,233,216,.08); border-radius:var(--r); padding:16px; }
+  .muted{ color:var(--cream-dim); font-size:.85rem; line-height:1.45; }
+  label{ display:block; font-size:.78rem; color:var(--cream-dim); margin:12px 0 5px; }
+  input, select{ width:100%; background:var(--bg-deep); border:1px solid rgba(242,233,216,.15); color:var(--cream);
+                 padding:12px; border-radius:10px; font:inherit; font-size:.95rem; }
+  .code-input{ font-size:1.6rem; letter-spacing:.4em; text-align:center; font-variant-numeric:tabular-nums; }
+  button{ font:inherit; cursor:pointer; border:none; border-radius:10px; }
+  .btn{ background:var(--gold); color:#1b1b1b; font-weight:600; padding:13px 16px; width:100%; margin-top:16px; }
+  .btn:disabled{ opacity:.6; }
+  .btn-sec{ background:var(--bg-raise); color:var(--cream); padding:9px 12px; font-size:.85rem; border:1px solid rgba(242,233,216,.12); }
+  .link{ background:none; color:var(--teal-light); text-decoration:underline; padding:0; font-size:.85rem; margin-top:12px; }
+  .msg{ margin-top:12px; font-size:.88rem; padding:10px 12px; border-radius:10px; display:none; line-height:1.4; }
+  .msg.show{ display:block; }
+  .msg.err{ background:rgba(224,104,94,.12); color:var(--danger); border:1px solid rgba(224,104,94,.35); }
+  .msg.ok{ background:rgba(76,175,125,.12); color:var(--success); border:1px solid rgba(76,175,125,.35); }
+  .secret{ font-family:ui-monospace,monospace; background:var(--bg-deep); padding:12px; border-radius:10px; word-break:break-all;
+           font-size:1rem; letter-spacing:.06em; margin-top:8px; user-select:all; }
+  .qr{ background:#fff; border-radius:10px; padding:8px; width:170px; margin-top:10px; }
+  .qr img{ width:100%; display:block; }
+
+  .stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .stat{ background:var(--bg-panel); border-radius:var(--r); padding:14px; border:1px solid rgba(242,233,216,.08); }
+  .stat .n{ font-family:'Fraunces',Georgia,serif; font-size:1.7rem; line-height:1.1; }
+  .stat .l{ font-size:.75rem; color:var(--cream-dim); margin-top:4px; }
+  .stat.big{ grid-column:span 2; }
+  .stat.big .n{ color:var(--gold); font-size:2.1rem; }
+  .row-money{ display:flex; justify-content:space-between; font-size:.88rem; padding:6px 0; border-bottom:1px solid rgba(242,233,216,.06); }
+  .row-money:last-child{ border-bottom:none; }
+
+  .table{ width:100%; border-collapse:collapse; font-size:.84rem; }
+  .table th{ text-align:left; color:var(--cream-dim); font-weight:500; font-size:.72rem; padding:6px 6px; border-bottom:1px solid rgba(242,233,216,.1); }
+  .table td{ padding:8px 6px; border-bottom:1px solid rgba(242,233,216,.06); vertical-align:top; }
+  .table td.num, .table th.num{ text-align:right; font-variant-numeric:tabular-nums; }
+  .scroll{ overflow-x:auto; }
+  .pill{ display:inline-block; font-size:.7rem; padding:2px 8px; border-radius:20px; background:var(--bg-raise); }
+  .pill.on{ background:rgba(76,175,125,.18); color:var(--success); }
+  .pill.off{ background:rgba(224,104,94,.15); color:var(--danger); }
+  .pill.gold{ background:rgba(217,164,65,.15); color:var(--gold); }
+  .item{ padding:12px 0; border-bottom:1px solid rgba(242,233,216,.07); }
+  .item:last-child{ border-bottom:none; }
+  .item b{ font-weight:600; }
+  .item a{ color:var(--teal-light); }
+  .actions{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+  details summary{ cursor:pointer; font-family:'Fraunces',Georgia,serif; font-size:1.1rem; list-style:none; }
+  details summary::after{ content:" ＋"; color:var(--gold); }
+  details[open] summary::after{ content:" －"; }
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="wordmark">is<b>Here</b> <small>administración</small></div>
+    <button class="btn-sec hidden" id="btn-salir">Salir</button>
+  </header>
+
+  <!-- 1. Login -->
+  <section class="card hidden" id="v-login">
+    <h2>Entrar</h2>
+    <label for="l-email">Email</label>
+    <input id="l-email" type="email" autocomplete="username">
+    <label for="l-pass">Contraseña</label>
+    <input id="l-pass" type="password" autocomplete="current-password">
+    <button class="btn" id="btn-login">Entrar</button>
+    <div class="msg" id="m-login"></div>
+  </section>
+
+  <!-- 2. Activar verificación en dos pasos (solo la primera vez) -->
+  <section class="card hidden" id="v-enroll">
+    <h2>Activa la verificación en dos pasos</h2>
+    <p class="muted">Solo se hace una vez. Abre <b>Google Authenticator</b> en tu celular, toca <b>＋</b> →
+      <b>Ingresar clave de configuración</b>, pon de nombre "isHere" y pega esta clave (tipo: basada en tiempo):</p>
+    <div class="secret" id="e-secret">…</div>
+    <div class="actions"><button class="btn-sec" id="btn-copiar-secret">Copiar clave</button></div>
+    <p class="muted" style="margin-top:12px">Si tienes otro dispositivo a mano, también puedes escanear este código:</p>
+    <div class="qr"><img id="e-qr" alt="Código QR para la app autenticadora"></div>
+    <label for="e-code">Código de 6 dígitos que muestra la app</label>
+    <input id="e-code" class="code-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+    <button class="btn" id="btn-enroll">Activar y entrar</button>
+    <div class="msg" id="m-enroll"></div>
+  </section>
+
+  <!-- 3. Código de cada entrada -->
+  <section class="card hidden" id="v-mfa">
+    <h2>Código de verificación</h2>
+    <p class="muted">Abre Google Authenticator y escribe el código de isHere.</p>
+    <label for="c-code">Código de 6 dígitos</label>
+    <input id="c-code" class="code-input" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+    <button class="btn" id="btn-mfa">Verificar</button>
+    <div class="msg" id="m-mfa"></div>
+  </section>
+
+  <!-- 4. Panel -->
+  <div class="hidden" id="v-panel" style="display:flex; flex-direction:column; gap:22px;">
+
+    <section>
+      <div class="stats">
+        <div class="stat big"><div class="n" id="s-mes">—</div><div class="l">Cobrado este mes (con IVA)</div></div>
+        <div class="stat"><div class="n" id="s-activas">—</div><div class="l">Pymes activas</div></div>
+        <div class="stat"><div class="n" id="s-cortesia">—</div><div class="l">De cortesía</div></div>
+        <div class="stat"><div class="n" id="s-pendientes">—</div><div class="l">Pagos sin terminar</div></div>
+        <div class="stat"><div class="n" id="s-bajas">—</div><div class="l">Bajas</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ingresos acumulados</h2>
+      <div class="row-money"><span>Base</span><span id="i-base">—</span></div>
+      <div class="row-money"><span>IVA a declarar (modelo 303)</span><span id="i-iva">—</span></div>
+      <div class="row-money"><span>Total cobrado</span><span id="i-total">—</span></div>
+      <div class="row-money"><span>Comisiones pagadas a reclutadores</span><span id="i-com">—</span></div>
+      <div class="row-money"><span>IVA de este mes</span><span id="i-mes-iva">—</span></div>
+    </section>
+
+    <section class="card">
+      <h2>Altas y bajas por mes</h2>
+      <div class="scroll"><table class="table">
+        <thead><tr><th>Mes</th><th class="num">Altas</th><th class="num">Bajas</th><th class="num">Cobrado</th><th class="num">IVA</th></tr></thead>
+        <tbody id="t-meses"></tbody>
+      </table></div>
+    </section>
+
+    <section class="card">
+      <h2>Reclutadores</h2>
+      <div id="l-reclutadores"></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Crear reclutador</summary>
+        <p class="muted" style="margin-top:8px">Se crea su cuenta de Stripe y recibes su enlace de invitación permanente para mandárselo.</p>
+        <div class="grid2">
+          <div><label for="r-codigo">Código</label><input id="r-codigo" placeholder="MARIA01" autocapitalize="characters"></div>
+          <div><label for="r-nombre">Nombre</label><input id="r-nombre"></div>
+        </div>
+        <div class="grid2">
+          <div><label for="r-email">Email</label><input id="r-email" type="email"></div>
+          <div><label for="r-tel">Teléfono</label><input id="r-tel" type="tel" placeholder="+34"></div>
+        </div>
+        <button class="btn" id="btn-reclutador">Crear reclutador</button>
+        <div class="msg" id="m-reclutador"></div>
+      </details>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Negocio de cortesía</summary>
+        <p class="muted" style="margin-top:8px">Aparece en el buscador sin pagar. Para negocios estrella o acuerdos especiales.</p>
+        <label for="c-name">Nombre del negocio</label><input id="c-name">
+        <div class="grid2">
+          <div><label for="c-zone">Barrio</label>
+            <select id="c-zone"><option>Gràcia</option><option>Gòtic</option><option>Eixample</option><option>El Raval</option><option>Sagrada Familia</option></select></div>
+          <div><label for="c-meses">Duración</label>
+            <select id="c-meses"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="0">Sin vencimiento</option></select></div>
+        </div>
+        <label for="c-product">Producto estrella</label><input id="c-product">
+        <label for="c-tags">Palabras de búsqueda (catalán, español e inglés), separadas por comas</label><input id="c-tags">
+        <label for="c-address">Dirección exacta</label><input id="c-address" placeholder="Carrer de Verdi 23">
+        <button class="btn" id="btn-cortesia">Dar de alta gratis</button>
+        <div class="msg" id="m-cortesia"></div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Bajas para recuperar</h2>
+      <div id="l-bajas"></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Últimas pymes</summary>
+        <div class="scroll" style="margin-top:10px"><table class="table">
+          <thead><tr><th>Negocio</th><th>Estado</th><th>Vence</th></tr></thead>
+          <tbody id="t-pymes"></tbody>
+        </table></div>
+      </details>
+    </section>
+
+    <button class="btn-sec" id="btn-recargar">Actualizar datos</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
+const APP = "https://anitagaetez.github.io/Simulacionishere-barcelona-/";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const $ = (id) => document.getElementById(id);
+const VISTAS = ["v-login", "v-enroll", "v-mfa", "v-panel"];
+function ver(id){
+  VISTAS.forEach(v => $(v).classList.toggle("hidden", v !== id));
+  $("btn-salir").classList.toggle("hidden", id === "v-login");
+}
+function msg(id, texto, tipo = "err"){ const m = $(id); m.textContent = texto; m.className = "msg show " + tipo; }
+function limpiar(id){ $(id).className = "msg"; }
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+const euro = (n) => new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(Number(n || 0));
+const fecha = (f) => f ? new Date(f).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : "—";
+const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const mesTxt = (m) => { const [a, n] = m.split("-"); return `${MESES[Number(n) - 1]} ${a}`; };
+async function copiar(texto, boton){
+  try { await navigator.clipboard.writeText(texto); const o = boton.textContent; boton.textContent = "Copiado ✓"; setTimeout(() => boton.textContent = o, 1500); }
+  catch (e) { prompt("Copia el texto:", texto); }
+}
+
+/* ---------- flujo de entrada ---------- */
+let factorId = null;
+
+async function decidir(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session){ ver("v-login"); return; }
+
+  const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal && aal.currentLevel === "aal2"){ ver("v-panel"); cargarPanel(); return; }
+
+  const { data: factores } = await sb.auth.mfa.listFactors();
+  const verificado = (factores?.totp || []).find(f => f.status === "verified");
+  if (verificado){ factorId = verificado.id; ver("v-mfa"); $("c-code").focus(); return; }
+  await iniciarEnrolamiento(factores);
+}
+
+async function iniciarEnrolamiento(factores){
+  // Borra intentos anteriores sin terminar.
+  for (const f of (factores?.all || [])){
+    if (f.status === "unverified") await sb.auth.mfa.unenroll({ factorId: f.id });
+  }
+  const { data, error } = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "isHere " + Date.now() });
+  ver("v-enroll");
+  if (error){ msg("m-enroll", "No se pudo preparar la verificación: " + error.message); return; }
+  factorId = data.id;
+  $("e-secret").textContent = data.totp.secret;
+  $("e-qr").src = data.totp.qr_code;
+}
+
+$("btn-login").addEventListener("click", async () => {
+  limpiar("m-login");
+  const email = $("l-email").value.trim(), password = $("l-pass").value;
+  if (!email || !password){ msg("m-login", "Escribe tu email y tu contraseña."); return; }
+  $("btn-login").disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  $("btn-login").disabled = false;
+  if (error){ msg("m-login", "Email o contraseña incorrectos."); return; }
+  decidir();
+});
+$("l-pass").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-login").click(); });
+
+async function verificar(inputId, msgId, boton){
+  limpiar(msgId);
+  const code = $(inputId).value.replace(/\D/g, "");
+  if (code.length !== 6){ msg(msgId, "El código tiene 6 dígitos."); return; }
+  boton.disabled = true;
+  const { error } = await sb.auth.mfa.challengeAndVerify({ factorId, code });
+  boton.disabled = false;
+  if (error){ msg(msgId, "Código incorrecto o vencido. Espera al siguiente y vuelve a intentarlo."); $(inputId).value = ""; return; }
+  ver("v-panel"); cargarPanel();
+}
+$("btn-enroll").addEventListener("click", (e) => verificar("e-code", "m-enroll", e.target));
+$("btn-mfa").addEventListener("click", (e) => verificar("c-code", "m-mfa", e.target));
+$("c-code").addEventListener("input", e => { if (e.target.value.replace(/\D/g, "").length === 6) $("btn-mfa").click(); });
+$("btn-copiar-secret").addEventListener("click", (e) => copiar($("e-secret").textContent, e.target));
+
+$("btn-salir").addEventListener("click", async () => { await sb.auth.signOut(); ver("v-login"); });
+$("btn-recargar").addEventListener("click", cargarPanel);
+
+/* ---------- panel ---------- */
+async function cargarPanel(){
+  const { data, error } = await sb.rpc("admin_panel");
+  if (error){
+    if (/autorizado/i.test(error.message)){ await sb.auth.signOut(); ver("v-login"); msg("m-login", "Esta cuenta no es administradora."); }
+    else alert("No se pudieron cargar los datos: " + error.message);
+    return;
+  }
+  const r = data.resumen, i = data.ingresos;
+  $("s-mes").textContent = euro(i.mes_total);
+  $("s-activas").textContent = r.activas;
+  $("s-cortesia").textContent = r.cortesia;
+  $("s-pendientes").textContent = r.pendientes;
+  $("s-bajas").textContent = r.bajas;
+  $("i-base").textContent = euro(i.base);
+  $("i-iva").textContent = euro(i.iva);
+  $("i-total").textContent = euro(i.total);
+  $("i-com").textContent = euro(i.comisiones);
+  $("i-mes-iva").textContent = euro(i.mes_iva);
+
+  $("t-meses").innerHTML = data.por_mes.map(m => `
+    <tr><td>${mesTxt(m.mes)}</td><td class="num">${m.altas}</td><td class="num">${m.bajas}</td>
+    <td class="num">${euro(m.ingresos)}</td><td class="num">${euro(m.iva)}</td></tr>`).join("");
+
+  $("l-reclutadores").innerHTML = data.reclutadores.length ? data.reclutadores.map(rc => `
+    <div class="item">
+      <b>${esc(rc.codigo)}</b> · ${esc(rc.nombre || "")}
+      <span class="pill ${rc.cuenta_lista ? "on" : "gold"}">${rc.cuenta_lista ? "Stripe listo" : "Stripe pendiente"}</span>
+      ${rc.activo === false ? '<span class="pill off">inactivo</span>' : ""}
+      <div class="muted">${rc.pymes} pymes traídas · ${rc.activas} activas · ${euro(rc.comisiones)} en comisiones</div>
+      ${rc.invite_token ? `<div class="actions"><button class="btn-sec" data-invite="${esc(rc.invite_token)}">Copiar invitación</button></div>` : ""}
+    </div>`).join("") : '<p class="muted">Aún no hay reclutadores.</p>';
+  document.querySelectorAll("[data-invite]").forEach(b =>
+    b.addEventListener("click", () => copiar(APP + "?invitacion=" + encodeURIComponent(b.dataset.invite), b)));
+
+  $("l-bajas").innerHTML = data.bajas.length ? data.bajas.map(p => `
+    <div class="item">
+      <b>${esc(p.name)}</b> <span class="muted">· ${esc(p.zone)} · baja el ${fecha(p.fecha)}</span>
+      <div class="muted">${esc(p.contacto || "")}</div>
+      <div class="actions">
+        ${p.telefono ? `<a class="btn-sec" href="https://wa.me/${esc(String(p.telefono).replace(/\D/g, ""))}" target="_blank" rel="noopener">WhatsApp</a>
+                        <a class="btn-sec" href="tel:${esc(p.telefono)}">Llamar</a>` : ""}
+        ${p.email ? `<a class="btn-sec" href="mailto:${esc(p.email)}">Email</a>` : ""}
+      </div>
+    </div>`).join("") : '<p class="muted">Ninguna baja por ahora. 🎉</p>';
+
+  const estado = { beta_active: ["activa", "on"], pending_payment: ["sin pagar", "gold"] };
+  $("t-pymes").innerHTML = data.pymes.map(p => {
+    const [txt, cls] = estado[p.status] || [p.status || "—", "off"];
+    return `<tr><td>${esc(p.name)}<div class="muted">${esc(p.zone)}${p.reclutador ? " · " + esc(p.reclutador) : ""}${p.plan === "courtesy" ? " · cortesía" : ""}</div></td>
+      <td><span class="pill ${cls}">${esc(txt)}</span></td><td>${p.expira ? fecha(p.expira) : "—"}</td></tr>`;
+  }).join("");
+}
+
+/* ---------- crear reclutador ---------- */
+$("btn-reclutador").addEventListener("click", async (e) => {
+  limpiar("m-reclutador");
+  const body = {
+    codigo: $("r-codigo").value.trim().toUpperCase(),
+    nombre: $("r-nombre").value.trim(),
+    email: $("r-email").value.trim(),
+    telefono: $("r-tel").value.trim()
+  };
+  if (!body.codigo || !body.nombre){ msg("m-reclutador", "Pon al menos el código y el nombre."); return; }
+  e.target.disabled = true;
+  const { data, error } = await sb.functions.invoke("crear-reclutador", { body });
+  e.target.disabled = false;
+  if (error || data?.error){ msg("m-reclutador", "No se pudo crear: " + (data?.error || error.message)); return; }
+  const enlace = data.enlace || data.invitacion || data.invite_url || data.link || data.url
+    || (data.invite_token ? APP + "?invitacion=" + encodeURIComponent(data.invite_token) : "");
+  msg("m-reclutador", enlace ? "Reclutador creado. Enlace copiado para mandárselo: " + enlace : "Reclutador creado: " + JSON.stringify(data), "ok");
+  if (enlace){ try { await navigator.clipboard.writeText(enlace); } catch (err) {} }
+  ["r-codigo", "r-nombre", "r-email", "r-tel"].forEach(id => $(id).value = "");
+  cargarPanel();
+});
+
+/* ---------- negocio de cortesía ---------- */
+$("btn-cortesia").addEventListener("click", async (e) => {
+  limpiar("m-cortesia");
+  const p = {
+    p_name: $("c-name").value.trim(), p_zone: $("c-zone").value, p_product: $("c-product").value.trim(),
+    p_tags: $("c-tags").value.trim(), p_address: $("c-address").value.trim(), p_meses: Number($("c-meses").value)
+  };
+  if (!p.p_name || !p.p_product || !p.p_tags || !p.p_address){ msg("m-cortesia", "Completa nombre, producto, palabras y dirección."); return; }
+  e.target.disabled = true;
+  const { error } = await sb.rpc("admin_crear_cortesia", p);
+  e.target.disabled = false;
+  if (error){ msg("m-cortesia", "No se pudo dar de alta: " + error.message); return; }
+  msg("m-cortesia", `"${p.p_name}" ya aparece en el buscador.`, "ok");
+  ["c-name", "c-product", "c-tags", "c-address"].forEach(id => $(id).value = "");
+  cargarPanel();
+});
+
+decidir();
+</script>
+</body>
+</html>
