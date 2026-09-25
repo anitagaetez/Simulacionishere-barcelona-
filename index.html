@@ -189,6 +189,17 @@
   .chip:active{ background: var(--bg-panel-raise); }
   @media (prefers-reduced-motion: reduce){ .rot-text{ transition: none; } }
 
+  /* Lluvia de ideas */
+  .nube{ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 10px; padding: 4px 2px; }
+  .idea{ border: none; background: transparent; font: inherit; cursor: pointer; padding: 5px 8px; border-radius: 999px;
+         line-height: 1.2; animation: flotar 6s ease-in-out infinite; }
+  .idea:active{ background: rgba(242,233,216,0.08); }
+  .idea.s1{ font-size: 0.82rem; } .idea.s2{ font-size: 0.95rem; } .idea.s3{ font-size: 1.1rem; font-family: 'Fraunces', Georgia, serif; }
+  .idea.c1{ color: #D9A441; } .idea.c2{ color: #2EA89C; } .idea.c3{ color: #E88A7E; }
+  .idea.c4{ color: #9CC7E8; } .idea.c5{ color: #F2E9D8; } .idea.c6{ color: #C9A7E0; }
+  @keyframes flotar{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce){ .idea{ animation: none; } }
+
   /* Catálogo en el alta */
   .cat-list{ display: flex; flex-direction: column; gap: 6px; }
   .cat-opt{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
@@ -602,6 +613,8 @@
         </div>
         <h2 class="sug-title" id="sug-title" data-i18n="sug_title">Lo que más se olvida</h2>
         <div class="chips" id="chips"></div>
+        <h2 class="sug-title" data-i18n="nube_title">¿Qué se te antoja?</h2>
+        <div class="nube" id="nube"></div>
       </section>
 
       <footer class="hint">
@@ -861,7 +874,21 @@ const I18N = {
     cat_add: "Añadir",
     ph_price: "Precio",
     cat_remove: "Quitar",
-    err_tags_or_products: "Añade palabras de búsqueda o al menos un producto del catálogo."
+    err_tags_or_products: "Añade palabras de búsqueda o al menos un producto del catálogo.",
+    rot_security: "🎒 ¿Te preocupan los carteristas? Lleva el móvil a salvo en una riñonera antirrobo.",
+    rot_thirst: "💧 ¿Te mueres de sed? Agua bien fría a la vuelta de la esquina.",
+    rot_icecream: "🍦 ¿Calor de verdad? Un helado a pocos pasos.",
+    rot_beer: "🍺 ¿Te apetece una caña? Cerveza fría cerca de ti.",
+    rot_sandwich: "🥪 ¿Hambre entre visita y visita? Un bocadillo recién hecho cerca.",
+    rot_homefood: "🍲 ¿Echas de menos la comida de casa? Menú casero cerca de ti.",
+    rot_coffee: "☕ ¿Necesitas un café para seguir? Café para llevar a pocos pasos.",
+    rot_breakfast: "🥐 ¿Aún sin desayunar? Desayuno cerca de ti.",
+    rot_church: "⛪ ¿Vas a la Sagrada Familia en tirantes? Un chal para cubrir los hombros, cerca.",
+    rot_souvenir: "🎁 ¿Falta el regalo para casa? Recuerdos de Barcelona sin precio de centro.",
+    rot_laundry: "🧺 ¿Se acabó la ropa limpia? Lavandería cerca de ti.",
+    nube_title: "¿Qué se te antoja?",
+    rot_granizado: "🧊 ¿Te derrites de calor? Un granizado bien frío cerca.",
+    rot_delivery: "🛵 ¿Sin ganas de salir del hotel? Comida a domicilio."
   },
   ca: {
     zone_label: "Ets a",
@@ -974,7 +1001,21 @@ const I18N = {
     cat_add: "Afegeix",
     ph_price: "Preu",
     cat_remove: "Treu",
-    err_tags_or_products: "Afegeix paraules de cerca o almenys un producte del catàleg."
+    err_tags_or_products: "Afegeix paraules de cerca o almenys un producte del catàleg.",
+    rot_security: "🎒 Et preocupen els carteristes? Porta el mòbil segur en una ronyonera antirobatori.",
+    rot_thirst: "💧 Et mors de set? Aigua ben freda a la cantonada.",
+    rot_icecream: "🍦 Fa calor de debò? Un gelat a pocs passos.",
+    rot_beer: "🍺 Et ve de gust una canya? Cervesa freda a prop teu.",
+    rot_sandwich: "🥪 Gana entre visita i visita? Un entrepà acabat de fer a prop.",
+    rot_homefood: "🍲 Trobes a faltar el menjar de casa? Menú casolà a prop teu.",
+    rot_coffee: "☕ Necessites un cafè per continuar? Cafè per emportar a pocs passos.",
+    rot_breakfast: "🥐 Encara sense esmorzar? Esmorzar a prop teu.",
+    rot_church: "⛪ Vas a la Sagrada Família amb samarreta de tirants? Un xal per cobrir les espatlles, a prop.",
+    rot_souvenir: "🎁 Et falta el regal per a casa? Records de Barcelona sense preu de centre.",
+    rot_laundry: "🧺 S'ha acabat la roba neta? Bugaderia a prop teu.",
+    nube_title: "Què et ve de gust?",
+    rot_granizado: "🧊 Et fons de calor? Un granissat ben fred a prop.",
+    rot_delivery: "🛵 Sense ganes de sortir de l'hotel? Menjar a domicili."
   },
   en: {
     zone_label: "You're in",
@@ -1087,7 +1128,21 @@ const I18N = {
     cat_add: "Add",
     ph_price: "Price",
     cat_remove: "Remove",
-    err_tags_or_products: "Add search words or at least one catalogue product."
+    err_tags_or_products: "Add search words or at least one catalogue product.",
+    rot_security: "🎒 Worried about pickpockets? Keep your phone safe in an anti-theft bum bag.",
+    rot_thirst: "💧 Dying of thirst? Ice-cold water around the corner.",
+    rot_icecream: "🍦 Seriously hot? Ice cream a few steps away.",
+    rot_beer: "🍺 Fancy a cold beer? There's one near you.",
+    rot_sandwich: "🥪 Hungry between sights? A freshly made sandwich nearby.",
+    rot_homefood: "🍲 Missing home cooking? Homemade food near you.",
+    rot_coffee: "☕ Need a coffee to keep going? Coffee to go a few steps away.",
+    rot_breakfast: "🥐 Still no breakfast? Breakfast near you.",
+    rot_church: "⛪ Visiting the Sagrada Família in a tank top? A shawl to cover your shoulders, nearby.",
+    rot_souvenir: "🎁 Still need a gift for home? Barcelona souvenirs without city-centre prices.",
+    rot_laundry: "🧺 Out of clean clothes? A laundry near you.",
+    nube_title: "What are you craving?",
+    rot_granizado: "🧊 Melting in the heat? An ice-cold slushie nearby.",
+    rot_delivery: "🛵 Don't feel like leaving the hotel? Food delivered."
   }
 };
 
@@ -1270,22 +1325,40 @@ const ROT = [
   { k: "rot_phone", id: 67, q: "movil" },
   { k: "rot_battery", id: 63, q: "bateria externa", noche: true },
   { k: "rot_sandals", id: 91, q: "sandalias", temporada: "verano" },
-  { k: "rot_sun", id: 1, q: "protector solar", temporada: "verano" },
+  { k: "rot_sun", id: 1, q: "protector solar", temporada: "verano", franjas: ["manana", "mediodia", "tarde"] },
   { k: "rot_mosquito", id: 26, q: "antimosquitos", temporada: "verano", noche: true },
   { k: "rot_toiletry", id: 100, q: "kit de aseo" },
   { k: "rot_blister", id: 29, q: "ampollas" },
   { k: "rot_rain", id: 84, q: "paraguas", temporada: "invierno" },
-  { k: "rot_plug", id: 64, q: "adaptador" }
+  { k: "rot_plug", id: 64, q: "adaptador" },
+  { k: "rot_security", id: 115, q: "riñonera antirrobo" },
+  { k: "rot_thirst", id: 130, q: "agua fria", temporada: "verano", franjas: ["mediodia", "tarde"] },
+  { k: "rot_icecream", id: 139, q: "helado", temporada: "verano", franjas: ["mediodia", "tarde"] },
+  { k: "rot_beer", id: 150, q: "cerveza", franjas: ["tarde", "noche"] },
+  { k: "rot_sandwich", id: 134, q: "bocadillo", franjas: ["mediodia"] },
+  { k: "rot_homefood", id: 151, q: "comida casera", franjas: ["mediodia", "noche"] },
+  { k: "rot_coffee", id: 138, q: "cafe", franjas: ["manana", "tarde"] },
+  { k: "rot_breakfast", id: 145, q: "desayuno", franjas: ["manana"] },
+  { k: "rot_church", id: 95, q: "chal", franjas: ["manana", "mediodia", "tarde"] },
+  { k: "rot_souvenir", id: 149, q: "recuerdos" },
+  { k: "rot_laundry", id: 126, q: "lavanderia" },
+  { k: "rot_granizado", id: 152, q: "granizado", temporada: "verano", franjas: ["mediodia", "tarde"] },
+  { k: "rot_delivery", id: 164, q: "comida a domicilio", franjas: ["mediodia", "noche"] }
 ];
+
+// Lluvia de ideas: productos del catálogo en colores y tamaños distintos.
+const NUBE = [100, 11, 1, 150, 152, 138, 145, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 143, 163, 164];
 function momento(){
   const d = new Date(), m = d.getMonth() + 1, h = d.getHours();
-  return { verano: m >= 5 && m <= 9, noche: h >= 20 || h < 6 };
+  const franja = h >= 6 && h < 12 ? "manana" : h >= 12 && h < 17 ? "mediodia" : h >= 17 && h < 20 ? "tarde" : "noche";
+  return { verano: m >= 5 && m <= 9, noche: h >= 20 || h < 6, franja };
 }
 function pesoMomento(x, mo){
   let p = 0;
   if (x.temporada === "verano") p += mo.verano ? 2 : -3;
   if (x.temporada === "invierno") p += mo.verano ? -3 : 2;
   if (x.noche && mo.noche) p += 1;
+  if (x.franjas) p += x.franjas.includes(mo.franja) ? 2 : -5; // desayuno solo por la mañana, cerveza no a primera hora
   return p;
 }
 const CAT_PESO = { verano: { playa: 3, farmacia: 2, tecnologia: 1 }, invierno: { ropa: 3, tecnologia: 2, farmacia: 1 } };
@@ -1322,7 +1395,9 @@ rotBtn.addEventListener("click", () => {
 
 function renderPortada(){
   const mo = momento();
-  rotLista = ROT.map(x => ({ ...x, peso: pesoMomento(x, mo) })).filter(x => x.peso >= 0).sort((a, b) => b.peso - a.peso);
+  // A igual peso, orden al azar para que no salga siempre la misma frase primero.
+  rotLista = ROT.map(x => ({ ...x, peso: pesoMomento(x, mo), azar: Math.random() }))
+    .filter(x => x.peso >= 0).sort((a, b) => b.peso - a.peso || a.azar - b.azar);
   rotIdx = 0; mostrarRot();
   if (!rotTimer) rotTimer = setInterval(siguienteRot, 7000);
 
@@ -1385,8 +1460,25 @@ function renderElegidos(){
 }
 catInput.addEventListener("input", renderSugerenciasCat);
 
+function renderNube(){
+  const nubeEl = document.getElementById("nube");
+  if (!nubeEl) return;
+  nubeEl.innerHTML = "";
+  const items = NUBE.map(id => catalogo.find(p => p.id === id)).filter(Boolean)
+    .map(p => ({ p, azar: Math.random() })).sort((a, b) => a.azar - b.azar);
+  items.forEach(({ p }, i) => {
+    const b = document.createElement("button");
+    b.className = `idea c${(i % 6) + 1} s${[2, 1, 3, 1, 2, 3, 1][i % 7]}`;
+    b.style.animationDelay = `${(i % 5) * -1.1}s`;
+    b.textContent = nombreProducto(p);
+    b.addEventListener("click", () => buscarDesdePortada(nombreProducto(p)));
+    nubeEl.appendChild(b);
+  });
+}
+
 function refrescarDinamicos(){
   renderPortada();
+  renderNube();
   renderElegidos();
   renderSugerenciasCat();
 }
