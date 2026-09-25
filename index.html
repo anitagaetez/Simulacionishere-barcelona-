@@ -392,6 +392,15 @@
     font-family: inherit;
     font-size: 0.92rem;
   }
+  .foto-input{ position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .foto-btn{
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    background: var(--bg-panel); border: 1px dashed rgba(242,233,216,0.25);
+    color: var(--cream-dim); padding: 12px 13px; border-radius: var(--radius-sm);
+    font-size: 0.9rem; min-height: 48px;
+  }
+  .foto-input:focus-visible + .foto-btn{ outline: 2px solid var(--gold); outline-offset: 2px; }
+  .foto-btn img{ width: 56px; height: 56px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
   .field input::placeholder{ color: rgba(242,233,216,0.3); }
   .field-row{ display: flex; gap: 10px; }
   .field-row .field{ flex: 1; min-width: 0; }
@@ -593,8 +602,12 @@
         </div>
 
         <div class="field">
-          <label for="f-logo">Foto o logo (enlace a una imagen)</label>
-          <input id="f-logo" type="url" placeholder="https://...">
+          <label for="f-foto">Foto o logo del comercio</label>
+          <input id="f-foto" type="file" accept="image/*" class="foto-input">
+          <label for="f-foto" class="foto-btn" id="foto-btn">
+            <img id="foto-preview" alt="" hidden>
+            <span id="foto-texto">Elegir foto de la galería o hacer una</span>
+          </label>
         </div>
 
         <div class="field">
@@ -965,6 +978,57 @@ function mostrarEstado(texto, tipo){
 }
 function valor(id){ return document.getElementById(id).value.trim(); }
 
+/* ---------- foto del comercio ---------- */
+const fotoInput = document.getElementById("f-foto");
+const fotoPreview = document.getElementById("foto-preview");
+const fotoTexto = document.getElementById("foto-texto");
+let fotoComprimida = null;
+
+function comprimirFoto(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      const escala = Math.min(1, MAX / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * escala);
+      canvas.height = Math.round(img.height * escala);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error("no se pudo procesar la foto")), "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("formato de foto no compatible, prueba con otra")); };
+    img.src = url;
+  });
+}
+
+fotoInput.addEventListener("change", async () => {
+  fotoComprimida = null;
+  const file = fotoInput.files && fotoInput.files[0];
+  if (!file) return;
+  fotoTexto.textContent = "Preparando foto…";
+  try {
+    fotoComprimida = await comprimirFoto(file);
+    fotoPreview.src = URL.createObjectURL(fotoComprimida);
+    fotoPreview.hidden = false;
+    fotoTexto.textContent = "Foto lista. Toca para cambiarla.";
+  } catch (e){
+    fotoPreview.hidden = true;
+    fotoTexto.textContent = "Elegir foto de la galería o hacer una";
+    mostrarErrorForm("La foto no se pudo cargar: " + e.message + ".");
+  }
+});
+
+async function subirFoto(id){
+  if (!fotoComprimida) return "";
+  const ruta = `${id}.jpg`;
+  const { error } = await supabaseClient.storage.from("fotos-pymes")
+    .upload(ruta, fotoComprimida, { contentType: "image/jpeg", upsert: false });
+  if (error) throw new Error("no se pudo subir la foto (" + error.message + ")");
+  return supabaseClient.storage.from("fotos-pymes").getPublicUrl(ruta).data.publicUrl;
+}
+
 async function codigoReclutadorValido(cod){
   const { data, error } = await supabaseClient.rpc("codigo_reclutador_valido", { p_codigo: cod });
   if (error) throw new Error("no se pudo comprobar el código de recomendación");
@@ -981,7 +1045,6 @@ async function enviarAlta(){
     price: valor("f-price"),
     tagsRaw: valor("f-tags"),
     address: valor("f-address"),
-    logo: valor("f-logo"),
     web: valor("f-web"),
     contacto: valor("f-contacto"),
     email: valor("f-email"),
@@ -1012,6 +1075,9 @@ async function enviarAlta(){
     }
 
     const id = crypto.randomUUID();
+    btnPay.textContent = fotoComprimida ? "Subiendo foto…" : "Preparando el pago…";
+    const logoUrl = await subirFoto(id);
+    btnPay.textContent = "Preparando el pago…";
     const tags = datos.tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
 
     const { error } = await supabaseClient.from("pymes").insert([{
@@ -1022,7 +1088,7 @@ async function enviarAlta(){
       star_product_price: datos.price,
       tags: tags.join(", "),
       address: datos.address,
-      logo_url: datos.logo,
+      logo_url: logoUrl,
       web: datos.web,
       contacto_nombre: datos.contacto,
       email: datos.email,
