@@ -358,7 +358,18 @@ $("btn-reclutador").addEventListener("click", async (e) => {
   e.target.disabled = true;
   const { data, error } = await sb.functions.invoke("crear-reclutador", { body });
   e.target.disabled = false;
-  if (error || data?.error){ msg("m-reclutador", "No se pudo crear: " + (data?.error || error.message)); return; }
+  if (error || data?.error){
+    // Lee el mensaje real que devolvió la función.
+    let detalle = data?.error || error?.message || "";
+    try {
+      if (error?.context){
+        const txt = await error.context.text();
+        detalle = `(${error.context.status}) ` + (txt || detalle);
+      }
+    } catch (err) {}
+    msg("m-reclutador", "No se pudo crear: " + detalle);
+    return;
+  }
   const enlace = data.enlace || data.invitacion || data.invite_url || data.link || data.url
     || (data.invite_token ? APP + "?invitacion=" + encodeURIComponent(data.invite_token) : "");
   msg("m-reclutador", enlace ? "Reclutador creado. Enlace copiado para mandárselo: " + enlace : "Reclutador creado: " + JSON.stringify(data), "ok");
