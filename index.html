@@ -3,20 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>isHere Barcelona — Prototipo</title>
+<title>isHere Barcelona</title>
 <style>
-  .setup-banner{
-    background: var(--bg-panel, #123449);
-    border: 1px solid rgba(217,164,65,0.3);
-    color: #F2E9D8;
-    font-size: 0.78rem;
-    padding: 12px 16px;
-    margin: 14px 20px 0;
-    border-radius: 10px;
-    line-height: 1.5;
-  }
-  .setup-banner b{ color: #D9A441; }
-  .setup-banner.hide{ display: none; }
   :root{
     --bg-deep: #0D2B3E;
     --bg-panel: #123449;
@@ -28,18 +16,13 @@
     --cream: #F2E9D8;
     --cream-dim: #B9C7CE;
     --success: #4CAF7D;
-    --danger: #C1443A;
+    --danger: #E0685E;
     --radius-lg: 22px;
     --radius-sm: 10px;
     font-size: 16px;
   }
 
   *{ box-sizing: border-box; margin:0; padding:0; }
-
-  @font-face{
-    font-family: 'Fraunces';
-    src: local('Fraunces');
-  }
 
   body{
     background: var(--bg-deep);
@@ -62,6 +45,8 @@
     pointer-events: none;
     z-index: 0;
   }
+
+  :focus-visible{ outline: 2px solid var(--gold); outline-offset: 2px; }
 
   .device{
     width: 100%;
@@ -91,9 +76,20 @@
   .wordmark svg{ flex-shrink: 0; }
   .wordmark b{ color: var(--gold); font-weight: 600; }
 
-  .business-link{
-    margin-top: 10px;
+  /* Aviso general (reclutadores, errores de conexión) */
+  .aviso{
+    display: none;
+    font-size: 0.82rem;
+    padding: 12px 16px;
+    margin: 4px 20px 10px;
+    border-radius: var(--radius-sm);
+    line-height: 1.5;
   }
+  .aviso.show{ display: block; }
+  .aviso.ok{ background: rgba(76,175,125,0.12); border: 1px solid rgba(76,175,125,0.35); color: var(--success); }
+  .aviso.warn{ background: rgba(217,164,65,0.12); border: 1px solid rgba(217,164,65,0.35); color: var(--gold); }
+
+  .business-link{ margin-top: 10px; }
   .business-link a{
     color: var(--cream-dim);
     font-size: 0.76rem;
@@ -147,7 +143,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   #btn-lang{
-    background: var(--bg-panel-raise, #17415A);
+    background: var(--bg-panel-raise);
     border: 1px solid var(--teal-light);
     color: var(--cream);
     padding: 5px 10px;
@@ -165,11 +161,7 @@
     min-height: 14px;
   }
 
-  .manual-search{
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-  }
+  .manual-search{ display: flex; gap: 8px; margin-top: 14px; }
   .manual-search input{
     flex: 1;
     background: var(--bg-panel);
@@ -202,7 +194,6 @@
   }
 
   .mic-wrap{ position: relative; width: 168px; height: 168px; display:flex; align-items:center; justify-content:center; }
-
   .mic-wrap::before{
     content: "";
     position: absolute;
@@ -216,7 +207,6 @@
     z-index: 0;
   }
   .mic-wrap.listening::before{ animation-duration: 2s; opacity: 0.55; }
-
   @keyframes spin-halo{ to{ transform: rotate(360deg); } }
 
   .ring{
@@ -231,7 +221,6 @@
   .mic-wrap.listening .ring{ animation: pulse-ring 1.8s ease-out infinite; }
   .mic-wrap.listening .ring:nth-child(2){ animation-delay: 0.5s; }
   .mic-wrap.listening .ring:nth-child(3){ animation-delay: 1s; }
-
   @keyframes pulse-ring{
     0%{ transform: scale(0.72); opacity: 0.7; }
     100%{ transform: scale(1.35); opacity: 0; }
@@ -281,6 +270,10 @@
     50%{ transform: scaleY(1); }
   }
 
+  @media (prefers-reduced-motion: reduce){
+    #btn-mic, .mic-wrap::before, .mic-wrap.listening .ring, .wave-bars span{ animation: none !important; }
+  }
+
   .listen-status{
     text-align: center;
     font-size: 0.95rem;
@@ -297,12 +290,7 @@
     font-style: italic;
   }
 
-  .transcript{
-    font-size: 0.82rem;
-    color: var(--teal-light);
-    text-align: center;
-    min-height: 18px;
-  }
+  .transcript{ font-size: 0.82rem; color: var(--teal-light); text-align: center; min-height: 18px; }
 
   .result-card{
     display: none;
@@ -357,13 +345,14 @@
   .voice-guide-btn{
     width: 100%;
     margin-top: 12px;
-    background: transparent;
-    border: 1px solid rgba(242,233,216,0.18);
+    background: var(--teal);
+    border: none;
     color: var(--cream);
-    padding: 12px;
+    padding: 13px;
     border-radius: var(--radius-sm);
     font-family: inherit;
-    font-size: 0.86rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
     display: none;
   }
@@ -376,17 +365,24 @@
     padding-top: 18px;
   }
 
-  #view-comercio{ display: none; flex-direction: column; padding: 6px 20px 40px; gap: 22px; }
+  /* ----- Vista comercio ----- */
+  #view-comercio{ display: none; flex-direction: column; padding: 6px 20px 40px; gap: 20px; }
 
-  .section-title{
+  .section-title{ font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; font-weight: 500; }
+  .section-sub{ color: var(--cream-dim); font-size: 0.85rem; margin-top: 3px; line-height: 1.45; }
+
+  .form-group-title{
     font-family: 'Fraunces', Georgia, serif;
-    font-size: 1.3rem;
+    font-size: 1rem;
     font-weight: 500;
+    color: var(--gold);
+    margin-top: 6px;
   }
-  .section-sub{ color: var(--cream-dim); font-size: 0.85rem; margin-top: 3px; }
+  .form-group-note{ font-size: 0.74rem; color: var(--cream-dim); margin-top: -12px; }
 
   .field{ display: flex; flex-direction: column; gap: 6px; }
   .field label{ font-size: 0.78rem; color: var(--cream-dim); }
+  .field label .req{ color: var(--gold); }
   .field input, .field select{
     background: var(--bg-panel);
     border: 1px solid rgba(242,233,216,0.12);
@@ -398,7 +394,7 @@
   }
   .field input::placeholder{ color: rgba(242,233,216,0.3); }
   .field-row{ display: flex; gap: 10px; }
-  .field-row .field{ flex: 1; }
+  .field-row .field{ flex: 1; min-width: 0; }
 
   .price-card{
     background: var(--bg-panel-raise);
@@ -407,10 +403,10 @@
     border: 1px solid rgba(217,164,65,0.18);
   }
   .price-line{
-    display: flex; justify-content: space-between;
+    display: flex; justify-content: space-between; gap: 12px;
     font-size: 0.87rem;
     color: var(--cream-dim);
-    padding: 7px 0;
+    padding: 6px 0;
   }
   .price-line.total{
     border-top: 1px solid rgba(242,233,216,0.14);
@@ -421,7 +417,7 @@
     font-weight: 500;
   }
   .price-line.total span:last-child{ color: var(--gold); }
-  .price-note{ font-size: 0.72rem; color: var(--cream-dim); margin-top: 8px; line-height: 1.4; }
+  .price-note{ font-size: 0.74rem; color: var(--cream-dim); margin-top: 10px; line-height: 1.5; }
 
   .pay-btn{
     width: 100%;
@@ -434,32 +430,38 @@
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: opacity 0.2s ease;
   }
   .pay-btn:disabled{ opacity: 0.6; cursor: default; }
 
-  .pay-methods{
-    display: flex; gap: 8px; justify-content: center;
-    font-size: 0.7rem; color: var(--cream-dim);
-    margin-top: 10px;
+  .pay-methods{ text-align: center; font-size: 0.72rem; color: var(--cream-dim); margin-top: -8px; }
+
+  .form-error{
+    display: none;
+    background: rgba(224,104,94,0.12);
+    border: 1px solid rgba(224,104,94,0.4);
+    color: var(--danger);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.84rem;
+    line-height: 1.45;
   }
+  .form-error.show{ display: block; }
 
   .status-banner{
     display: none;
-    background: rgba(76,175,125,0.12);
-    border: 1px solid rgba(76,175,125,0.35);
-    color: var(--success);
     padding: 14px 16px;
     border-radius: var(--radius-sm);
-    font-size: 0.86rem;
-    align-items: center;
-    gap: 10px;
+    font-size: 0.88rem;
+    line-height: 1.45;
   }
-  .status-banner.show{ display: flex; }
+  .status-banner.show{ display: block; }
+  .status-banner.ok{ background: rgba(76,175,125,0.12); border: 1px solid rgba(76,175,125,0.35); color: var(--success); }
+  .status-banner.warn{ background: rgba(217,164,65,0.12); border: 1px solid rgba(217,164,65,0.35); color: var(--gold); }
 
   @media (max-width: 380px){
     :root{ font-size: 15px; }
+    .field-row{ flex-direction: column; }
   }
 </style>
 </head>
@@ -468,22 +470,21 @@
 
   <header>
     <div class="wordmark">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="#D9A441" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="#D9A441" stroke-width="1.6"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="#D9A441" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="#D9A441" stroke-width="1.6"/></svg>
       <span>is<b>Here</b> Barcelona</span>
     </div>
   </header>
 
-  <div class="setup-banner" id="setup-banner">
-    Falta conectar Supabase: pegá tu <b>SUPABASE_URL</b> y <b>SUPABASE_ANON_KEY</b> al final del archivo (líneas marcadas con <b>TODO</b>) para que las búsquedas y altas de pymes sean reales.
-  </div>
+  <div class="aviso" id="aviso-global" role="status"></div>
 
   <main>
 
+    <!-- ================= VISTA TURISTA ================= -->
     <section id="view-turista">
 
       <div class="zone-picker">
         <span>Estás en</span>
-        <select id="zone-select">
+        <select id="zone-select" aria-label="Barrio">
           <option value="Gràcia">Gràcia</option>
           <option value="Gòtic">Gòtic</option>
           <option value="Eixample">Eixample</option>
@@ -496,7 +497,7 @@
       <p class="locate-status" id="locate-status"></p>
 
       <div class="manual-search">
-        <input type="text" id="manual-input" placeholder="O escribí qué buscás (ej: costura, botones)">
+        <input type="text" id="manual-input" placeholder="O escribe qué buscas (ej: costura, botones)" aria-label="Qué buscas">
         <button id="btn-manual-search">Buscar</button>
       </div>
 
@@ -504,7 +505,7 @@
         <div class="mic-wrap" id="mic-wrap">
           <div class="ring"></div><div class="ring"></div><div class="ring"></div>
           <button id="btn-mic" aria-label="Buscar por voz">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#F2E9D8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F2E9D8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
               <path d="M6.5 11a5.5 5.5 0 0 0 11 0"/>
               <path d="M12 16.5V20M9 20h6"/>
@@ -523,88 +524,119 @@
           <h3 id="result-name">—</h3>
           <p id="result-product">—</p>
           <p class="distance" id="result-distance">—</p>
-          <span class="badge" id="result-badge" style="display:none;">producto estrella</span>
+          <span class="badge">producto estrella</span>
         </div>
         <a class="direction-indicator" id="result-maps-link" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
           <span>MAPA</span>
         </a>
       </div>
-      <button class="voice-guide-btn" id="voice-guide-btn">Guiarme por voz →</button>
+      <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
 
       <footer class="hint">
-        Puedes guardar el móvil mientras te guiamos por voz.
-        <div class="business-link"><a href="#" id="link-to-comercio">¿Tienes un comercio? →</a></div>
+        Google Maps te guía por voz hasta la puerta.
+        <div class="business-link"><a href="#" id="link-to-comercio">¿Tienes un comercio? Aparece en isHere</a></div>
       </footer>
     </section>
 
+    <!-- ================= VISTA COMERCIO ================= -->
     <section id="view-comercio">
 
       <button class="back-link" id="link-to-turista">← Volver a la búsqueda</button>
 
       <div>
         <h2 class="section-title">Da de alta tu comercio</h2>
-        <p class="section-sub">Aparece cuando un turista cerca de ti busque justo lo que vendes.</p>
+        <p class="section-sub">Aparece cuando alguien cerca de ti busque justo lo que vendes.</p>
       </div>
 
-      <div class="field">
-        <label for="f-name">Nombre del negocio</label>
-        <input id="f-name" type="text" placeholder="Mercería Trini">
-      </div>
+      <div class="status-banner" id="status-banner" role="status"></div>
 
-      <div class="field-row">
+      <div id="form-alta" style="display:flex; flex-direction:column; gap:20px;">
+
+        <h3 class="form-group-title">Tu negocio</h3>
+
         <div class="field">
-          <label for="f-zone">Barrio</label>
-          <select id="f-zone">
-            <option>Gràcia</option>
-            <option>Gòtic</option>
-            <option>Eixample</option>
-            <option>El Raval</option>
-            <option>Sagrada Familia</option>
-          </select>
+          <label for="f-name">Nombre del negocio <span class="req">*</span></label>
+          <input id="f-name" type="text" placeholder="Mercería Trini" autocomplete="organization">
         </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-zone">Barrio <span class="req">*</span></label>
+            <select id="f-zone">
+              <option>Gràcia</option>
+              <option>Gòtic</option>
+              <option>Eixample</option>
+              <option>El Raval</option>
+              <option>Sagrada Familia</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-price">Precio del producto</label>
+            <input id="f-price" type="text" placeholder="2,50 €">
+          </div>
+        </div>
+
         <div class="field">
-          <label for="f-price">Precio producto</label>
-          <input id="f-price" type="text" placeholder="2,50 €">
+          <label for="f-product">Producto estrella <span class="req">*</span></label>
+          <input id="f-product" type="text" placeholder="Kit de costura urgente">
         </div>
-      </div>
 
-      <div class="field">
-        <label for="f-product">Producto estrella</label>
-        <input id="f-product" type="text" placeholder="Kit de costura urgente">
-      </div>
+        <div class="field">
+          <label for="f-tags">Palabras con las que te buscarían, separadas por comas <span class="req">*</span></label>
+          <input id="f-tags" type="text" placeholder="aguja, hilo, coser, botón">
+        </div>
 
-      <div class="field">
-        <label for="f-logo">Foto o logo del negocio (enlace a una imagen)</label>
-        <input id="f-logo" type="text" placeholder="https://...">
-      </div>
+        <div class="field">
+          <label for="f-address">Dirección exacta (calle y número) <span class="req">*</span></label>
+          <input id="f-address" type="text" placeholder="Carrer de Verdi 23, Gràcia" autocomplete="street-address">
+        </div>
 
-      <div class="field">
-        <label for="f-address">Dirección exacta (calle y número)</label>
-        <input id="f-address" type="text" placeholder="Carrer de Verdi 23, Gràcia">
-      </div>
+        <div class="field">
+          <label for="f-logo">Foto o logo (enlace a una imagen)</label>
+          <input id="f-logo" type="url" placeholder="https://...">
+        </div>
 
-      <div class="field">
-        <label for="f-tags">Palabras clave (separadas por comas)</label>
-        <input id="f-tags" type="text" placeholder="aguja, hilo, coser, botón">
-      </div>
+        <div class="field">
+          <label for="f-web">Página web o Instagram</label>
+          <input id="f-web" type="text" placeholder="https://...">
+        </div>
 
-      <div class="price-card">
-        <div class="price-line"><span>Suscripción inicial</span><span>10,00 €</span></div>
-        <div class="price-line total"><span>Duración</span><span>3 meses (90 días)</span></div>
-        <p class="price-note">Pasados los 3 meses, la suscripción se renueva sola a 10€/mes mientras sigas activo. <b>Por ahora estamos terminando de conectar el cobro real</b>: tu ficha se activa igual, sin que se te cargue nada todavía, y vas a recibir aviso antes de que el cobro automático empiece a funcionar. Si no se renueva, la ficha se desactiva sola y podés reactivarla cuando quieras.</p>
-      </div>
+        <h3 class="form-group-title">Contacto</h3>
+        <p class="form-group-note">Solo lo ve isHere. No se muestra al público.</p>
 
-      <button class="pay-btn" id="btn-pay">Activar mi ficha — 10€/3 meses</button>
-      <div class="pay-methods">Stripe · Apple Pay · Bizum (próximamente)</div>
+        <div class="field">
+          <label for="f-contacto">Tu nombre <span class="req">*</span></label>
+          <input id="f-contacto" type="text" placeholder="Trini García" autocomplete="name">
+        </div>
 
-      <div class="status-banner" id="status-banner">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-        <span id="status-text">Ficha activa. Ya apareces en las búsquedas de isHere.</span>
-      </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input id="f-email" type="email" placeholder="hola@tunegocio.com" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="f-telefono">Teléfono <span class="req">*</span></label>
+            <input id="f-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel">
+          </div>
+        </div>
 
-      <div style="text-align:center; margin-top:4px;">
-        <a href="#" id="link-negocio-estrella" style="color:var(--cream-dim); font-size:0.7rem; text-decoration:underline; text-decoration-color:rgba(242,233,216,0.25);">★ Alta como negocio estrella</a>
+        <div class="field">
+          <label for="f-ref">Código de quien te recomendó (si tienes)</label>
+          <input id="f-ref" type="text" placeholder="ANA01" autocapitalize="characters">
+        </div>
+
+        <div class="price-card">
+          <div class="price-line"><span>Promoción de 3 meses</span><span>10,00 €</span></div>
+          <div class="price-line"><span>IVA (21 %)</span><span>2,10 €</span></div>
+          <div class="price-line total"><span>Pagas hoy</span><span>12,10 €</span></div>
+          <p class="price-note">A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
+        </div>
+
+        <div class="form-error" id="form-error" role="alert"></div>
+
+        <button class="pay-btn" id="btn-pay">Pagar 12,10 € y activar mi ficha</button>
+        <div class="pay-methods">Pago seguro con tarjeta a través de Stripe</div>
       </div>
 
     </section>
@@ -612,113 +644,67 @@
   </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onerror="console.error('No se pudo cargar Supabase desde el CDN — la app sigue funcionando con datos de respaldo')"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_00w7sKcFCe366HTcrNcbC00";
 
-const supabaseReady = !SUPABASE_URL.includes("TU_PROJECT_URL") && !SUPABASE_ANON_KEY.includes("TU_ANON_KEY");
+// Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at";
 
 let supabaseClient = null;
 try {
-  if (supabaseReady && window.supabase) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
+  if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (err) {
-  console.error('No se pudo conectar a Supabase, la app sigue funcionando sin base de datos remota:', err);
+  console.error("No se pudo conectar a Supabase:", err);
 }
 
-const fallbackPymesDatabase = [
-  {
-    id: "pyme_001",
-    name: "Mercería Trini",
-    zone: "Gràcia",
-    star_product: { name: "Kit de costura urgente (Aguja e Hilo)", price: 2.50 },
-    tags: ["aguja", "hilo", "coser", "boton", "merceria", "ropa", "costura"],
-    status: "beta_active",
-    distance_m: 45
-  },
-  {
-    id: "pyme_002",
-    name: "Retoucherie Eixample",
-    zone: "Eixample",
-    star_product: { name: "Arreglo exprés de bajos", price: 8 },
-    tags: ["arreglo", "costura", "bajos", "ropa", "sastre"],
-    status: "inactive",
-    distance_m: 210
-  },
-  {
-    id: "pyme_003",
-    name: "Vinoteca El Petit Celler",
-    zone: "Gòtic",
-    star_product: { name: "Copa de vino chileno", price: 4 },
-    tags: ["vino", "vino chileno", "copa", "enoteca", "bar"],
-    status: "beta_active",
-    distance_m: 90
-  },
-  {
-    id: "pyme_004",
-    name: "Farmàcia Raval",
-    zone: "El Raval",
-    star_product: { name: "Kit primeros auxilios viaje", price: 6.5 },
-    tags: ["farmacia", "tirita", "dolor", "sol", "protector"],
-    status: "beta_active",
-    distance_m: 130
-  },
-  {
-    id: "pyme_005",
-    name: "Bany de Platja Sagrada",
-    zone: "Sagrada Familia",
-    star_product: { name: "Traje de baño talla única", price: 22 },
-    tags: ["traje de bano", "bikini", "playa", "bano"],
-    status: "inactive",
-    distance_m: 300
-  }
-];
-
+/* ---------- utilidades ---------- */
+function esc(str){
+  return String(str ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
 function normalize(str){
-  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return String(str).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+const avisoGlobal = document.getElementById("aviso-global");
+function mostrarAviso(texto, tipo){
+  avisoGlobal.textContent = texto;
+  avisoGlobal.className = "aviso show " + (tipo || "ok");
 }
 
-// Diccionario básico para que un turista pueda buscar en inglés
-// y encuentre negocios cuyas palabras clave están en español.
-// Se puede ir ampliando con el tiempo, según lo que la gente busque.
+let searchLang = "es";
+function hablar(texto){
+  if (!("speechSynthesis" in window)) return;
+  try {
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = searchLang === "es" ? "es-ES" : "en-US";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+/* ---------- vistas ---------- */
+function mostrarVista(vista){
+  document.getElementById("view-turista").style.display = vista === "turista" ? "flex" : "none";
+  document.getElementById("view-comercio").style.display = vista === "comercio" ? "flex" : "none";
+  window.scrollTo(0, 0);
+}
+document.getElementById("link-to-comercio").addEventListener("click", (e) => { e.preventDefault(); mostrarVista("comercio"); });
+document.getElementById("link-to-turista").addEventListener("click", () => mostrarVista("turista"));
+
+/* ---------- búsqueda ---------- */
 const enToEs = {
-  "chilean food": ["comida chilena"],
-  "chilean wine": ["vino chileno"],
-  "wine": ["vino"],
-  "wine bar": ["enoteca", "bar"],
-  "pharmacy": ["farmacia"],
-  "medicine": ["farmacia"],
-  "sunscreen": ["protector solar", "protector"],
-  "band aid": ["tirita"],
-  "bandage": ["tirita"],
-  "pain": ["dolor"],
-  "swimsuit": ["traje de bano", "bano"],
-  "bikini": ["bikini"],
-  "beach": ["playa"],
-  "needle": ["aguja"],
-  "thread": ["hilo"],
-  "sewing": ["costura", "coser"],
-  "tailor": ["sastre", "arreglo"],
-  "button": ["boton"],
-  "clothes repair": ["arreglo", "costura"],
-  "haberdashery": ["merceria"],
-  "coffee": ["cafe"],
-  "tapas": ["tapas"],
-  "bakery": ["panaderia"],
-  "restaurant": ["restaurante", "comida"],
-  "food": ["comida"],
-  "cheap": ["barato"],
-  "best": ["mejor"],
-  "clean": ["limpio"],
-  "haircut": ["peluqueria", "corte"],
-  "hair salon": ["peluqueria"],
-  "laundry": ["lavanderia"],
+  "chilean food": ["comida chilena"], "chilean wine": ["vino chileno"], "wine": ["vino"],
+  "wine bar": ["enoteca", "bar"], "pharmacy": ["farmacia"], "medicine": ["farmacia"],
+  "sunscreen": ["protector solar", "protector"], "band aid": ["tirita"], "bandage": ["tirita"],
+  "pain": ["dolor"], "swimsuit": ["traje de bano", "bano"], "bikini": ["bikini"], "beach": ["playa"],
+  "needle": ["aguja"], "thread": ["hilo"], "sewing": ["costura", "coser"], "tailor": ["sastre", "arreglo"],
+  "button": ["boton"], "clothes repair": ["arreglo", "costura"], "haberdashery": ["merceria"],
+  "coffee": ["cafe"], "tapas": ["tapas"], "bakery": ["panaderia"], "restaurant": ["restaurante", "comida"],
+  "food": ["comida"], "cheap": ["barato"], "best": ["mejor"], "clean": ["limpio"],
+  "haircut": ["peluqueria", "corte"], "hair salon": ["peluqueria"], "laundry": ["lavanderia"],
   "supermarket": ["supermercado"]
 };
-
 function palabrasTraducidas(speech){
   const norm = normalize(speech);
   let extra = [];
@@ -734,93 +720,61 @@ function palabrasTraducidas(speech){
 
 async function searchNearestProduct(userSpeech, userZone){
   const words = normalize(userSpeech).split(/[^a-z0-9]+/).filter(w => w.length >= 3).concat(palabrasTraducidas(userSpeech));
-  let pool = fallbackPymesDatabase;
+  if (!supabaseClient) return { error: true };
 
-  if (supabaseReady && supabaseClient){
-    const { data, error } = await supabaseClient
-      .from('pymes')
-      .select('*')
-      .eq('zone', userZone);
+  const { data, error } = await supabaseClient
+    .from("pymes")
+    .select(COLUMNAS_PUBLICAS)
+    .eq("zone", userZone)
+    .eq("status", "beta_active");
 
-    if (error){
-      console.error('Error consultando Supabase:', error.message);
-    } else {
-      pool = (data || []).map(row => ({
-        id: row.id,
-        name: row.name,
-        zone: row.zone,
-        star_product: { name: row.star_product_name, price: row.star_product_price },
-        tags: (row.tags || '').split(',').map(t => t.trim()).filter(Boolean),
-        status: row.status,
-        plan_type: row.plan_type || 'paid',
-        distance_m: row.distance_m || 0,
-        logo_url: row.logo_url || '',
-        address: row.address || '',
-        expires_at: row.expires_at || null
-      }));
-    }
+  if (error){
+    console.error("Error consultando Supabase:", error.message);
+    return { error: true };
   }
 
-  // Una ficha sin expires_at nunca vence (así no rompemos los ejemplos de demostración).
-  // Una ficha con expires_at pasado se trata como vencida, sin ningún proceso corriendo aparte:
-  // el chequeo pasa cada vez que alguien busca.
-  const isExpired = (p) => p.expires_at && new Date(p.expires_at).getTime() < Date.now();
-
-  const vencidasEnSupabase = pool.filter(p => isExpired(p) && p.status === 'beta_active' && supabaseReady && supabaseClient);
-  if (vencidasEnSupabase.length){
-    // Se marcan como inactivas en segundo plano (no bloquea la búsqueda del turista actual).
-    vencidasEnSupabase.forEach(p => {
-      supabaseClient.from('pymes').update({ status: 'inactive' }).eq('id', p.id)
-        .then(() => {})
-        .catch(() => {});
-    });
-  }
-
-  const candidates = pool
-    .filter(p => p.zone === userZone && !isExpired(p))
+  // Margen de 3 días tras el vencimiento, por si el cobro de renovación tarda en confirmarse.
+  const limite = Date.now() - 3 * 24 * 60 * 60 * 1000;
+  const candidates = (data || [])
+    .filter(p => !p.expires_at || new Date(p.expires_at).getTime() >= limite)
     .map(p => {
-      const tagHits = p.tags.filter(tag => words.some(w => normalize(tag).includes(w) || w.includes(normalize(tag))));
-      return { pyme: p, score: tagHits.length };
+      const tags = String(p.tags || "").split(",").map(t => t.trim()).filter(Boolean);
+      const hits = tags.filter(tag => words.some(w => normalize(tag).includes(w) || w.includes(normalize(tag))));
+      return { pyme: p, score: hits.length };
     })
     .filter(c => c.score > 0)
-    .sort((a, b) => {
-      const priority = (c) => c.pyme.status === "beta_active" ? 1 : 0;
-      if (priority(b) !== priority(a)) return priority(b) - priority(a);
-      return b.score - a.score;
-    });
+    .sort((a, b) => b.score - a.score);
 
-  return candidates.length ? candidates[0].pyme : null;
+  return { match: candidates.length ? candidates[0].pyme : null };
 }
 
-const micWrap = document.getElementById('mic-wrap');
-const btnMic = document.getElementById('btn-mic');
-const listenStatus = document.getElementById('listen-status');
-const transcriptEl = document.getElementById('transcript');
-const resultCard = document.getElementById('result-card');
-const voiceGuideBtn = document.getElementById('voice-guide-btn');
-const zoneSelect = document.getElementById('zone-select');
-const btnLocate = document.getElementById('btn-locate');
-const btnLang = document.getElementById('btn-lang');
-let searchLang = 'es';
-btnLang.addEventListener('click', () => {
-  searchLang = searchLang === 'es' ? 'en' : 'es';
-  btnLang.textContent = searchLang === 'es' ? 'ES' : 'EN';
-  const manualInput = document.getElementById('manual-input');
-  manualInput.placeholder = searchLang === 'es'
-    ? 'O escribí qué buscás (ej: costura, botones)'
-    : 'Or type what you need (e.g. sewing, buttons)';
+const micWrap = document.getElementById("mic-wrap");
+const btnMic = document.getElementById("btn-mic");
+const listenStatus = document.getElementById("listen-status");
+const transcriptEl = document.getElementById("transcript");
+const resultCard = document.getElementById("result-card");
+const voiceGuideBtn = document.getElementById("voice-guide-btn");
+const zoneSelect = document.getElementById("zone-select");
+const btnLocate = document.getElementById("btn-locate");
+const btnLang = document.getElementById("btn-lang");
+const locateStatus = document.getElementById("locate-status");
+let rutaActual = "";
+
+btnLang.addEventListener("click", () => {
+  searchLang = searchLang === "es" ? "en" : "es";
+  btnLang.textContent = searchLang === "es" ? "ES" : "EN";
+  document.getElementById("manual-input").placeholder = searchLang === "es"
+    ? "O escribe qué buscas (ej: costura, botones)"
+    : "Or type what you need (e.g. sewing, buttons)";
 });
-const locateStatus = document.getElementById('locate-status');
 
-// Coordenadas aproximadas del centro de cada barrio, para calcular cuál está más cerca del turista.
 const zoneCoords = {
-  'Gràcia': { lat: 41.4036, lng: 2.1527 },
-  'Gòtic': { lat: 41.3833, lng: 2.1765 },
-  'Eixample': { lat: 41.3888, lng: 2.1590 },
-  'El Raval': { lat: 41.3801, lng: 2.1686 },
-  'Sagrada Familia': { lat: 41.4036, lng: 2.1744 }
+  "Gràcia": { lat: 41.4036, lng: 2.1527 },
+  "Gòtic": { lat: 41.3833, lng: 2.1765 },
+  "Eixample": { lat: 41.3888, lng: 2.1590 },
+  "El Raval": { lat: 41.3801, lng: 2.1686 },
+  "Sagrada Familia": { lat: 41.4036, lng: 2.1744 }
 };
-
 function distanceKm(lat1, lng1, lat2, lng2){
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -828,7 +782,6 @@ function distanceKm(lat1, lng1, lat2, lng2){
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-
 function nearestZoneWithDistance(lat, lng){
   let best = null, bestDist = Infinity;
   for (const [zone, coord] of Object.entries(zoneCoords)){
@@ -837,312 +790,340 @@ function nearestZoneWithDistance(lat, lng){
   }
   return { zone: best, distanceKm: bestDist };
 }
-
 function detectLocation(auto){
   if (!navigator.geolocation){
-    if (!auto) locateStatus.textContent = 'Tu navegador no soporta ubicación. Elegí el barrio a mano.';
+    if (!auto) locateStatus.textContent = "Tu navegador no permite la ubicación. Elige el barrio a mano.";
     return;
   }
-  if (!auto) locateStatus.textContent = 'Detectando tu ubicación…';
+  if (!auto) locateStatus.textContent = "Detectando tu ubicación…";
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const { zone, distanceKm: dist } = nearestZoneWithDistance(pos.coords.latitude, pos.coords.longitude);
-      // Si está a más de 5km de cualquier barrio conocido, probablemente no está en Barcelona todavía
-      // (ej: recién llegando, en el aeropuerto, o en otra ciudad) — no forzamos el barrio.
       if (dist > 5){
-        if (!auto) locateStatus.textContent = 'Estás lejos de las zonas activas. Elegí el barrio a mano.';
+        if (!auto) locateStatus.textContent = "Estás lejos de las zonas activas. Elige el barrio a mano.";
         return;
       }
       zoneSelect.value = zone;
       locateStatus.textContent = auto ? `Ubicación detectada: ${zone}` : `Detectado: ${zone}`;
     },
-    (err) => {
-      if (!auto) locateStatus.textContent = 'No se pudo detectar tu ubicación. Elegí el barrio a mano.';
-      // En modo automático fallamos en silencio: el turista puede no haber decidido dar permiso todavía,
-      // y no queremos asustarlo con un error al abrir la app.
-    },
+    () => { if (!auto) locateStatus.textContent = "No se pudo detectar tu ubicación. Elige el barrio a mano."; },
     { enableHighAccuracy: true, timeout: 8000 }
   );
 }
+btnLocate.addEventListener("click", () => detectLocation(false));
 
-btnLocate.addEventListener('click', () => detectLocation(false));
-
-// Al abrir la app, intentamos detectar el barrio solos (el navegador pedirá permiso).
-// Si el turista ya lo había autorizado antes, esto detecta el barrio sin que tenga que tocar nada.
-detectLocation(true);
-
-const frasesEncontrado = [
-  (n) => `Puedes guardar tu móvil. Te guío por voz hasta <b>${n}</b>.`,
-  (n) => `Encontré justo lo que buscabas: <b>${n}</b>. Te llevo para allá.`,
-  (n) => `¡Aquí está! <b>${n}</b> te espera. Guarda el móvil, te voy guiando.`
-];
 const frasesSinResultado = [
   (s, z) => `No encontré nada para "<b>${s}</b>" en ${z} todavía. Prueba con otro barrio o busca otra cosa.`,
   (s, z) => `Por ahora no hay nada para "<b>${s}</b>" cerca de ${z}. Intenta con otra palabra.`,
   (s, z) => `Todavía no tengo resultados para "<b>${s}</b>" en ${z}. ¿Probamos con otra búsqueda?`
 ];
-function frasealeatoria(lista, ...args){
-  return lista[Math.floor(Math.random() * lista.length)](...args);
-}
 
 async function handleSpeechResult(speech){
   transcriptEl.textContent = `"${speech}"`;
-  listenStatus.textContent = 'Buscando cerca de ti…';
+  listenStatus.classList.remove("pocket-mode");
+  listenStatus.textContent = "Buscando cerca de ti…";
   const zone = zoneSelect.value;
-  const match = await searchNearestProduct(speech, zone);
+  const res = await searchNearestProduct(speech, zone);
 
+  if (res.error){
+    resultCard.classList.remove("show");
+    voiceGuideBtn.classList.remove("show");
+    listenStatus.textContent = "No se pudo buscar ahora. Revisa tu conexión e inténtalo de nuevo.";
+    return;
+  }
+
+  const match = res.match;
   if (match){
-    const thumb = document.getElementById('result-thumb');
-    if (match.logo_url){
-      thumb.style.backgroundImage = `url('${match.logo_url}')`;
-      thumb.textContent = '';
+    const thumb = document.getElementById("result-thumb");
+    if (match.logo_url && /^https?:\/\//i.test(match.logo_url)){
+      thumb.style.backgroundImage = `url("${encodeURI(match.logo_url)}")`;
+      thumb.textContent = "";
     } else {
-      thumb.style.backgroundImage = 'none';
-      thumb.textContent = match.name.charAt(0);
+      thumb.style.backgroundImage = "none";
+      thumb.textContent = String(match.name || "?").charAt(0);
     }
-    document.getElementById('result-name').textContent = match.name;
-    document.getElementById('result-product').textContent = match.star_product.name;
-    document.getElementById('result-distance').textContent = `A ${match.distance_m} metros · ${match.zone}`;
-    document.getElementById('result-badge').style.display = match.status === 'beta_active' ? 'inline-block' : 'none';
+    document.getElementById("result-name").textContent = match.name;
+    document.getElementById("result-product").textContent =
+      match.star_product_price ? `${match.star_product_name} · ${match.star_product_price}` : match.star_product_name;
+    document.getElementById("result-distance").textContent =
+      match.distance_m > 0 ? `A ${match.distance_m} metros · ${match.zone}` : `En ${match.zone}`;
 
-    const mapsLink = document.getElementById('result-maps-link');
-    const query = match.address ? `${match.name}, ${match.address}` : `${match.name}, ${match.zone}, Barcelona`;
-    mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    const destino = match.address ? `${match.name}, ${match.address}, Barcelona` : `${match.name}, ${match.zone}, Barcelona`;
+    rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=walking`;
+    document.getElementById("result-maps-link").href = rutaActual;
 
-    resultCard.classList.add('show');
-    voiceGuideBtn.classList.add('show');
-    listenStatus.classList.add('pocket-mode');
-    listenStatus.innerHTML = frasealeatoria(frasesEncontrado, match.name);
+    resultCard.classList.add("show");
+    voiceGuideBtn.classList.add("show");
+    listenStatus.classList.add("pocket-mode");
+    listenStatus.innerHTML = `Encontré <b>${esc(match.name)}</b>. Toca "Guiarme caminando" y Google Maps te lleva con voz.`;
+    hablar(searchLang === "es"
+      ? `Encontré ${match.name}. Toca guiarme caminando y te llevo.`
+      : `I found ${match.name}. Tap guide me and I will take you there.`);
   } else {
-    resultCard.classList.remove('show');
-    voiceGuideBtn.classList.remove('show');
-    listenStatus.classList.remove('pocket-mode');
-    listenStatus.innerHTML = frasealeatoria(frasesSinResultado, speech, zone);
+    resultCard.classList.remove("show");
+    voiceGuideBtn.classList.remove("show");
+    const lista = frasesSinResultado;
+    listenStatus.innerHTML = lista[Math.floor(Math.random() * lista.length)](esc(speech), esc(zone));
   }
 }
 
+voiceGuideBtn.addEventListener("click", () => {
+  if (!rutaActual) return;
+  hablar(searchLang === "es" ? "Abriendo la ruta a pie." : "Opening walking directions.");
+  window.open(rutaActual, "_blank", "noopener");
+});
+
+function stopListeningUI(){
+  micWrap.classList.remove("listening");
+  btnMic.classList.remove("listening");
+}
+
 function startListening(){
-  micWrap.classList.add('listening');
-  btnMic.classList.add('listening');
-  listenStatus.classList.remove('pocket-mode');
-  listenStatus.textContent = 'Escuchando…';
-  transcriptEl.textContent = '';
-  resultCard.classList.remove('show');
-  voiceGuideBtn.classList.remove('show');
+  micWrap.classList.add("listening");
+  btnMic.classList.add("listening");
+  listenStatus.classList.remove("pocket-mode");
+  listenStatus.textContent = "Escuchando…";
+  transcriptEl.textContent = "";
+  resultCard.classList.remove("show");
+  voiceGuideBtn.classList.remove("show");
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!window.isSecureContext){
     stopListeningUI();
-    listenStatus.textContent = 'El micrófono necesita conexión segura (https). Usá el campo de texto de arriba mientras tanto.';
+    listenStatus.textContent = "El micrófono necesita conexión segura (https). Usa el campo de texto de arriba.";
+    return;
+  }
+  if (!SpeechRecognition){
+    stopListeningUI();
+    listenStatus.textContent = "Este navegador no reconoce la voz. Usa el campo de texto de arriba.";
     return;
   }
 
-  if (SpeechRecognition){
-    const rec = new SpeechRecognition();
-    rec.lang = searchLang === 'es' ? 'es-ES' : 'en-US';
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
+  const rec = new SpeechRecognition();
+  rec.lang = searchLang === "es" ? "es-ES" : "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
 
-    // Seguro: si en 10 segundos no pasó nada (ni resultado, ni error, ni fin),
-    // se resetea solo en vez de quedar "Escuchando…" para siempre.
-    const safetyTimeout = setTimeout(() => {
-      try { rec.abort(); } catch(e){}
-      stopListeningUI();
-      listenStatus.textContent = 'No detecté nada. Tocá el círculo e intentá de nuevo, más cerca del micrófono.';
-    }, 10000);
-
-    rec.onresult = (e) => {
-      clearTimeout(safetyTimeout);
-      stopListeningUI();
-      handleSpeechResult(e.results[0][0].transcript);
-    };
-    rec.onerror = (e) => {
-      clearTimeout(safetyTimeout);
-      stopListeningUI();
-      const mensajes = {
-        'not-allowed': 'Bloqueaste el permiso del micrófono. Habilitalo en los ajustes del navegador y tocá de nuevo.',
-        'no-speech': 'No te escuché. Tocá el círculo e intentá otra vez.',
-        'audio-capture': 'No encontré un micrófono disponible en este dispositivo.',
-        'network': 'Fallo de conexión al reconocer la voz. Probá con el campo de texto de arriba.'
-      };
-      listenStatus.textContent = mensajes[e.error] || `No se pudo usar el micrófono (${e.error}). Probá con el campo de texto de arriba.`;
-    };
-    rec.onend = () => {
-      clearTimeout(safetyTimeout);
-      stopListeningUI();
-    };
-    try {
-      rec.start();
-    } catch (err){
-      clearTimeout(safetyTimeout);
-      stopListeningUI();
-      listenStatus.textContent = 'No se pudo iniciar el micrófono. Probá con el campo de texto de arriba.';
-    }
-  } else {
+  const safetyTimeout = setTimeout(() => {
+    try { rec.abort(); } catch(e){}
     stopListeningUI();
-    listenStatus.textContent = 'Este navegador no soporta reconocimiento de voz. Usá el campo de texto de arriba.';
+    listenStatus.textContent = "No detecté nada. Toca el círculo e inténtalo de nuevo, más cerca del micrófono.";
+  }, 10000);
+
+  rec.onresult = (e) => {
+    clearTimeout(safetyTimeout);
+    stopListeningUI();
+    handleSpeechResult(e.results[0][0].transcript);
+  };
+  rec.onerror = (e) => {
+    clearTimeout(safetyTimeout);
+    stopListeningUI();
+    const mensajes = {
+      "not-allowed": "El permiso del micrófono está bloqueado. Actívalo en los ajustes del navegador y toca de nuevo.",
+      "no-speech": "No te escuché. Toca el círculo e inténtalo otra vez.",
+      "audio-capture": "No encontré un micrófono disponible en este dispositivo.",
+      "network": "Falló la conexión al reconocer la voz. Prueba con el campo de texto de arriba."
+    };
+    listenStatus.textContent = mensajes[e.error] || "No se pudo usar el micrófono. Prueba con el campo de texto de arriba.";
+  };
+  rec.onend = () => { clearTimeout(safetyTimeout); stopListeningUI(); };
+  try { rec.start(); }
+  catch (err){
+    clearTimeout(safetyTimeout);
+    stopListeningUI();
+    listenStatus.textContent = "No se pudo iniciar el micrófono. Prueba con el campo de texto de arriba.";
   }
 }
 
-function stopListeningUI(){
-  micWrap.classList.remove('listening');
-  btnMic.classList.remove('listening');
-}
-
-btnMic.addEventListener('click', startListening);
-
-document.getElementById('btn-manual-search').addEventListener('click', () => {
-  const text = document.getElementById('manual-input').value.trim();
+btnMic.addEventListener("click", startListening);
+document.getElementById("btn-manual-search").addEventListener("click", () => {
+  const text = document.getElementById("manual-input").value.trim();
   if (text) handleSpeechResult(text);
 });
-document.getElementById('manual-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter'){
+document.getElementById("manual-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter"){
     const text = e.target.value.trim();
     if (text) handleSpeechResult(text);
   }
 });
 
-voiceGuideBtn.addEventListener('click', () => {
-  listenStatus.classList.add('pocket-mode');
-  listenStatus.textContent = 'Camina recto dos calles y gira a la derecha.';
-});
+/* ---------- alta de comercio ---------- */
+const formError = document.getElementById("form-error");
+const statusBanner = document.getElementById("status-banner");
+const btnPay = document.getElementById("btn-pay");
+const TEXTO_BOTON_PAGO = btnPay.textContent;
 
-async function guardarNegocio(datos, planType, expiresAt){
-  const { name, zone, product, priceRaw, tags, logoUrl, address } = datos;
-  if (supabaseReady && supabaseClient){
-    const { error } = await supabaseClient.from('pymes').insert([{
-      name, zone,
-      star_product_name: product,
-      star_product_price: priceRaw,
-      tags: tags.join(', '),
-      logo_url: logoUrl,
-      address: address,
-      status: 'beta_active',
-      expires_at: expiresAt,
-      plan_type: planType
+function mostrarErrorForm(texto){
+  formError.textContent = texto;
+  formError.classList.add("show");
+  formError.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function mostrarEstado(texto, tipo){
+  statusBanner.textContent = texto;
+  statusBanner.className = "status-banner show " + (tipo || "ok");
+}
+function valor(id){ return document.getElementById(id).value.trim(); }
+
+async function codigoReclutadorValido(cod){
+  const { data, error } = await supabaseClient.rpc("codigo_reclutador_valido", { p_codigo: cod });
+  if (error) throw new Error("no se pudo comprobar el código de recomendación");
+  return data === true;
+}
+
+async function enviarAlta(){
+  formError.classList.remove("show");
+
+  const datos = {
+    name: valor("f-name"),
+    zone: document.getElementById("f-zone").value,
+    product: valor("f-product"),
+    price: valor("f-price"),
+    tagsRaw: valor("f-tags"),
+    address: valor("f-address"),
+    logo: valor("f-logo"),
+    web: valor("f-web"),
+    contacto: valor("f-contacto"),
+    email: valor("f-email"),
+    telefono: valor("f-telefono"),
+    ref: valor("f-ref").toUpperCase()
+  };
+
+  if (!datos.name || !datos.product || !datos.tagsRaw || !datos.address || !datos.contacto || !datos.email || !datos.telefono){
+    mostrarErrorForm("Completa todos los campos marcados con * para continuar.");
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)){
+    mostrarErrorForm("El email no parece válido. Revísalo, ahí te llegarán las facturas.");
+    return;
+  }
+  if (!supabaseClient){
+    mostrarErrorForm("No hay conexión con isHere en este momento. Revisa tu internet y vuelve a intentarlo.");
+    return;
+  }
+
+  btnPay.disabled = true;
+  btnPay.textContent = "Preparando el pago…";
+
+  try {
+    if (datos.ref && !(await codigoReclutadorValido(datos.ref))){
+      mostrarErrorForm(`El código "${datos.ref}" no existe. Revísalo o deja ese campo vacío.`);
+      return;
+    }
+
+    const id = crypto.randomUUID();
+    const tags = datos.tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
+
+    const { error } = await supabaseClient.from("pymes").insert([{
+      id,
+      name: datos.name,
+      zone: datos.zone,
+      star_product_name: datos.product,
+      star_product_price: datos.price,
+      tags: tags.join(", "),
+      address: datos.address,
+      logo_url: datos.logo,
+      web: datos.web,
+      contacto_nombre: datos.contacto,
+      email: datos.email,
+      telefono: datos.telefono,
+      reclutador_codigo: datos.ref || null,
+      status: "pending_payment",
+      plan_type: "paid"
     }]);
-    if (error) return { ok: false, error: error.message };
-  } else {
-    fallbackPymesDatabase.push({
-      id: 'pyme_' + Date.now(),
-      name, zone,
-      star_product: { name: product, price: priceRaw },
-      tags, status: 'beta_active', distance_m: 0, logo_url: logoUrl, address: address,
-      expires_at: expiresAt, plan_type: planType
-    });
+    if (error) throw new Error(error.message);
+
+    localStorage.setItem("ishere_ultima_pyme", JSON.stringify({ id, name: datos.name }));
+
+    const { data, error: errPago } = await supabaseClient.functions.invoke("crear-pago", { body: { pyme_id: id } });
+    if (errPago || !data || !data.url) throw new Error((data && data.error) || (errPago && errPago.message) || "no se recibió el enlace de pago");
+
+    window.location.href = data.url;
+  } catch (e){
+    console.error(e);
+    mostrarErrorForm("No se pudo preparar el pago: " + e.message + ". Inténtalo de nuevo en unos minutos.");
+  } finally {
+    btnPay.disabled = false;
+    btnPay.textContent = TEXTO_BOTON_PAGO;
   }
-  return { ok: true };
 }
+btnPay.addEventListener("click", enviarAlta);
 
-function mostrarConfirmacionActivacion(name, zone, planType, expiresAt){
-  const fechaVencimiento = new Date(expiresAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
-  const mensaje = planType === 'free_promo'
-    ? `Cortesía de negocio estrella activada para "${name}" en ${zone}, 3 meses gratis hasta el ${fechaVencimiento}.`
-    : `Ficha de "${name}" activa en ${zone} hasta el ${fechaVencimiento}. Ya apareces en las búsquedas de isHere.`;
-  document.getElementById('status-text').textContent = mensaje;
-  document.getElementById('status-banner').classList.add('show');
-}
+async function confirmarActivacion(){
+  let ultima = null;
+  try { ultima = JSON.parse(localStorage.getItem("ishere_ultima_pyme") || "null"); } catch (e) {}
 
-async function activarFicha(planType){
-  const name = document.getElementById('f-name').value.trim();
-  const zone = document.getElementById('f-zone').value;
-  const product = document.getElementById('f-product').value.trim();
-  const priceRaw = document.getElementById('f-price').value.trim();
-  const logoUrl = document.getElementById('f-logo').value.trim();
-  const address = document.getElementById('f-address').value.trim();
-  const tagsRaw = document.getElementById('f-tags').value.trim();
+  document.getElementById("form-alta").style.display = "none";
 
-  if (!name || !product || !tagsRaw){
-    alert('Completa nombre del negocio, producto estrella y etiquetas antes de activar.');
+  if (!ultima || !supabaseClient){
+    mostrarEstado("¡Pago recibido! Tu ficha se activa en unos minutos. Te llegará la factura por email.", "ok");
     return;
   }
 
-  const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
-  const datos = { name, zone, product, priceRaw, tags, logoUrl, address };
+  mostrarEstado(`¡Pago recibido! Activando "${ultima.name}"…`, "ok");
 
-  // El plan pagado primero te manda a pagar en Stripe. El negocio recién se
-  // guarda cuando vuelves a la app después de pagar (ver comprobarPagoPendiente).
-  if (planType === 'paid'){
-    localStorage.setItem('ishere_pending_business', JSON.stringify(datos));
-    window.location.href = STRIPE_PAYMENT_LINK;
-    return;
+  for (let i = 0; i < 10; i++){
+    const { data } = await supabaseClient.from("pymes").select("id, name, expires_at").eq("id", ultima.id).maybeSingle();
+    if (data){
+      const fecha = data.expires_at
+        ? new Date(data.expires_at).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
+        : null;
+      mostrarEstado(`¡Listo! "${data.name}" ya aparece en las búsquedas de isHere.` + (fecha ? ` Tu promoción dura hasta el ${fecha}.` : "") + " Te llegará la factura por email.", "ok");
+      localStorage.removeItem("ishere_ultima_pyme");
+      return;
+    }
+    await new Promise(r => setTimeout(r, 3000));
   }
-
-  // El plan de cortesía (negocio estrella) se activa directo, sin pago.
-  const btn = document.getElementById('btn-negocio-estrella-confirmar') || document.getElementById('btn-pay');
-  const textoOriginal = btn ? btn.textContent : '';
-  if (btn){ btn.disabled = true; btn.textContent = 'Activando…'; }
-
-  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-  const resultado = await guardarNegocio(datos, planType, expiresAt);
-
-  if (btn){ btn.disabled = false; btn.textContent = textoOriginal; }
-
-  if (!resultado.ok){
-    alert('No se pudo guardar en Supabase: ' + resultado.error);
-    return;
-  }
-  mostrarConfirmacionActivacion(name, zone, planType, expiresAt);
+  mostrarEstado(`¡Pago recibido! "${ultima.name}" se activará en unos minutos. Si en una hora no aparece en las búsquedas, escríbenos.`, "ok");
 }
 
-async function comprobarPagoPendiente(){
+/* ---------- invitaciones de reclutadores ---------- */
+async function abrirInvitacion(token){
+  mostrarAviso("Abriendo tu registro de reclutador en Stripe…", "ok");
+  try {
+    if (!supabaseClient) throw new Error("sin conexión");
+    const { data, error } = await supabaseClient.functions.invoke("onboarding-reclutador", { body: { invitacion: token } });
+    if (error || !data || !data.url) throw new Error((data && data.error) || (error && error.message) || "sin enlace");
+    window.location.href = data.url;
+  } catch (e){
+    console.error(e);
+    mostrarAviso("No se pudo abrir tu registro. Revisa que el enlace de invitación esté completo o pide uno nuevo a isHere.", "warn");
+  }
+}
+
+/* ---------- vuelta desde Stripe y enlaces especiales ---------- */
+async function manejarRetorno(){
   const params = new URLSearchParams(window.location.search);
-  if (params.get('pago') !== 'exitoso') return;
 
-  const pendienteRaw = localStorage.getItem('ishere_pending_business');
-  if (!pendienteRaw) return;
+  const invitacion = params.get("invitacion");
+  if (invitacion){ await abrirInvitacion(invitacion); return; }
 
-  const datos = JSON.parse(pendienteRaw);
-  const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-  const resultado = await guardarNegocio(datos, 'paid', expiresAt);
+  const reclutador = params.get("reclutador");
+  if (reclutador === "listo") mostrarAviso("¡Listo! Tu cuenta de reclutador quedó configurada. Ya puedes recibir tus comisiones.", "ok");
+  if (reclutador === "reintentar") mostrarAviso("El enlace de Stripe venció. Vuelve a abrir tu invitación para continuar donde quedaste.", "warn");
 
-  localStorage.removeItem('ishere_pending_business');
-
-  if (!resultado.ok){
-    alert('El pago se realizó, pero hubo un problema al guardar tu ficha: ' + resultado.error + '. Escríbenos para activarla manualmente.');
-    return;
+  const ref = params.get("ref");
+  if (ref){
+    mostrarVista("comercio");
+    document.getElementById("f-ref").value = ref.toUpperCase();
   }
-  document.getElementById('view-turista').style.display = 'none';
-  document.getElementById('view-comercio').style.display = 'flex';
-  mostrarConfirmacionActivacion(datos.name, datos.zone, 'paid', expiresAt);
+  if (params.has("comercio")) mostrarVista("comercio");
+
+  const pago = params.get("pago");
+  if (pago === "cancelado"){
+    mostrarVista("comercio");
+    mostrarEstado("El pago no se completó, así que tu ficha no se activó. Puedes intentarlo de nuevo cuando quieras.", "warn");
+  }
+  if (pago === "ok"){
+    mostrarVista("comercio");
+    await confirmarActivacion();
+  }
+
+  if ([...params.keys()].length) history.replaceState(null, "", window.location.pathname);
 }
 
-document.getElementById('btn-pay').addEventListener('click', () => activarFicha('paid'));
-
-document.getElementById('link-negocio-estrella').addEventListener('click', (e) => {
-  e.preventDefault();
-  const pin = prompt('Clave de administradora para dar de alta un negocio estrella:');
-  if (pin === null) return;
-  if (pin.trim() !== '9999'){
-    alert('Clave incorrecta.');
-    return;
-  }
-  activarFicha('free_promo');
-});
-
-if (supabaseReady){
-  document.getElementById('setup-banner').classList.add('hide');
-}
-
-document.getElementById('link-to-comercio').addEventListener('click', (e) => {
-  e.preventDefault();
-  const pin = prompt('Ingresá la clave de acceso para comercios:');
-  if (pin === null) return;
-  if (pin.trim() !== '1234'){
-    alert('Clave incorrecta.');
-    return;
-  }
-  document.getElementById('view-turista').style.display = 'none';
-  document.getElementById('view-comercio').style.display = 'flex';
-});
-document.getElementById('link-to-turista').addEventListener('click', () => {
-  document.getElementById('view-comercio').style.display = 'none';
-  document.getElementById('view-turista').style.display = 'flex';
-});
-
-comprobarPagoPendiente();
-
+detectLocation(true);
+manejarRetorno();
 </script>
 </body>
 </html>
