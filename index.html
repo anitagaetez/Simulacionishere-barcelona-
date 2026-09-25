@@ -170,6 +170,36 @@
   }
 
   .manual-search{ display: flex; gap: 8px; margin-top: 14px; }
+
+  /* Portada */
+  .hero{ text-align: center; padding: 6px 8px 14px; }
+  .hero-title{ font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 1.95rem; line-height: 1.15; color: var(--cream); }
+  .hero-sub{ color: var(--cream-dim); font-size: 0.92rem; line-height: 1.45; max-width: 300px; margin: 8px auto 0; }
+  .sugerencias{ display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+  .rotator{ background: var(--bg-panel); border: 1px solid rgba(242,233,216,0.08); border-radius: var(--radius-lg);
+            padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .rot-text{ flex: 1; font-size: 0.92rem; line-height: 1.4; transition: opacity 0.35s ease; }
+  .rot-text.fade{ opacity: 0; }
+  .rot-btn{ background: var(--teal); color: var(--cream); border: none; border-radius: 999px; padding: 9px 14px;
+            font: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .sug-title{ font-size: 0.8rem; color: var(--cream-dim); font-weight: 500; text-align: center; margin-top: 4px; }
+  .chips{ display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip{ background: transparent; border: 1px solid rgba(242,233,216,0.18); color: var(--cream); border-radius: 999px;
+         padding: 8px 13px; font: inherit; font-size: 0.85rem; cursor: pointer; }
+  .chip:active{ background: var(--bg-panel-raise); }
+  @media (prefers-reduced-motion: reduce){ .rot-text{ transition: none; } }
+
+  /* Catálogo en el alta */
+  .cat-list{ display: flex; flex-direction: column; gap: 6px; }
+  .cat-opt{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
+            background: var(--bg-panel); border: 1px solid rgba(242,233,216,0.1); border-radius: var(--radius-sm);
+            padding: 10px 12px; color: var(--cream); font: inherit; font-size: 0.88rem; cursor: pointer; }
+  .cat-opt .add{ color: var(--gold); font-weight: 600; white-space: nowrap; }
+  .cat-chosen{ display: flex; flex-direction: column; gap: 6px; }
+  .cat-row{ display: flex; gap: 8px; align-items: center; }
+  .cat-row .nombre{ flex: 1; font-size: 0.88rem; min-width: 0; }
+  .field .cat-row input{ width: 96px; padding: 9px 10px; }
+  .cat-row .quitar{ background: none; border: none; color: var(--danger); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
   .manual-search input{
     flex: 1;
     background: var(--bg-panel);
@@ -510,6 +540,11 @@
     <!-- ================= VISTA TURISTA ================= -->
     <section id="view-turista">
 
+      <div class="hero">
+        <h1 class="hero-title" data-i18n="hero_title">¿Se te olvidó algo?</h1>
+        <p class="hero-sub" data-i18n="hero_sub">Dime qué necesitas y te llevo a la tienda más cercana.</p>
+      </div>
+
       <div class="zone-picker">
         <span data-i18n="zone_label">Estás en</span>
         <select id="zone-select" aria-label="Barrio">
@@ -559,6 +594,15 @@
         </a>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
+
+      <section class="sugerencias" aria-labelledby="sug-title">
+        <div class="rotator">
+          <p class="rot-text" id="rot-text"></p>
+          <button class="rot-btn" id="rot-btn" data-i18n="rot_btn">Buscar cerca</button>
+        </div>
+        <h2 class="sug-title" id="sug-title" data-i18n="sug_title">Lo que más se olvida</h2>
+        <div class="chips" id="chips"></div>
+      </section>
 
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
@@ -610,8 +654,15 @@
         </div>
 
         <div class="field">
-          <label for="f-tags"><span data-i18n="l_tags">Palabras con las que te buscarían, separadas por comas</span> <span class="req">*</span></label>
+          <label for="f-tags"><span data-i18n="l_tags">Palabras con las que te buscarían, separadas por comas</span></label>
           <input id="f-tags" type="text" placeholder="aguja, agulla, needle, hilo, fil, thread">
+        </div>
+
+        <div class="field">
+          <label for="f-cat" data-i18n="l_catalog">Productos del catálogo turista que vendes</label>
+          <input id="f-cat" type="text" data-i18n-ph="ph_catalog" placeholder="Busca: protector, cargador, paraguas…" autocomplete="off">
+          <div class="cat-list" id="cat-list"></div>
+          <div class="cat-chosen" id="cat-chosen"></div>
         </div>
 
         <div class="field">
@@ -788,7 +839,29 @@ const I18N = {
     invite_opening: "Abriendo tu registro de reclutador en Stripe…",
     invite_fail: "No se pudo abrir tu registro. Revisa que el enlace de invitación esté completo o pide uno nuevo a isHere.",
     rec_ready: "¡Listo! Tu cuenta de reclutador quedó configurada. Ya puedes recibir tus comisiones.",
-    rec_retry: "El enlace de Stripe venció. Vuelve a abrir tu invitación para continuar donde quedaste."
+    rec_retry: "El enlace de Stripe venció. Vuelve a abrir tu invitación para continuar donde quedaste.",
+    hero_title: "¿Se te olvidó algo?",
+    hero_sub: "Dime qué necesitas y te llevo a la tienda más cercana.",
+    rot_btn: "Buscar cerca",
+    sug_title: "Lo que más se olvida",
+    rot_phone: "📱 ¿Perdiste el móvil? Consigue uno de emergencia cerca.",
+    rot_battery: "🔋 ¿Batería al 5 %? Cargador o batería externa a minutos de ti.",
+    rot_sandals: "🩴 ¿Te molestan las sandalias? Cámbialas a pocos pasos.",
+    rot_sun: "☀️ ¿Olvidaste el protector solar? No pagues el doble junto a la playa.",
+    rot_mosquito: "🦟 ¿Te comen los mosquitos? Antimosquitos cerca de ti.",
+    rot_toiletry: "🧼 ¿Te falta el kit de aseo? Llévatelo sin precio de centro.",
+    rot_blister: "🦶 ¿Ampollas de tanto caminar? Apósitos a la vuelta de la esquina.",
+    rot_rain: "☔ ¿Empezó a llover? Hay un paraguas cerca.",
+    rot_plug: "🔌 ¿Tu enchufe no encaja? Adaptador a pocos pasos.",
+    badge_sells: "lo vende",
+    dist_m: "A {m} metros · {z}",
+    dist_zone: "En {z}",
+    l_catalog: "Productos del catálogo turista que vendes (ayudan a que te encuentren)",
+    ph_catalog: "Busca: protector, cargador, paraguas…",
+    cat_add: "Añadir",
+    ph_price: "Precio",
+    cat_remove: "Quitar",
+    err_tags_or_products: "Añade palabras de búsqueda o al menos un producto del catálogo."
   },
   ca: {
     zone_label: "Ets a",
@@ -879,7 +952,29 @@ const I18N = {
     invite_opening: "Obrint el teu registre de reclutador a Stripe…",
     invite_fail: "No s'ha pogut obrir el teu registre. Comprova que l'enllaç d'invitació sigui complet o demana'n un de nou a isHere.",
     rec_ready: "Fet! El teu compte de reclutador ha quedat configurat. Ja pots rebre les teves comissions.",
-    rec_retry: "L'enllaç de Stripe ha caducat. Torna a obrir la teva invitació per continuar on ho vas deixar."
+    rec_retry: "L'enllaç de Stripe ha caducat. Torna a obrir la teva invitació per continuar on ho vas deixar.",
+    hero_title: "Se t'ha oblidat alguna cosa?",
+    hero_sub: "Digues-me què necessites i et porto a la botiga més propera.",
+    rot_btn: "Cerca a prop",
+    sug_title: "El que més s'oblida",
+    rot_phone: "📱 Has perdut el mòbil? Troba'n un d'emergència a prop.",
+    rot_battery: "🔋 Bateria al 5 %? Carregador o bateria externa a pocs minuts.",
+    rot_sandals: "🩴 Et fan mal les sandàlies? Canvia-les a pocs passos.",
+    rot_sun: "☀️ T'has oblidat el protector solar? No paguis el doble al costat de la platja.",
+    rot_mosquito: "🦟 Et mengen els mosquits? Antimosquits a prop teu.",
+    rot_toiletry: "🧼 Et falta el kit d'higiene? Emporta-te'l sense preu de centre.",
+    rot_blister: "🦶 Butllofes de tant caminar? Apòsits a la cantonada.",
+    rot_rain: "☔ Ha començat a ploure? Tens un paraigua a prop.",
+    rot_plug: "🔌 L'endoll no encaixa? Adaptador a pocs passos.",
+    badge_sells: "el ven",
+    dist_m: "A {m} metres · {z}",
+    dist_zone: "A {z}",
+    l_catalog: "Productes del catàleg turista que vens (ajuden que et trobin)",
+    ph_catalog: "Cerca: protector, carregador, paraigua…",
+    cat_add: "Afegeix",
+    ph_price: "Preu",
+    cat_remove: "Treu",
+    err_tags_or_products: "Afegeix paraules de cerca o almenys un producte del catàleg."
   },
   en: {
     zone_label: "You're in",
@@ -970,7 +1065,29 @@ const I18N = {
     invite_opening: "Opening your recruiter sign-up on Stripe…",
     invite_fail: "Your sign-up couldn't be opened. Check that the invitation link is complete or ask isHere for a new one.",
     rec_ready: "Done! Your recruiter account is set up. You can now receive your commissions.",
-    rec_retry: "The Stripe link expired. Open your invitation again to continue where you left off."
+    rec_retry: "The Stripe link expired. Open your invitation again to continue where you left off.",
+    hero_title: "Forgot something?",
+    hero_sub: "Tell me what you need and I'll take you to the nearest shop.",
+    rot_btn: "Find nearby",
+    sug_title: "Most often forgotten",
+    rot_phone: "📱 Lost your phone? Get an emergency one nearby.",
+    rot_battery: "🔋 Battery at 5%? Charger or power bank minutes away.",
+    rot_sandals: "🩴 Sandals hurting? Swap them a few steps away.",
+    rot_sun: "☀️ Forgot your sunscreen? Don't pay double by the beach.",
+    rot_mosquito: "🦟 Mosquitoes biting? Repellent near you.",
+    rot_toiletry: "🧼 Missing your toiletries? Grab a kit without city-centre prices.",
+    rot_blister: "🦶 Blisters from walking? Plasters around the corner.",
+    rot_rain: "☔ Started raining? There's an umbrella nearby.",
+    rot_plug: "🔌 Plug doesn't fit? Adapter a few steps away.",
+    badge_sells: "sells it",
+    dist_m: "{m} m away · {z}",
+    dist_zone: "In {z}",
+    l_catalog: "Tourist catalogue products you sell (they help people find you)",
+    ph_catalog: "Search: sunscreen, charger, umbrella…",
+    cat_add: "Add",
+    ph_price: "Price",
+    cat_remove: "Remove",
+    err_tags_or_products: "Add search words or at least one catalogue product."
   }
 };
 
@@ -1025,6 +1142,7 @@ function aplicarIdioma(){
     el.title = t(el.dataset.i18nAria);
   });
   document.querySelectorAll(".flag-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (typeof refrescarDinamicos === "function") refrescarDinamicos();
 }
 
 function cambiarIdioma(nuevo){
@@ -1103,14 +1221,185 @@ function palabrasTraducidas(speech){
   return extra;
 }
 
+/* ---------- catálogo de productos turista ---------- */
+let catalogo = [];
+const STOP = new Set(["para","per","del","les","con","sin","the","and","for","los","las","una","uno","que","amb","els","dels",
+  "with","from","por","tipo","tipus","busco","necesito","quiero","need","want","looking","necessito","vull","some","algo",
+  "alguna","cosa","any","hay","donde","dónde","where","buy","comprar","vender"]);
+function tokensDe(texto){ return normalize(texto).split(/[^a-z0-9]+/).filter(w => w.length >= 3 && !STOP.has(w)); }
+function coincide(w, nt){ return nt.includes(w) || w.includes(nt) || (w.length >= 5 && nt.length >= 5 && w.slice(0, 5) === nt.slice(0, 5)); }
+function nombreProducto(p, L = lang){ return p ? (p[L] || p.es) : ""; }
+
+// Productos del catálogo que mejor encajan con lo que se busca (los que coinciden con más palabras).
+function productosQueCoinciden(words){
+  let max = 0; const puntos = new Map();
+  catalogo.forEach(p => {
+    const n = words.filter(w => p.tokens.some(nt => coincide(w, nt))).length;
+    if (n > 0){ puntos.set(p.id, n); if (n > max) max = n; }
+  });
+  return new Set([...puntos].filter(([, n]) => n === max).map(([id]) => id));
+}
+
+async function cargarCatalogo(){
+  if (!supabaseClient) return;
+  const { data, error } = await supabaseClient.from("catalogo").select("id, categoria, es, ca, en, claves, destacado").order("id");
+  if (error || !data) return;
+  catalogo = data.map(p => ({ ...p, tokens: tokensDe([p.es, p.ca, p.en, p.claves].join(" ")) }));
+  refrescarDinamicos();
+}
+
+async function productosDePymes(){
+  if (!supabaseClient) return new Map();
+  const { data } = await supabaseClient.from("pyme_productos").select("pyme_id, producto_id, precio");
+  const mapa = new Map();
+  (data || []).forEach(r => { if (!mapa.has(r.pyme_id)) mapa.set(r.pyme_id, []); mapa.get(r.pyme_id).push(r); });
+  return mapa;
+}
+
+let ultimaSinResultado = "";
+async function registrarSinResultado(texto, zona){
+  const limpio = String(texto || "").trim().slice(0, 120);
+  if (!limpio || !supabaseClient || limpio === ultimaSinResultado) return;
+  ultimaSinResultado = limpio;
+  try { await supabaseClient.from("busquedas_sin_resultado").insert({ texto: limpio, zona, idioma: lang }); } catch (e) {}
+}
+
+/* ---------- portada: frases que rotan y productos estrella ---------- */
+// q: búsqueda de respaldo si el catálogo aún no cargó.
+const ROT = [
+  { k: "rot_phone", id: 67, q: "movil" },
+  { k: "rot_battery", id: 63, q: "bateria externa", noche: true },
+  { k: "rot_sandals", id: 91, q: "sandalias", temporada: "verano" },
+  { k: "rot_sun", id: 1, q: "protector solar", temporada: "verano" },
+  { k: "rot_mosquito", id: 26, q: "antimosquitos", temporada: "verano", noche: true },
+  { k: "rot_toiletry", id: 100, q: "kit de aseo" },
+  { k: "rot_blister", id: 29, q: "ampollas" },
+  { k: "rot_rain", id: 84, q: "paraguas", temporada: "invierno" },
+  { k: "rot_plug", id: 64, q: "adaptador" }
+];
+function momento(){
+  const d = new Date(), m = d.getMonth() + 1, h = d.getHours();
+  return { verano: m >= 5 && m <= 9, noche: h >= 20 || h < 6 };
+}
+function pesoMomento(x, mo){
+  let p = 0;
+  if (x.temporada === "verano") p += mo.verano ? 2 : -3;
+  if (x.temporada === "invierno") p += mo.verano ? -3 : 2;
+  if (x.noche && mo.noche) p += 1;
+  return p;
+}
+const CAT_PESO = { verano: { playa: 3, farmacia: 2, tecnologia: 1 }, invierno: { ropa: 3, tecnologia: 2, farmacia: 1 } };
+
+const rotText = document.getElementById("rot-text");
+const rotBtn = document.getElementById("rot-btn");
+const chipsEl = document.getElementById("chips");
+let rotLista = [], rotIdx = 0, rotTimer = null;
+const sinMovimiento = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function mostrarRot(){
+  if (!rotLista.length) return;
+  const item = rotLista[rotIdx % rotLista.length];
+  rotText.textContent = t(item.k);
+  rotBtn.dataset.idx = String(rotIdx % rotLista.length);
+}
+function siguienteRot(){
+  if (document.hidden || !rotLista.length) return;
+  if (sinMovimiento){ rotIdx++; mostrarRot(); return; }
+  rotText.classList.add("fade");
+  setTimeout(() => { rotIdx++; mostrarRot(); rotText.classList.remove("fade"); }, 350);
+}
+function buscarDesdePortada(texto){
+  document.getElementById("manual-input").value = texto;
+  handleSpeechResult(texto);
+  document.getElementById("listen-status").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "center" });
+}
+rotBtn.addEventListener("click", () => {
+  const item = rotLista[Number(rotBtn.dataset.idx) || 0];
+  if (!item) return;
+  const prod = catalogo.find(p => p.id === item.id);
+  buscarDesdePortada(prod ? nombreProducto(prod) : item.q);
+});
+
+function renderPortada(){
+  const mo = momento();
+  rotLista = ROT.map(x => ({ ...x, peso: pesoMomento(x, mo) })).filter(x => x.peso >= 0).sort((a, b) => b.peso - a.peso);
+  rotIdx = 0; mostrarRot();
+  if (!rotTimer) rotTimer = setInterval(siguienteRot, 7000);
+
+  const pesos = mo.verano ? CAT_PESO.verano : CAT_PESO.invierno;
+  const destacados = catalogo.filter(p => p.destacado)
+    .sort((a, b) => (pesos[b.categoria] || 0) - (pesos[a.categoria] || 0))
+    .slice(0, 8);
+  chipsEl.innerHTML = "";
+  destacados.forEach(p => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = nombreProducto(p);
+    b.addEventListener("click", () => buscarDesdePortada(nombreProducto(p)));
+    chipsEl.appendChild(b);
+  });
+}
+
+/* ---------- catálogo en el formulario de alta ---------- */
+const elegidos = new Map(); // id del producto -> precio
+const catInput = document.getElementById("f-cat");
+const catList = document.getElementById("cat-list");
+const catChosen = document.getElementById("cat-chosen");
+
+function renderSugerenciasCat(){
+  const q = tokensDe(catInput.value);
+  catList.innerHTML = "";
+  if (!q.length || !catalogo.length) return;
+  catalogo
+    .map(p => ({ p, n: q.filter(w => p.tokens.some(nt => coincide(w, nt))).length }))
+    .filter(x => x.n > 0 && !elegidos.has(x.p.id))
+    .sort((a, b) => b.n - a.n)
+    .slice(0, 6)
+    .forEach(({ p }) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cat-opt";
+      b.innerHTML = `<span>${esc(nombreProducto(p))}</span><span class="add">+ ${esc(t("cat_add"))}</span>`;
+      b.addEventListener("click", () => {
+        elegidos.set(p.id, "");
+        catInput.value = "";
+        catList.innerHTML = "";
+        renderElegidos();
+      });
+      catList.appendChild(b);
+    });
+}
+function renderElegidos(){
+  catChosen.innerHTML = "";
+  elegidos.forEach((precio, id) => {
+    const p = catalogo.find(x => x.id === id);
+    const fila = document.createElement("div");
+    fila.className = "cat-row";
+    fila.innerHTML = `<span class="nombre">${esc(nombreProducto(p))}</span>
+      <input type="text" inputmode="decimal" placeholder="${esc(t("ph_price"))}" value="${esc(precio)}" aria-label="${esc(t("ph_price"))}">
+      <button type="button" class="quitar" aria-label="${esc(t("cat_remove"))}">×</button>`;
+    fila.querySelector("input").addEventListener("input", e => elegidos.set(id, e.target.value));
+    fila.querySelector(".quitar").addEventListener("click", () => { elegidos.delete(id); renderElegidos(); });
+    catChosen.appendChild(fila);
+  });
+}
+catInput.addEventListener("input", renderSugerenciasCat);
+
+function refrescarDinamicos(){
+  renderPortada();
+  renderElegidos();
+  renderSugerenciasCat();
+}
+
 async function searchNearestProduct(userSpeech, userZone){
-  const words = normalize(userSpeech).split(/[^a-z0-9]+/).filter(w => w.length >= 3).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
+  const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
 
-  const { data, error } = await supabaseClient
-    .from("pymes")
-    .select(COLUMNAS_PUBLICAS)
-    .eq("status", "beta_active");
+  const [{ data, error }, mapaProductos] = await Promise.all([
+    supabaseClient.from("pymes").select(COLUMNAS_PUBLICAS).eq("status", "beta_active"),
+    productosDePymes()
+  ]);
+  const buscados = productosQueCoinciden(words);
 
   if (error){
     console.error("Error consultando Supabase:", error.message);
@@ -1129,7 +1418,9 @@ async function searchNearestProduct(userSpeech, userZone){
         const nt = normalize(tag);
         return words.some(w => nt.includes(w) || w.includes(nt) || (w.length >= 5 && nt.length >= 5 && w.slice(0, 5) === nt.slice(0, 5)));
       });
-      return { pyme: p, score: hits.length };
+      // Productos del catálogo que la pyme marcó y que coinciden con la búsqueda (valen doble).
+      const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
+      return { pyme: p, score: hits.length + suyos.length * 2, producto: suyos[0] || null };
     })
     .filter(c => c.score > 0)
     .map(c => ({ ...c, km: kmDesdeUsuario(c.pyme, userZone) }))
@@ -1140,7 +1431,8 @@ async function searchNearestProduct(userSpeech, userZone){
       b.score - a.score ||
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
-  return { match: candidates.length ? candidates[0].pyme : null, km: candidates.length ? candidates[0].km : null };
+  const mejor = candidates[0];
+  return { match: mejor ? mejor.pyme : null, km: mejor ? mejor.km : null, producto: mejor ? mejor.producto : null };
 }
 
 const micWrap = document.getElementById("mic-wrap");
@@ -1241,10 +1533,19 @@ async function handleSpeechResult(speech){
       thumb.textContent = String(match.name || "?").charAt(0);
     }
     document.getElementById("result-name").textContent = match.name;
-    document.getElementById("result-product").textContent =
-      match.star_product_price ? `${match.star_product_name} · ${match.star_product_price}` : match.star_product_name;
+    const badge = resultCard.querySelector(".badge");
+    const prod = res.producto ? catalogo.find(p => p.id === res.producto.producto_id) : null;
+    if (prod){
+      document.getElementById("result-product").textContent =
+        res.producto.precio ? `${nombreProducto(prod)} · ${res.producto.precio}` : nombreProducto(prod);
+      badge.textContent = t("badge_sells");
+    } else {
+      document.getElementById("result-product").textContent =
+        match.star_product_price ? `${match.star_product_name} · ${match.star_product_price}` : match.star_product_name;
+      badge.textContent = t("badge");
+    }
     document.getElementById("result-distance").textContent =
-      match.distance_m > 0 ? `A ${match.distance_m} metros · ${match.zone}` : `En ${match.zone}`;
+      match.distance_m > 0 ? t("dist_m", { m: match.distance_m, z: match.zone }) : t("dist_zone", { z: match.zone });
 
     // Destino: coordenadas si las hay; si no, solo la dirección (el nombre del negocio confunde a Google Maps).
     const c = (match.lat != null && match.lng != null) ? `${match.lat},${match.lng}` : null;
@@ -1272,6 +1573,7 @@ async function handleSpeechResult(speech){
     voiceGuideBtn.classList.remove("show");
     const clave = frasesSinResultado[Math.floor(Math.random() * frasesSinResultado.length)];
     listenStatus.innerHTML = t(clave, { s: esc(speech) });
+    registrarSinResultado(speech, zone);
   }
 }
 
@@ -1446,8 +1748,12 @@ async function enviarAlta(){
     ref: valor("f-ref").toUpperCase()
   };
 
-  if (!datos.name || !datos.product || !datos.tagsRaw || !datos.address || !datos.contacto || !datos.email || !datos.telefono){
+  if (!datos.name || !datos.product || !datos.address || !datos.contacto || !datos.email || !datos.telefono){
     mostrarErrorForm(t("err_required"));
+    return;
+  }
+  if (!datos.tagsRaw && elegidos.size === 0){
+    mostrarErrorForm(t("err_tags_or_products"));
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)){
@@ -1492,6 +1798,13 @@ async function enviarAlta(){
       plan_type: "paid"
     }]);
     if (error) throw new Error(error.message);
+
+    // Productos del catálogo que marcó la pyme (si falla, no bloquea el pago).
+    if (elegidos.size){
+      const filas = [...elegidos].map(([pid, precio]) => ({ pyme_id: id, producto_id: pid, precio: String(precio || "").trim() || null }));
+      const { error: errProd } = await supabaseClient.from("pyme_productos").insert(filas);
+      if (errProd) console.warn("No se guardaron los productos del catálogo:", errProd.message);
+    }
 
     localStorage.setItem("ishere_ultima_pyme", JSON.stringify({ id, name: datos.name }));
 
@@ -1583,6 +1896,7 @@ async function manejarRetorno(){
 }
 
 aplicarIdioma();
+cargarCatalogo();
 detectLocation(true);
 manejarRetorno();
 </script>
