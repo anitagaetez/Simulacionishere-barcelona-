@@ -163,6 +163,9 @@
       <textarea id="e-tags"></textarea>
       <label for="e-address" data-i18n="l_address">Dirección exacta (calle y número)</label>
       <input id="e-address">
+      <label for="e-wa" data-i18n="l_wa">WhatsApp para clientes (público)</label>
+      <input id="e-wa" type="tel" placeholder="+34 612 345 678">
+      <p class="muted" style="font-size:.8rem;margin-top:6px" data-i18n="wa_help">Con el prefijo del país. Los turistas verán un botón para escribirte directamente. Déjalo vacío si no quieres recibir mensajes.</p>
       <label for="e-web" data-i18n="l_web2">Página web</label>
       <input id="e-web" placeholder="www.tunegocio.com">
       <div class="row2">
@@ -232,6 +235,7 @@ const I18N = {
     l_tags: "Palabras con las que te buscan (catalán, español e inglés), separadas por comas",
     l_desc: "Descripción corta de tu comercio", ph_desc: "Empanadas chilenas caseras, horneadas cada mañana. Opciones vegetarianas.", l_carta: "Tu carta: productos propios con su precio", carta_help: "Aparecen en tu ficha y también sirven para que te encuentren.", b_add_item: "+ Añadir producto", ph_item: "Producto",
     l_web2: "Página web", l_google: "Enlace de tu local en Google Maps (para tus reseñas)", google_help: "En Google Maps, busca tu local → Compartir → Copiar enlace, y pégalo aquí. Así el botón de reseñas muestra tus estrellas y no las de otro negocio.", err_google: "El enlace de Google Maps no es válido. Cópialo desde Google Maps → Compartir.",
+    l_wa: "WhatsApp para clientes (público)", wa_help: "Con el prefijo del país. Los turistas verán un botón para escribirte directamente. Déjalo vacío si no quieres recibir mensajes.", err_wa: "El WhatsApp debe incluir el prefijo del país, por ejemplo +34 612 345 678.",
     l_address: "Dirección exacta (calle y número)", l_web: "Página web o Instagram", l_photo: "Foto o logo",
     photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
     l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
@@ -264,6 +268,7 @@ const I18N = {
     l_tags: "Paraules amb què et busquen (català, castellà i anglès), separades per comes",
     l_desc: "Descripció breu del teu comerç", ph_desc: "Empanades xilenes casolanes, fetes cada matí. Opcions vegetarianes.", l_carta: "La teva carta: productes propis amb el seu preu", carta_help: "Apareixen a la teva fitxa i també serveixen perquè et trobin.", b_add_item: "+ Afegeix un producte", ph_item: "Producte",
     l_web2: "Pàgina web", l_google: "Enllaç del teu local a Google Maps (per a les teves ressenyes)", google_help: "A Google Maps, cerca el teu local → Compartir → Copiar l'enllaç, i enganxa'l aquí. Així el botó de ressenyes mostra les teves estrelles i no les d'un altre negoci.", err_google: "L'enllaç de Google Maps no és vàlid. Copia'l des de Google Maps → Compartir.",
+    l_wa: "WhatsApp per a clients (públic)", wa_help: "Amb el prefix del país. Els turistes veuran un botó per escriure't directament. Deixa'l buit si no vols rebre missatges.", err_wa: "El WhatsApp ha d'incloure el prefix del país, per exemple +34 612 345 678.",
     l_address: "Adreça exacta (carrer i número)", l_web: "Pàgina web o Instagram", l_photo: "Foto o logotip",
     photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
     l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
@@ -296,6 +301,7 @@ const I18N = {
     l_tags: "Words people use to find you (Catalan, Spanish and English), separated by commas",
     l_desc: "Short description of your business", ph_desc: "Homemade Chilean empanadas, baked every morning. Vegetarian options.", l_carta: "Your menu: your own products with prices", carta_help: "They appear on your listing and also help people find you.", b_add_item: "+ Add product", ph_item: "Product",
     l_web2: "Website", l_google: "Your Google Maps link (for your reviews)", google_help: "In Google Maps, find your place → Share → Copy link, and paste it here. That way the reviews button shows your stars, not another business’s.", err_google: "That Google Maps link isn’t valid. Copy it from Google Maps → Share.",
+    l_wa: "WhatsApp for customers (public)", wa_help: "Include the country code. Tourists will see a button to message you directly. Leave it empty if you don’t want messages.", err_wa: "WhatsApp must include the country code, e.g. +34 612 345 678.",
     l_address: "Exact address (street and number)", l_web: "Website or Instagram", l_photo: "Photo or logo",
     photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
     l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
@@ -412,6 +418,7 @@ function elegir(i){
   const rd = actual.redes || {};
   $("e-ig").value = rd.instagram || ""; $("e-tt").value = rd.tiktok || ""; $("e-fb").value = rd.facebook || "";
   $("e-google").value = actual.google_url || "";
+  $("e-wa").value = actual.whatsapp ? "+" + actual.whatsapp : "";
   $("e-foto-prev").hidden = !actual.logo_url;
   if (actual.logo_url) $("e-foto-prev").src = actual.logo_url;
   limpiar("m-guardar");
@@ -537,6 +544,11 @@ $("btn-guardar").addEventListener("click", async (e) => {
   limpiar("m-guardar");
   const star = $("e-star").value.trim(), address = $("e-address").value.trim();
   if (!star || !address){ msg("m-guardar", t("err_required")); return; }
+  const waRaw = $("e-wa").value.trim();
+  const waNum = waRaw.replace(/\D/g, "");
+  if (waRaw && (!waRaw.startsWith("+") && !waRaw.startsWith("00") || waNum.length < 8 || waNum.length > 15)){
+    msg("m-guardar", t("err_wa")); return;
+  }
   const gUrl = $("e-google").value.trim();
   if (gUrl && !/^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.page|www\.google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)/i.test(gUrl)){
     msg("m-guardar", t("err_google")); return;
@@ -557,6 +569,7 @@ $("btn-guardar").addEventListener("click", async (e) => {
       p_descripcion: $("e-desc").value.trim(),
       p_redes: { instagram: $("e-ig").value.trim(), tiktok: $("e-tt").value.trim(), facebook: $("e-fb").value.trim() },
       p_google: gUrl,
+      p_whatsapp: waNum.replace(/^00/, ""),
       p_carta: carta.filter(x => x.nombre.trim()).map(x => ({ nombre: x.nombre.trim(), precio: x.precio.trim() }))
     });
     if (error) throw error;

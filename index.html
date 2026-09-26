@@ -383,6 +383,8 @@
   .ft-lista li:last-child{ border-bottom: none; }
   .ft-lista .precio{ color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ft-lista li.destacado{ font-weight: 600; }
+  .ft-wa{ display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #0b2a17;
+           font-weight: 600; font-size: 0.95rem; border-radius: 12px; padding: 12px; text-decoration: none; }
   .ft-links{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .ft-links a{ font-size: 0.84rem; color: var(--cream); text-decoration: none; border: 1px solid rgba(242,233,216,0.2);
                border-radius: 999px; padding: 8px 13px; }
@@ -649,6 +651,10 @@
             <h4 class="ft-h" data-i18n="ft_vende">Lo que vende</h4>
             <ul class="ft-lista" id="ft-lista"></ul>
           </div>
+          <a class="ft-wa" id="ft-wa" target="_blank" rel="noopener" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
+            <span data-i18n="ft_wa">Escribir por WhatsApp</span>
+          </a>
           <div class="ft-links">
             <a id="ft-google" target="_blank" rel="noopener" hidden>⭐ <span data-i18n="ft_reviews">Reseñas en Google</span></a>
             <a id="ft-web" target="_blank" rel="noopener" hidden>🌐 <span data-i18n="ft_web">Web</span></a>
@@ -800,7 +806,7 @@ const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
 // Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
-const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url";
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp";
 
 let supabaseClient = null;
 try {
@@ -830,6 +836,9 @@ const I18N = {
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     ft_vende: "Lo que vende",
+    ft_wa: "Escribir por WhatsApp",
+    wa_hola_p: "Hola, te encontré en isHere. ¿Tienes {p}?",
+    wa_hola: "Hola, te encontré en isHere.",
     ft_reviews: "Reseñas en Google",
     ft_web: "Web",
     back: "← Volver a la búsqueda",
@@ -961,6 +970,9 @@ const I18N = {
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     ft_vende: "El que ven",
+    ft_wa: "Escriure per WhatsApp",
+    wa_hola_p: "Hola, t\'he trobat a isHere. Tens {p}?",
+    wa_hola: "Hola, t\'he trobat a isHere.",
     ft_reviews: "Ressenyes a Google",
     ft_web: "Web",
     back: "← Tornar a la cerca",
@@ -1092,6 +1104,9 @@ const I18N = {
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
     ft_vende: "What they sell",
+    ft_wa: "Message on WhatsApp",
+    wa_hola_p: "Hi, I found you on isHere. Do you have {p}?",
+    wa_hola: "Hi, I found you on isHere.",
     ft_reviews: "Google reviews",
     ft_web: "Website",
     back: "← Back to search",
@@ -1667,6 +1682,16 @@ function pintarFicha(match, res){
   const gUrl = /^https:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.page|www\.google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)/i.test(match.google_url || "") ? match.google_url : "";
   g.hidden = !gUrl;
   if (gUrl) g.href = gUrl;
+
+  // WhatsApp público del comercio, con un mensaje ya escrito en el idioma del turista.
+  const waNum = String(match.whatsapp || "").replace(/\D/g, "");
+  const producto = res.cartaHit ? res.cartaHit.nombre
+    : (res.producto && catalogo.find(c => c.id === res.producto.producto_id)) ? nombreProducto(catalogo.find(c => c.id === res.producto.producto_id))
+    : match.star_product_name;
+  const waTxt = producto ? t("wa_hola_p", { p: String(producto).toLowerCase() }) : t("wa_hola");
+  const waEl = document.getElementById("ft-wa");
+  waEl.hidden = waNum.length < 8;
+  if (waNum.length >= 8) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
 
   const poner = (id, url) => { const a = document.getElementById(id); a.hidden = !url; if (url) a.href = url; };
   const redes = match.redes || {};
