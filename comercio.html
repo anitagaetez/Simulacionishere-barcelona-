@@ -63,6 +63,16 @@
   .cat-row .nombre{ flex:1; font-size:.88rem; min-width:0; }
   .cat-row input{ width:96px; padding:9px 10px; }
   .cat-row .quitar{ background:none; color:var(--danger); font-size:1.2rem; padding:4px 8px; }
+  .dia{ border-top:1px solid rgba(242,233,216,.08); padding:10px 0; }
+  .dia:first-child{ border-top:none; }
+  .dia-cab{ display:flex; justify-content:space-between; align-items:center; font-size:.9rem; }
+  .dia-cab label{ margin:0; display:flex; align-items:center; gap:6px; font-size:.8rem; }
+  .dia-cab input{ width:auto; }
+  .tramos{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .tramo{ display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--cream-dim); }
+  .tramo .tl{ width:62px; flex-shrink:0; }
+  .tramo input{ flex:1; min-width:0; padding:8px 6px; font-size:.88rem; }
+  .dia.cerrado .tramos{ display:none; }
   .carta-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
   .carta-row .n{ flex:1; min-width:0; }
   .carta-row .pr{ width:96px; }
@@ -163,6 +173,12 @@
       <textarea id="e-tags"></textarea>
       <label for="e-address" data-i18n="l_address">Dirección exacta (calle y número)</label>
       <input id="e-address">
+      <p class="muted" id="geo-estado" style="font-size:.8rem;margin-top:6px"></p>
+
+      <label data-i18n="l_horario">Horario de apertura</label>
+      <p class="muted" style="font-size:.8rem" data-i18n="horario_help">Los turistas verán si estás abierto ahora. Deja vacío el segundo tramo si no cierras a mediodía.</p>
+      <div id="horario"></div>
+      <button type="button" class="btn-sec" id="btn-copiar-lunes" style="margin-top:6px" data-i18n="b_copy_mon">Copiar el lunes a los demás días</button>
       <label for="e-wa" data-i18n="l_wa">WhatsApp para clientes (público)</label>
       <input id="e-wa" type="tel" placeholder="+34 612 345 678">
       <p class="muted" style="font-size:.8rem;margin-top:6px" data-i18n="wa_help">Con el prefijo del país. Los turistas verán un botón para escribirte directamente. Déjalo vacío si no quieres recibir mensajes.</p>
@@ -236,6 +252,7 @@ const I18N = {
     l_desc: "Descripción corta de tu comercio", ph_desc: "Empanadas chilenas caseras, horneadas cada mañana. Opciones vegetarianas.", l_carta: "Tu carta: productos propios con su precio", carta_help: "Aparecen en tu ficha y también sirven para que te encuentren.", b_add_item: "+ Añadir producto", ph_item: "Producto",
     l_web2: "Página web", l_google: "Enlace de tu local en Google Maps (para tus reseñas)", google_help: "En Google Maps, busca tu local → Compartir → Copiar enlace, y pégalo aquí. Así el botón de reseñas muestra tus estrellas y no las de otro negocio.", err_google: "El enlace de Google Maps no es válido. Cópialo desde Google Maps → Compartir.",
     l_wa: "WhatsApp para clientes (público)", wa_help: "Con el prefijo del país. Los turistas verán un botón para escribirte directamente. Déjalo vacío si no quieres recibir mensajes.", err_wa: "El WhatsApp debe incluir el prefijo del país, por ejemplo +34 612 345 678.",
+    l_horario: "Horario de apertura", horario_help: "Los turistas verán si estás abierto ahora. Deja vacío el segundo tramo si no cierras a mediodía.", b_copy_mon: "Copiar el lunes a los demás días", cerrado: "Cerrado", tramo1: "Mañana", tramo2: "Tarde", dias: "Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo", geo_ok: "📍 Ubicación exacta guardada: la distancia a pie se calcula al metro.", geo_no: "⚠️ No encontramos esa dirección en el mapa. Revisa la calle y el número para que la distancia sea exacta.", geo_buscando: "Buscando la dirección en el mapa…",
     l_address: "Dirección exacta (calle y número)", l_web: "Página web o Instagram", l_photo: "Foto o logo",
     photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
     l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
@@ -269,6 +286,7 @@ const I18N = {
     l_desc: "Descripció breu del teu comerç", ph_desc: "Empanades xilenes casolanes, fetes cada matí. Opcions vegetarianes.", l_carta: "La teva carta: productes propis amb el seu preu", carta_help: "Apareixen a la teva fitxa i també serveixen perquè et trobin.", b_add_item: "+ Afegeix un producte", ph_item: "Producte",
     l_web2: "Pàgina web", l_google: "Enllaç del teu local a Google Maps (per a les teves ressenyes)", google_help: "A Google Maps, cerca el teu local → Compartir → Copiar l'enllaç, i enganxa'l aquí. Així el botó de ressenyes mostra les teves estrelles i no les d'un altre negoci.", err_google: "L'enllaç de Google Maps no és vàlid. Copia'l des de Google Maps → Compartir.",
     l_wa: "WhatsApp per a clients (públic)", wa_help: "Amb el prefix del país. Els turistes veuran un botó per escriure't directament. Deixa'l buit si no vols rebre missatges.", err_wa: "El WhatsApp ha d'incloure el prefix del país, per exemple +34 612 345 678.",
+    l_horario: "Horari d'obertura", horario_help: "Els turistes veuran si ara estàs obert. Deixa buit el segon tram si no tanques al migdia.", b_copy_mon: "Copiar el dilluns a la resta de dies", cerrado: "Tancat", tramo1: "Matí", tramo2: "Tarda", dias: "Dilluns,Dimarts,Dimecres,Dijous,Divendres,Dissabte,Diumenge", geo_ok: "📍 Ubicació exacta desada: la distància a peu es calcula al metre.", geo_no: "⚠️ No hem trobat aquesta adreça al mapa. Revisa el carrer i el número perquè la distància sigui exacta.", geo_buscando: "Cercant l'adreça al mapa…",
     l_address: "Adreça exacta (carrer i número)", l_web: "Pàgina web o Instagram", l_photo: "Foto o logotip",
     photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
     l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
@@ -302,6 +320,7 @@ const I18N = {
     l_desc: "Short description of your business", ph_desc: "Homemade Chilean empanadas, baked every morning. Vegetarian options.", l_carta: "Your menu: your own products with prices", carta_help: "They appear on your listing and also help people find you.", b_add_item: "+ Add product", ph_item: "Product",
     l_web2: "Website", l_google: "Your Google Maps link (for your reviews)", google_help: "In Google Maps, find your place → Share → Copy link, and paste it here. That way the reviews button shows your stars, not another business’s.", err_google: "That Google Maps link isn’t valid. Copy it from Google Maps → Share.",
     l_wa: "WhatsApp for customers (public)", wa_help: "Include the country code. Tourists will see a button to message you directly. Leave it empty if you don’t want messages.", err_wa: "WhatsApp must include the country code, e.g. +34 612 345 678.",
+    l_horario: "Opening hours", horario_help: "Tourists will see whether you're open right now. Leave the second slot empty if you don't close at midday.", b_copy_mon: "Copy Monday to the other days", cerrado: "Closed", tramo1: "Morning", tramo2: "Afternoon", dias: "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday", geo_ok: "📍 Exact location saved: walking distance is calculated to the metre.", geo_no: "⚠️ We couldn't find that address on the map. Check the street and number so the distance is exact.", geo_buscando: "Looking up the address on the map…",
     l_address: "Exact address (street and number)", l_web: "Website or Instagram", l_photo: "Photo or logo",
     photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
     l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
@@ -380,7 +399,8 @@ document.querySelectorAll("[data-salir]").forEach(b => b.addEventListener("click
 }));
 
 /* ---------- datos ---------- */
-let comercios = [], actual = null, catalogo = [], elegidos = new Map(), fotoNueva = null, carta = [];
+let comercios = [], actual = null, catalogo = [], elegidos = new Map(), fotoNueva = null, carta = [], horario = null;
+const DIAS_K = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
 
 async function cargarCatalogo(){
   const { data } = await sb.from("catalogo").select("id, es, ca, en, claves").order("id");
@@ -412,6 +432,8 @@ function elegir(i){
   $("e-precio").value = actual.star_product_price || "";
   $("e-tags").value = actual.tags || "";
   $("e-desc").value = actual.descripcion || "";
+  horario = cargarHorario(actual.horario);
+  $("geo-estado").textContent = actual.address ? (actual.lat != null ? t("geo_ok") : t("geo_no")) : "";
   carta = (Array.isArray(actual.carta) ? actual.carta : []).map(x => ({ nombre: x.nombre || "", precio: x.precio || "" }));
   $("e-address").value = actual.address || "";
   $("e-web").value = actual.web || "";
@@ -459,7 +481,7 @@ function pintarPanel(){
   $("a-mail").href = `mailto:${correo}?subject=${encodeURIComponent(t("mail_subject", { c: c.name }))}`;
   $("a-baja").href = `mailto:isherebarcelona@gmail.com?subject=${encodeURIComponent(t("billing_subject", { c: c.name }))}`;
 
-  renderElegidos(); renderSugerencias(); renderCarta();
+  renderElegidos(); renderSugerencias(); renderCarta(); renderHorario();
   if (fotoNueva) $("e-foto-txt").textContent = t("photo_ready");
 }
 
@@ -492,6 +514,61 @@ function renderElegidos(){
   });
 }
 $("cat-q").addEventListener("input", renderSugerencias);
+
+/* ---------- horario ---------- */
+// Estructura interna: por día { cerrado, t: [[abre, cierra], [abre, cierra]] }
+function cargarHorario(h){
+  const conocido = h && typeof h === "object" && DIAS_K.some(k => Array.isArray(h[k]) && h[k].length);
+  return DIAS_K.map(k => {
+    const r = conocido && Array.isArray(h[k]) ? h[k] : [];
+    return { cerrado: conocido && !r.length, t: [r[0] || ["", ""], r[1] || ["", ""]] };
+  });
+}
+function renderHorario(){
+  const box = $("horario"); box.innerHTML = "";
+  const nombres = t("dias").split(",");
+  horario.forEach((d, i) => {
+    const el = document.createElement("div");
+    el.className = "dia" + (d.cerrado ? " cerrado" : "");
+    el.innerHTML = `<div class="dia-cab"><span>${esc(nombres[i])}</span>
+        <label><input type="checkbox" ${d.cerrado ? "checked" : ""}> ${esc(t("cerrado"))}</label></div>
+      <div class="tramos"></div>`;
+    const tramos = el.querySelector(".tramos");
+    tramos.innerHTML = [0, 1].map(j => `<div class="tramo"><span class="tl">${esc(t(j ? "tramo2" : "tramo1"))}</span><input type="time" data-j="${j}" data-k="0" value="${d.t[j][0]}"> – <input type="time" data-j="${j}" data-k="1" value="${d.t[j][1]}"></div>`).join("");
+    el.querySelector('input[type="checkbox"]').addEventListener("change", e => { d.cerrado = e.target.checked; el.classList.toggle("cerrado", d.cerrado); });
+    tramos.querySelectorAll('input[type="time"]').forEach(inp => inp.addEventListener("input", e => {
+      d.t[Number(e.target.dataset.j)][Number(e.target.dataset.k)] = e.target.value;
+    }));
+    box.appendChild(el);
+  });
+}
+$("btn-copiar-lunes").addEventListener("click", () => {
+  const l = horario[0];
+  horario = horario.map((d, i) => i === 0 ? d : { cerrado: l.cerrado, t: l.t.map(x => [...x]) });
+  renderHorario();
+});
+// Devuelve null si no se indicó ningún horario (así el turista no ve un "cerrado" falso).
+function horarioParaGuardar(){
+  const res = {}; let alguno = false;
+  horario.forEach((d, i) => {
+    const tramos = d.cerrado ? [] : d.t.filter(x => x[0] && x[1]).map(x => [x[0], x[1]]);
+    if (tramos.length) alguno = true;
+    res[DIAS_K[i]] = tramos;
+  });
+  return alguno ? res : null;
+}
+
+/* ---------- ubicación exacta (OpenStreetMap) ---------- */
+async function geocodificar(direccion){
+  try {
+    const q = encodeURIComponent(`${direccion}, Barcelona, España`);
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q=${q}`);
+    const d = await r.json();
+    if (!d || !d[0]) return null;
+    const lat = Number(d[0].lat), lng = Number(d[0].lon);
+    return (lat > 41.25 && lat < 41.5 && lng > 1.95 && lng < 2.35) ? { lat, lng } : null;
+  } catch (e) { return null; }
+}
 
 /* ---------- carta propia ---------- */
 function renderCarta(){
@@ -563,6 +640,13 @@ $("btn-guardar").addEventListener("click", async (e) => {
       logo = sb.storage.from("fotos-pymes").getPublicUrl(ruta).data.publicUrl;
     }
     const productos = [...elegidos].map(([id, precio]) => ({ id, precio }));
+    // Solo se busca en el mapa si cambió la dirección o aún no hay coordenadas.
+    let lat = actual.lat, lng = actual.lng;
+    if (address !== (actual.address || "") || lat == null){
+      $("geo-estado").textContent = t("geo_buscando");
+      const c = await geocodificar(address);
+      lat = c ? c.lat : null; lng = c ? c.lng : null;
+    }
     const { error } = await sb.rpc("actualizar_mi_comercio", {
       p_id: actual.id, p_star: star, p_precio: $("e-precio").value.trim(), p_tags: $("e-tags").value.trim(),
       p_address: address, p_web: $("e-web").value.trim(), p_logo: logo, p_productos: productos,
@@ -570,6 +654,8 @@ $("btn-guardar").addEventListener("click", async (e) => {
       p_redes: { instagram: $("e-ig").value.trim(), tiktok: $("e-tt").value.trim(), facebook: $("e-fb").value.trim() },
       p_google: gUrl,
       p_whatsapp: waNum.replace(/^00/, ""),
+      p_horario: horarioParaGuardar(),
+      p_lat: lat, p_lng: lng,
       p_carta: carta.filter(x => x.nombre.trim()).map(x => ({ nombre: x.nombre.trim(), precio: x.precio.trim() }))
     });
     if (error) throw error;

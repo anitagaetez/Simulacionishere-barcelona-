@@ -407,6 +407,27 @@
   .info-pyme h3{ font-family: 'Fraunces', Georgia, serif; font-size: 1.08rem; font-weight: 500; margin-bottom: 2px; }
   .info-pyme p{ font-size: 0.84rem; color: var(--cream-dim); }
   .info-pyme .distance{ color: var(--success); font-weight: 500; margin-top: 3px; }
+  .horario-estado{ font-size: 0.82rem; margin-top: 3px; display: flex; align-items: center; gap: 6px; color: var(--cream-dim); }
+  .horario-estado::before{ content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--cream-dim); flex-shrink: 0; }
+  .horario-estado.abierto{ color: var(--success); } .horario-estado.abierto::before{ background: var(--success); }
+  .horario-estado.cerrado{ color: var(--danger); } .horario-estado.cerrado::before{ background: var(--danger); }
+  .horario-estado:empty{ display: none; }
+  /* Otras opciones cercanas */
+  .otras{ display: none; margin-top: 14px; }
+  .voice-guide-btn.show + .otras.hay{ display: block; }
+  .otras h4{ font-size: 0.8rem; color: var(--cream-dim); font-weight: 500; margin-bottom: 8px; text-align: center; }
+  .otra{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
+         background: var(--bg-panel); border: 1px solid rgba(242,233,216,0.1); border-radius: 12px; padding: 11px 14px;
+         color: var(--cream); font: inherit; cursor: pointer; margin-bottom: 8px; }
+  .otra .o-n{ font-size: 0.92rem; font-weight: 600; }
+  .otra .o-s{ font-size: 0.78rem; color: var(--cream-dim); margin-top: 2px; }
+  .otra .o-d{ font-size: 0.8rem; color: var(--success); white-space: nowrap; }
+  /* Horario en la ficha */
+  .ft-horario summary{ cursor: pointer; font-size: 0.85rem; color: var(--gold); }
+  .ft-horario table{ width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.85rem; }
+  .ft-horario td{ padding: 4px 0; color: var(--cream-dim); }
+  .ft-horario td:last-child{ text-align: right; }
+  .ft-horario tr.hoy td{ color: var(--cream); font-weight: 600; }
   .info-pyme .badge{
     display: inline-block;
     margin-top: 6px;
@@ -635,6 +656,7 @@
           <h3 id="result-name">—</h3>
           <p id="result-product">—</p>
           <p class="distance" id="result-distance">—</p>
+          <p class="horario-estado" id="result-horario"></p>
           <span class="badge" data-i18n="badge">producto estrella</span>
         </div>
         <a class="direction-indicator" id="result-maps-link" href="#" target="_blank" rel="noopener">
@@ -647,6 +669,10 @@
         <div class="ft-body">
           <p class="ft-desc" id="ft-desc" hidden></p>
           <p class="ft-dir" id="ft-dir"></p>
+          <details class="ft-horario" id="ft-horario" hidden>
+            <summary data-i18n="h_ver">Ver horario</summary>
+            <table id="ft-horario-tabla"></table>
+          </details>
           <div id="ft-vende-wrap">
             <h4 class="ft-h" data-i18n="ft_vende">Lo que vende</h4>
             <ul class="ft-lista" id="ft-lista"></ul>
@@ -665,6 +691,10 @@
         </div>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
+      <div class="otras" id="otras">
+        <h4 data-i18n="otras_title">Otras opciones cerca</h4>
+        <div id="otras-lista"></div>
+      </div>
 
       <section class="sugerencias" aria-labelledby="sug-title">
         <div class="rotator">
@@ -679,6 +709,7 @@
 
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
+        <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
         <div class="business-link"><a href="comercio.html" data-i18n="portal_link">¿Ya estás en isHere? Entra a Mi comercio</a></div>
       </footer>
@@ -806,7 +837,7 @@ const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
 // Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
-const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp";
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp, horario";
 
 let supabaseClient = null;
 try {
@@ -836,6 +867,17 @@ const I18N = {
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     ft_vende: "Lo que vende",
+    h_ver: "Ver horario",
+    otras_title: "Otras opciones cerca",
+    h_open: "Abierto · cierra a las {h}",
+    h_opens: "Cerrado · abre a las {h}",
+    h_opens_day: "Cerrado · abre el {d} a las {h}",
+    h_closed: "Cerrado",
+    h_closed_day: "Cerrado",
+    h_24: "Abierto 24 h",
+    dist_walk: "A {d} · {min} min a pie · {z}",
+    dist_far: "A {d} · {z}",
+    dias: "lunes,martes,miércoles,jueves,viernes,sábado,domingo",
     ft_wa: "Escribir por WhatsApp",
     wa_hola_p: "Hola, te encontré en isHere. ¿Tienes {p}?",
     wa_hola: "Hola, te encontré en isHere.",
@@ -970,6 +1012,17 @@ const I18N = {
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     ft_vende: "El que ven",
+    h_ver: "Veure l'horari",
+    otras_title: "Altres opcions a prop",
+    h_open: "Obert · tanca a les {h}",
+    h_opens: "Tancat · obre a les {h}",
+    h_opens_day: "Tancat · obre {d} a les {h}",
+    h_closed: "Tancat",
+    h_closed_day: "Tancat",
+    h_24: "Obert 24 h",
+    dist_walk: "A {d} · {min} min a peu · {z}",
+    dist_far: "A {d} · {z}",
+    dias: "dilluns,dimarts,dimecres,dijous,divendres,dissabte,diumenge",
     ft_wa: "Escriure per WhatsApp",
     wa_hola_p: "Hola, t\'he trobat a isHere. Tens {p}?",
     wa_hola: "Hola, t\'he trobat a isHere.",
@@ -1104,6 +1157,17 @@ const I18N = {
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
     ft_vende: "What they sell",
+    h_ver: "See opening hours",
+    otras_title: "Other options nearby",
+    h_open: "Open · closes at {h}",
+    h_opens: "Closed · opens at {h}",
+    h_opens_day: "Closed · opens {d} at {h}",
+    h_closed: "Closed",
+    h_closed_day: "Closed",
+    h_24: "Open 24 h",
+    dist_walk: "{d} away · {min} min walk · {z}",
+    dist_far: "{d} away · {z}",
+    dias: "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
     ft_wa: "Message on WhatsApp",
     wa_hola_p: "Hi, I found you on isHere. Do you have {p}?",
     wa_hola: "Hi, I found you on isHere.",
@@ -1618,17 +1682,79 @@ async function searchNearestProduct(userSpeech, userZone){
                productos: mapaProductos.get(p.id) || [] };
     })
     .filter(c => c.score > 0)
-    .map(c => ({ ...c, km: kmDesdeUsuario(c.pyme, userZone) }))
-    // Primero la zona del usuario, luego la más cercana; a igual distancia, más coincidencias y con foto.
+    .map(c => {
+      const e = estadoHorario(c.pyme.horario);
+      // 0 = abierto ahora, 1 = sin horario indicado, 2 = cerrado ahora
+      return { ...c, km: kmDesdeUsuario(c.pyme, userZone), cerrado: e.abierto === true ? 0 : e.conocido ? 2 : 1 };
+    })
+    // Primero los abiertos y al final los cerrados. Con GPS manda la distancia real; sin GPS, primero el barrio elegido.
+    // A igualdad, más coincidencias y con foto.
     .sort((a, b) =>
-      (a.pyme.zone === userZone ? 0 : 1) - (b.pyme.zone === userZone ? 0 : 1) ||
+      a.cerrado - b.cerrado ||
+      (posicionUsuario ? 0 : (a.pyme.zone === userZone ? 0 : 1) - (b.pyme.zone === userZone ? 0 : 1)) ||
       a.km - b.km ||
       b.score - a.score ||
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
   const mejor = candidates[0];
-  return { match: mejor ? mejor.pyme : null, km: mejor ? mejor.km : null, producto: mejor ? mejor.producto : null,
-           cartaHit: mejor ? mejor.cartaHit : null, productos: mejor ? mejor.productos : [] };
+  const aRes = (c) => ({ match: c.pyme, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos });
+  return { ...(mejor ? aRes(mejor) : { match: null, km: null, producto: null, cartaHit: null, productos: [] }),
+           candidatos: candidates.slice(0, 4).map(aRes) };
+}
+
+/* ---------- horario (hora de Barcelona) ---------- */
+const DIAS_K = ["lun", "mar", "mie", "jue", "vie", "sab", "dom"];
+const aMin = (hhmm) => { const [h, m] = String(hhmm).split(":").map(Number); return h * 60 + m; };
+function ahoraBarcelona(){
+  const partes = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false })
+    .formatToParts(new Date());
+  const v = (tipo) => (partes.find(p => p.type === tipo) || {}).value;
+  const dia = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(v("weekday"));
+  return { dia, min: (Number(v("hour")) % 24) * 60 + Number(v("minute")) };
+}
+const nombreDia = (i) => t("dias").split(",")[i] || "";
+function horarioConocido(h){ return h && typeof h === "object" && DIAS_K.some(k => Array.isArray(h[k]) && h[k].length); }
+// Devuelve { conocido, abierto, texto } según el horario del comercio.
+function estadoHorario(h){
+  if (!horarioConocido(h)) return { conocido: false, abierto: null, texto: "" };
+  const { dia, min } = ahoraBarcelona();
+  const rangos = (d) => (Array.isArray(h[DIAS_K[(d + 7) % 7]]) ? h[DIAS_K[(d + 7) % 7]] : []);
+  // ¿Abierto ahora? (incluye tramos que pasan de medianoche, por ejemplo 20:00–02:00)
+  for (const [a, c] of rangos(dia)){
+    const ia = aMin(a), ic = aMin(c);
+    if (a === "00:00" && c === "23:59") return { conocido: true, abierto: true, texto: t("h_24") };
+    if (ic > ia ? (min >= ia && min < ic) : (min >= ia)) return { conocido: true, abierto: true, texto: t("h_open", { h: c }) };
+  }
+  for (const [a, c] of rangos(dia - 1)){
+    if (aMin(c) <= aMin(a) && min < aMin(c)) return { conocido: true, abierto: true, texto: t("h_open", { h: c }) };
+  }
+  // Próxima apertura
+  const hoy = rangos(dia).map(r => r[0]).filter(a => aMin(a) > min).sort();
+  if (hoy.length) return { conocido: true, abierto: false, texto: t("h_opens", { h: hoy[0] }) };
+  for (let k = 1; k <= 7; k++){
+    const r = rangos(dia + k).map(x => x[0]).sort();
+    if (r.length) return { conocido: true, abierto: false, texto: t("h_opens_day", { d: nombreDia((dia + k) % 7), h: r[0] }) };
+  }
+  return { conocido: true, abierto: false, texto: t("h_closed") };
+}
+function pintarEstado(el, h){
+  const e = estadoHorario(h);
+  el.textContent = e.texto;
+  el.className = "horario-estado" + (e.conocido ? (e.abierto ? " abierto" : " cerrado") : "");
+}
+function formatoDistancia(km){
+  if (km < 1) return `${Math.max(10, Math.round(km * 100) * 10)} m`;
+  return `${km.toLocaleString(LOCALE[lang], { maximumFractionDigits: 1 })} km`;
+}
+function textoDistancia(p, km){
+  const tieneCoords = p.lat != null && p.lng != null;
+  if (!tieneCoords || km == null || km >= 900) return t("dist_zone", { z: p.zone });
+  const prefijo = posicionUsuario ? "" : "≈ ";
+  if (km <= 2.5){
+    const min = Math.max(1, Math.round(km * 1000 * 1.3 / 80)); // factor de calles y 80 m/min a pie
+    return prefijo + t("dist_walk", { d: formatoDistancia(km), min, z: p.zone });
+  }
+  return prefijo + t("dist_far", { d: formatoDistancia(km), z: p.zone });
 }
 
 /* ---------- ficha ampliada del comercio para el turista ---------- */
@@ -1655,6 +1781,17 @@ function pintarFicha(match, res){
   desc.textContent = match.descripcion || "";
 
   document.getElementById("ft-dir").textContent = "📍 " + [match.address, match.zone].filter(Boolean).join(" · ");
+  const hBox = document.getElementById("ft-horario");
+  hBox.hidden = !horarioConocido(match.horario);
+  hBox.open = false;
+  if (!hBox.hidden){
+    const hoy = ahoraBarcelona().dia;
+    document.getElementById("ft-horario-tabla").innerHTML = DIAS_K.map((k, i) => {
+      const r = Array.isArray(match.horario[k]) ? match.horario[k] : [];
+      const txt = r.length ? r.map(x => `${x[0]}–${x[1]}`).join(" · ") : t("h_closed_day");
+      return `<tr class="${i === hoy ? "hoy" : ""}"><td>${esc(nombreDia(i))}</td><td>${esc(txt)}</td></tr>`;
+    }).join("");
+  }
 
   // Lista: producto estrella, carta propia y productos del catálogo, cada uno con su precio.
   const items = [];
@@ -1790,8 +1927,22 @@ async function handleSpeechResult(speech){
     return;
   }
 
+  if (res.match){
+    mostrarResultado(res, zone, true);
+    pintarOtras(res.candidatos, res.match, zone);
+  } else {
+    resultCard.classList.remove("show");
+    voiceGuideBtn.classList.remove("show");
+    const clave = frasesSinResultado[Math.floor(Math.random() * frasesSinResultado.length)];
+    listenStatus.innerHTML = t(clave, { s: esc(speech) });
+    registrarSinResultado(speech, zone);
+  }
+}
+
+// Muestra un resultado (el mejor o el que el turista elige entre las otras opciones).
+function mostrarResultado(res, zone, conVoz){
   const match = res.match;
-  if (match){
+  {
     const thumb = document.getElementById("result-thumb");
     if (match.logo_url && /^https?:\/\//i.test(match.logo_url)){
       thumb.style.backgroundImage = `url("${encodeURI(match.logo_url)}")`;
@@ -1816,8 +1967,8 @@ async function handleSpeechResult(speech){
         match.star_product_price ? `${match.star_product_name} · ${match.star_product_price}` : match.star_product_name;
       badge.textContent = t("badge");
     }
-    document.getElementById("result-distance").textContent =
-      match.distance_m > 0 ? t("dist_m", { m: match.distance_m, z: match.zone }) : t("dist_zone", { z: match.zone });
+    document.getElementById("result-distance").textContent = textoDistancia(match, res.km);
+    pintarEstado(document.getElementById("result-horario"), match.horario);
     pintarFicha(match, res);
 
     // Destino: coordenadas si las hay; si no, solo la dirección (el nombre del negocio confunde a Google Maps).
@@ -1842,14 +1993,33 @@ async function handleSpeechResult(speech){
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
     listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. ` + esc(t("tap_hint", { btn: textoBoton }));
-    hablar(L => t("speak_found", { aviso: avisoEn(L), name: match.name, btn: t(claveBoton, {}, L).toLowerCase() }, L));
-  } else {
-    resultCard.classList.remove("show");
-    voiceGuideBtn.classList.remove("show");
-    const clave = frasesSinResultado[Math.floor(Math.random() * frasesSinResultado.length)];
-    listenStatus.innerHTML = t(clave, { s: esc(speech) });
-    registrarSinResultado(speech, zone);
+    if (conVoz) hablar(L => t("speak_found", { aviso: avisoEn(L), name: match.name, btn: t(claveBoton, {}, L).toLowerCase() }, L));
   }
+}
+
+// Lista compacta con las demás opciones; al tocar una, pasa a ser la principal.
+function pintarOtras(candidatos, actual, zone){
+  const box = document.getElementById("otras");
+  const lista = document.getElementById("otras-lista");
+  const otras = (candidatos || []).filter(c => c.match.id !== actual.id).slice(0, 3);
+  box.classList.toggle("hay", otras.length > 0);
+  lista.innerHTML = "";
+  otras.forEach(c => {
+    const p = c.match;
+    const e = estadoHorario(p.horario);
+    const prod = c.cartaHit ? [c.cartaHit.nombre, c.cartaHit.precio].filter(Boolean).join(" · ")
+      : [p.star_product_name, p.star_product_price].filter(Boolean).join(" · ");
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "otra";
+    b.innerHTML = `<span><div class="o-n">${esc(p.name)}</div><div class="o-s">${esc(prod)}${e.conocido ? " · " + esc(e.texto) : ""}</div></span>
+      <span class="o-d">${esc(p.lat != null && c.km != null && c.km < 900 ? formatoDistancia(c.km) : p.zone)}</span>`;
+    b.addEventListener("click", () => {
+      mostrarResultado(c, zone, false);
+      pintarOtras(candidatos, p, zone);
+      document.getElementById("result-card").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "start" });
+    });
+    lista.appendChild(b);
+  });
 }
 
 voiceGuideBtn.addEventListener("click", () => {
@@ -2000,6 +2170,19 @@ async function subirFoto(id){
   return supabaseClient.storage.from("fotos-pymes").getPublicUrl(ruta).data.publicUrl;
 }
 
+// Convierte la dirección en coordenadas con OpenStreetMap (solo al guardar, nunca en cada búsqueda).
+async function geocodificar(direccion){
+  try {
+    const q = encodeURIComponent(`${direccion}, Barcelona, España`);
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q=${q}`);
+    const d = await r.json();
+    if (!d || !d[0]) return null;
+    const lat = Number(d[0].lat), lng = Number(d[0].lon);
+    // Solo se aceptan puntos dentro del área de Barcelona.
+    return (lat > 41.25 && lat < 41.5 && lng > 1.95 && lng < 2.35) ? { lat, lng } : null;
+  } catch (e) { return null; }
+}
+
 async function codigoReclutadorValido(cod){
   const { data, error } = await supabaseClient.rpc("codigo_reclutador_valido", { p_codigo: cod });
   if (error) throw new Error(t("err_ref_check"));
@@ -2054,6 +2237,7 @@ async function enviarAlta(){
     const logoUrl = await subirFoto(id);
     btnPay.textContent = t("preparing_pay");
     const tags = datos.tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
+    const coords = await geocodificar(datos.address);
 
     const { error } = await supabaseClient.from("pymes").insert([{
       id,
@@ -2063,6 +2247,8 @@ async function enviarAlta(){
       star_product_price: datos.price,
       tags: tags.join(", "),
       address: datos.address,
+      lat: coords ? coords.lat : null,
+      lng: coords ? coords.lng : null,
       logo_url: logoUrl,
       web: datos.web,
       contacto_nombre: datos.contacto,
