@@ -194,7 +194,8 @@
 <script>
 const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Sesión propia del portal: no se mezcla con la sesión del panel de administración.
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { storageKey: "ishere-comercio-auth" } });
 const $ = (id) => document.getElementById(id);
 
 /* ---------- idiomas ---------- */
