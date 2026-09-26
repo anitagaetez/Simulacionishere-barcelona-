@@ -637,6 +637,7 @@
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
+        <div class="business-link"><a href="comercio.html" data-i18n="portal_link">¿Ya estás en isHere? Entra a Mi comercio</a></div>
       </footer>
     </section>
 
@@ -790,6 +791,7 @@ const I18N = {
     map: "MAPA",
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
+    portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     back: "← Volver a la búsqueda",
     form_title: "Da de alta tu comercio",
     form_sub: "Aparece cuando alguien cerca de ti busque justo lo que vendes.",
@@ -917,6 +919,7 @@ const I18N = {
     map: "MAPA",
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
+    portal_link: "Ja ets a isHere? Entra a El meu comerç",
     back: "← Tornar a la cerca",
     form_title: "Dona d'alta el teu comerç",
     form_sub: "Apareix quan algú a prop teu busqui just el que vens.",
@@ -1044,6 +1047,7 @@ const I18N = {
     map: "MAP",
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
+    portal_link: "Already on isHere? Go to My business",
     back: "← Back to search",
     form_title: "List your shop",
     form_sub: "Show up when someone nearby searches for exactly what you sell.",
@@ -1692,6 +1696,8 @@ async function handleSpeechResult(speech){
     const aviso = avisoEn(lang);
 
     resultCard.classList.add("show");
+    // Cuenta la aparición para las estadísticas de la pyme (no bloquea nada si falla).
+    if (supabaseClient) supabaseClient.rpc("registrar_aparicion", { p: match.id }).then(() => {}, () => {});
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
     listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. ` + esc(t("tap_hint", { btn: textoBoton }));

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>isHere · Mi comercio</title>
+<style>
+  :root{
+    --bg-deep:#0D2B3E; --bg-panel:#123449; --bg-raise:#17415A;
+    --teal:#1E7F76; --teal-light:#2EA89C; --gold:#D9A441; --terracotta:#B8482F;
+    --cream:#F2E9D8; --cream-dim:#B9C7CE; --success:#4CAF7D; --danger:#E0685E; --wa:#25D366;
+    --r:14px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg-deep); color:var(--cream); font-family:'Work Sans',-apple-system,'Segoe UI',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .wrap{ max-width:520px; margin:0 auto; padding:18px 18px 60px; display:flex; flex-direction:column; gap:18px; }
+  header{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .wordmark{ font-family:'Fraunces',Georgia,serif; font-size:1.25rem; color:var(--cream); text-decoration:none; }
+  .wordmark b{ color:var(--gold); font-weight:600; }
+  .flags{ display:flex; gap:8px; }
+  .flag-btn{ width:32px; height:22px; padding:0; border-radius:5px; overflow:hidden; border:2px solid transparent; background:none; cursor:pointer; opacity:.55; }
+  .flag-btn svg{ display:block; width:100%; height:100%; }
+  .flag-btn[aria-pressed="true"]{ opacity:1; border-color:var(--gold); }
+  h1{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:1.6rem; line-height:1.2; }
+  h2{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:1.1rem; margin-bottom:10px; }
+  .muted{ color:var(--cream-dim); font-size:.88rem; line-height:1.45; }
+  .card{ background:var(--bg-panel); border:1px solid rgba(242,233,216,.08); border-radius:var(--r); padding:16px; }
+  label{ display:block; font-size:.78rem; color:var(--cream-dim); margin:12px 0 5px; }
+  input, textarea, select{ width:100%; background:var(--bg-deep); border:1px solid rgba(242,233,216,.15); color:var(--cream); padding:12px; border-radius:10px; font:inherit; font-size:.95rem; }
+  textarea{ resize:vertical; min-height:70px; }
+  .code-input{ font-size:1.6rem; letter-spacing:.35em; text-align:center; }
+  button{ font:inherit; cursor:pointer; border:none; border-radius:10px; }
+  .btn{ background:var(--gold); color:#1b1b1b; font-weight:600; padding:13px 16px; width:100%; margin-top:16px; }
+  .btn:disabled{ opacity:.6; }
+  .btn-sec{ background:var(--bg-raise); color:var(--cream); padding:10px 14px; font-size:.88rem; border:1px solid rgba(242,233,216,.12); text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+  .link{ background:none; color:var(--teal-light); text-decoration:underline; padding:0; font-size:.88rem; margin-top:14px; }
+  .msg{ margin-top:12px; font-size:.88rem; padding:10px 12px; border-radius:10px; display:none; line-height:1.4; }
+  .msg.show{ display:block; }
+  .msg.err{ background:rgba(224,104,94,.12); color:var(--danger); border:1px solid rgba(224,104,94,.35); }
+  .msg.ok{ background:rgba(76,175,125,.12); color:var(--success); border:1px solid rgba(76,175,125,.35); }
+  .hidden{ display:none !important; }
+
+  .ficha{ display:flex; gap:14px; align-items:center; }
+  .thumb{ width:64px; height:64px; border-radius:14px; background:var(--terracotta) center/cover; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',Georgia,serif; font-size:1.5rem; }
+  .ficha .nombre{ font-family:'Fraunces',Georgia,serif; font-size:1.2rem; }
+  .pill{ display:inline-block; font-size:.72rem; padding:3px 9px; border-radius:20px; margin-top:6px; }
+  .pill.on{ background:rgba(76,175,125,.18); color:var(--success); }
+  .pill.off{ background:rgba(224,104,94,.15); color:var(--danger); }
+  .pill.gold{ background:rgba(217,164,65,.15); color:var(--gold); }
+  .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .stat{ background:var(--bg-panel); border-radius:var(--r); padding:14px; border:1px solid rgba(242,233,216,.08); }
+  .stat .n{ font-family:'Fraunces',Georgia,serif; font-size:1.8rem; color:var(--gold); line-height:1.1; }
+  .stat .l{ font-size:.76rem; color:var(--cream-dim); margin-top:4px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+  .foto-btn{ display:flex; align-items:center; gap:12px; background:var(--bg-deep); border:1px dashed rgba(242,233,216,.25); color:var(--cream-dim); padding:10px 12px; border-radius:10px; cursor:pointer; font-size:.88rem; }
+  .foto-btn img{ width:48px; height:48px; object-fit:cover; border-radius:10px; }
+  .foto-input{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+  .cat-opt{ display:flex; justify-content:space-between; gap:10px; width:100%; text-align:left; background:var(--bg-deep); border:1px solid rgba(242,233,216,.1); border-radius:10px; padding:10px 12px; color:var(--cream); font-size:.88rem; margin-top:6px; }
+  .cat-opt .add{ color:var(--gold); font-weight:600; white-space:nowrap; }
+  .cat-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .cat-row .nombre{ flex:1; font-size:.88rem; min-width:0; }
+  .cat-row input{ width:96px; padding:9px 10px; }
+  .cat-row .quitar{ background:none; color:var(--danger); font-size:1.2rem; padding:4px 8px; }
+  .acciones{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+  .btn-wa{ background:var(--wa); color:#0b2a17; font-weight:600; padding:11px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+  .legal{ font-size:.76rem; color:var(--cream-dim); text-align:center; line-height:1.5; }
+  .legal a{ color:var(--cream-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="wordmark" href="./">is<b>Here</b></a>
+    <div class="flags" role="group" aria-label="Idioma / Language">
+      <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català"><svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg></button>
+      <button class="flag-btn" data-lang="es" aria-label="Español" title="Español"><svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="2" fill="#C60B1E"/><rect y="0.5" width="3" height="1" fill="#FFC400"/></svg></button>
+      <button class="flag-btn" data-lang="en" aria-label="English" title="English"><svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg></button>
+    </div>
+  </header>
+
+  <!-- 1. Email -->
+  <section id="v-email" class="hidden">
+    <h1 data-i18n="t_title">Mi comercio</h1>
+    <p class="muted" style="margin-top:8px" data-i18n="t_intro">Entra con el email con el que diste de alta tu comercio. Te enviaremos un código de acceso.</p>
+    <div class="card" style="margin-top:16px">
+      <label for="email" data-i18n="l_email">Email del comercio</label>
+      <input id="email" type="email" autocomplete="email" inputmode="email">
+      <button class="btn" id="btn-enviar" data-i18n="b_send">Enviarme el código</button>
+      <div class="msg" id="m-email"></div>
+    </div>
+  </section>
+
+  <!-- 2. Código -->
+  <section id="v-codigo" class="hidden">
+    <h1 data-i18n="t_code">Revisa tu correo</h1>
+    <p class="muted" style="margin-top:8px" id="txt-enviado"></p>
+    <div class="card" style="margin-top:16px">
+      <label for="codigo" data-i18n="l_code">Código</label>
+      <input id="codigo" class="code-input" inputmode="numeric" maxlength="8" autocomplete="one-time-code">
+      <button class="btn" id="btn-verificar" data-i18n="b_verify">Entrar</button>
+      <div class="msg" id="m-codigo"></div>
+      <button class="link" id="btn-otro" data-i18n="b_other">Usar otro email o reenviar el código</button>
+    </div>
+  </section>
+
+  <!-- 3. Sin comercios -->
+  <section id="v-vacio" class="hidden">
+    <h1 data-i18n="t_empty">No encontramos tu comercio</h1>
+    <p class="muted" style="margin-top:8px" data-i18n="t_empty_txt">No hay ningún comercio activo con este email. Comprueba que es el mismo que usaste al darte de alta o escríbenos.</p>
+    <div class="acciones">
+      <a class="btn-sec" href="mailto:isherebarcelona@gmail.com" data-i18n="b_write">Escribir a isHere</a>
+      <button class="btn-sec" data-salir data-i18n="b_logout">Salir</button>
+    </div>
+  </section>
+
+  <!-- 4. Panel -->
+  <section id="v-panel" class="hidden" style="display:flex; flex-direction:column; gap:18px;">
+
+    <div id="selector-wrap" class="hidden">
+      <label for="selector" data-i18n="l_select">Tus comercios</label>
+      <select id="selector"></select>
+    </div>
+
+    <div class="card">
+      <div class="ficha">
+        <div class="thumb" id="p-thumb"></div>
+        <div>
+          <div class="nombre" id="p-nombre"></div>
+          <div class="muted" id="p-producto"></div>
+          <span class="pill" id="p-estado"></span>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:12px" id="p-plan"></p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="n" id="s-7">0</div><div class="l" data-i18n="s_7">veces que te encontraron esta semana</div></div>
+      <div class="stat"><div class="n" id="s-30">0</div><div class="l" data-i18n="s_30">en los últimos 30 días</div></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="t_edit">Editar mi ficha</h2>
+      <div class="row2">
+        <div><label for="e-star" data-i18n="l_star">Producto estrella</label><input id="e-star"></div>
+        <div><label for="e-precio" data-i18n="l_price">Precio</label><input id="e-precio" inputmode="decimal"></div>
+      </div>
+      <label for="e-tags" data-i18n="l_tags">Palabras con las que te buscan (catalán, español e inglés), separadas por comas</label>
+      <textarea id="e-tags"></textarea>
+      <label for="e-address" data-i18n="l_address">Dirección exacta (calle y número)</label>
+      <input id="e-address">
+      <label for="e-web" data-i18n="l_web">Página web o Instagram</label>
+      <input id="e-web">
+      <label for="e-foto" data-i18n="l_photo">Foto o logo</label>
+      <input id="e-foto" type="file" accept="image/*" class="foto-input">
+      <label for="e-foto" class="foto-btn"><img id="e-foto-prev" alt="" hidden><span id="e-foto-txt" data-i18n="photo_change">Cambiar foto</span></label>
+
+      <label for="cat-q" data-i18n="l_catalog">Productos del catálogo turista que vendes</label>
+      <input id="cat-q" data-i18n-ph="ph_catalog" placeholder="Busca: protector, cargador, paraguas…" autocomplete="off">
+      <div id="cat-list"></div>
+      <div id="cat-chosen"></div>
+
+      <button class="btn" id="btn-guardar" data-i18n="b_save">Guardar cambios</button>
+      <div class="msg" id="m-guardar"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="t_help">¿Necesitas ayuda?</h2>
+      <p class="muted" id="p-asesor"></p>
+      <div class="acciones">
+        <a class="btn-wa hidden" id="a-wa" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
+          <span>WhatsApp</span>
+        </a>
+        <a class="btn-sec" id="a-mail">✉️ <span>Email</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="t_billing">Pagos, facturas y baja</h2>
+      <p class="muted" data-i18n="billing_txt">Para cambiar la tarjeta, pedir una factura o darte de baja, escríbenos y lo gestionamos. Sin permanencia: tu ficha sigue visible hasta el final del periodo pagado.</p>
+      <div class="acciones"><a class="btn-sec" id="a-baja" data-i18n="b_billing">Escribir a isHere</a></div>
+    </div>
+
+    <p class="legal"><span data-i18n="legal">Bajas y reclamaciones:</span> <a href="mailto:isherebarcelona@gmail.com">isherebarcelona@gmail.com</a></p>
+    <button class="btn-sec" data-salir data-i18n="b_logout" style="align-self:center">Salir</button>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+
+/* ---------- idiomas ---------- */
+const I18N = {
+  es: {
+    t_title: "Mi comercio", t_intro: "Entra con el email con el que diste de alta tu comercio. Te enviaremos un código de acceso.",
+    l_email: "Email del comercio", b_send: "Enviarme el código", t_code: "Revisa tu correo",
+    sent: "Te enviamos un código a {e}. Si no lo ves, mira en la carpeta de spam.", l_code: "Código", b_verify: "Entrar",
+    b_other: "Usar otro email o reenviar el código", t_empty: "No encontramos tu comercio",
+    t_empty_txt: "No hay ningún comercio activo con este email. Comprueba que es el mismo que usaste al darte de alta o escríbenos.",
+    b_write: "Escribir a isHere", b_logout: "Salir", l_select: "Tus comercios",
+    s_7: "veces que te encontraron esta semana", s_30: "en los últimos 30 días",
+    t_edit: "Editar mi ficha", l_star: "Producto estrella", l_price: "Precio",
+    l_tags: "Palabras con las que te buscan (catalán, español e inglés), separadas por comas",
+    l_address: "Dirección exacta (calle y número)", l_web: "Página web o Instagram", l_photo: "Foto o logo",
+    photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
+    l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
+    cat_add: "Añadir", ph_price: "Precio", cat_remove: "Quitar", b_save: "Guardar cambios",
+    saving: "Guardando…", saved: "¡Guardado! Tu ficha ya se ve así en el buscador.", err_required: "El producto estrella y la dirección son obligatorios.",
+    err_save: "No se pudo guardar: {e}", t_help: "¿Necesitas ayuda?",
+    asesor_rec: "Tu asesor es {n}, quien te presentó isHere. Escríbele por WhatsApp o email.",
+    asesor_is: "Te acompaña directamente el equipo de isHere. Escríbenos y te respondemos.",
+    wa_msg: "Hola, soy {c}, de isHere. Necesito ayuda con mi ficha.", mail_subject: "Ayuda con mi ficha – {c}",
+    t_billing: "Pagos, facturas y baja",
+    billing_txt: "Para cambiar la tarjeta, pedir una factura o darte de baja, escríbenos y lo gestionamos. Sin permanencia: tu ficha sigue visible hasta el final del periodo pagado.",
+    b_billing: "Escribir a isHere", billing_subject: "Pagos / facturas / baja – {c}", legal: "Bajas y reclamaciones:",
+    st_active: "Activa", st_courtesy: "Cortesía", st_off: "No activa",
+    plan_promo: "Promoción de 3 meses hasta el {d}. Después, 12,10 €/mes (IVA incluido), sin permanencia.",
+    plan_month: "Suscripción mensual de 12,10 € (IVA incluido), sin permanencia.",
+    plan_courtesy: "Ficha de cortesía hasta el {d}.", plan_courtesy_open: "Ficha de cortesía sin vencimiento.",
+    plan_off: "Tu ficha no aparece ahora en el buscador. Escríbenos si quieres reactivarla.",
+    err_email: "Escribe un email válido.", err_send: "No se pudo enviar el código: {e}", err_code: "Código incorrecto o caducado. Pide uno nuevo.",
+    err_load: "No se pudieron cargar tus datos. Inténtalo de nuevo."
+  },
+  ca: {
+    t_title: "El meu comerç", t_intro: "Entra amb el correu amb què vas donar d'alta el teu comerç. T'enviarem un codi d'accés.",
+    l_email: "Correu del comerç", b_send: "Envia'm el codi", t_code: "Revisa el teu correu",
+    sent: "T'hem enviat un codi a {e}. Si no el veus, mira a la carpeta de correu brossa.", l_code: "Codi", b_verify: "Entra",
+    b_other: "Fer servir un altre correu o reenviar el codi", t_empty: "No hem trobat el teu comerç",
+    t_empty_txt: "No hi ha cap comerç actiu amb aquest correu. Comprova que és el mateix que vas fer servir en donar-te d'alta o escriu-nos.",
+    b_write: "Escriure a isHere", b_logout: "Surt", l_select: "Els teus comerços",
+    s_7: "vegades que t'han trobat aquesta setmana", s_30: "en els darrers 30 dies",
+    t_edit: "Editar la meva fitxa", l_star: "Producte estrella", l_price: "Preu",
+    l_tags: "Paraules amb què et busquen (català, castellà i anglès), separades per comes",
+    l_address: "Adreça exacta (carrer i número)", l_web: "Pàgina web o Instagram", l_photo: "Foto o logotip",
+    photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
+    l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
+    cat_add: "Afegeix", ph_price: "Preu", cat_remove: "Treu", b_save: "Desar els canvis",
+    saving: "Desant…", saved: "Desat! La teva fitxa ja es veu així al cercador.", err_required: "El producte estrella i l'adreça són obligatoris.",
+    err_save: "No s'ha pogut desar: {e}", t_help: "Necessites ajuda?",
+    asesor_rec: "El teu assessor és {n}, que et va presentar isHere. Escriu-li per WhatsApp o correu.",
+    asesor_is: "T'acompanya directament l'equip d'isHere. Escriu-nos i et responem.",
+    wa_msg: "Hola, soc {c}, d'isHere. Necessito ajuda amb la meva fitxa.", mail_subject: "Ajuda amb la meva fitxa – {c}",
+    t_billing: "Pagaments, factures i baixa",
+    billing_txt: "Per canviar la targeta, demanar una factura o donar-te de baixa, escriu-nos i ho gestionem. Sense permanència: la teva fitxa continua visible fins al final del període pagat.",
+    b_billing: "Escriure a isHere", billing_subject: "Pagaments / factures / baixa – {c}", legal: "Baixes i reclamacions:",
+    st_active: "Activa", st_courtesy: "Cortesia", st_off: "No activa",
+    plan_promo: "Promoció de 3 mesos fins al {d}. Després, 12,10 €/mes (IVA inclòs), sense permanència.",
+    plan_month: "Subscripció mensual de 12,10 € (IVA inclòs), sense permanència.",
+    plan_courtesy: "Fitxa de cortesia fins al {d}.", plan_courtesy_open: "Fitxa de cortesia sense venciment.",
+    plan_off: "Ara la teva fitxa no apareix al cercador. Escriu-nos si la vols reactivar.",
+    err_email: "Escriu un correu vàlid.", err_send: "No s'ha pogut enviar el codi: {e}", err_code: "Codi incorrecte o caducat. Demana'n un de nou.",
+    err_load: "No s'han pogut carregar les teves dades. Torna-ho a provar."
+  },
+  en: {
+    t_title: "My business", t_intro: "Sign in with the email you used to register your business. We'll send you an access code.",
+    l_email: "Business email", b_send: "Send me the code", t_code: "Check your email",
+    sent: "We sent a code to {e}. If you can't see it, check your spam folder.", l_code: "Code", b_verify: "Sign in",
+    b_other: "Use another email or resend the code", t_empty: "We couldn't find your business",
+    t_empty_txt: "There's no active business with this email. Check it's the same one you registered with, or write to us.",
+    b_write: "Write to isHere", b_logout: "Sign out", l_select: "Your businesses",
+    s_7: "times you were found this week", s_30: "in the last 30 days",
+    t_edit: "Edit my listing", l_star: "Star product", l_price: "Price",
+    l_tags: "Words people use to find you (Catalan, Spanish and English), separated by commas",
+    l_address: "Exact address (street and number)", l_web: "Website or Instagram", l_photo: "Photo or logo",
+    photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
+    l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
+    cat_add: "Add", ph_price: "Price", cat_remove: "Remove", b_save: "Save changes",
+    saving: "Saving…", saved: "Saved! This is how your listing now appears in search.", err_required: "Star product and address are required.",
+    err_save: "Couldn't save: {e}", t_help: "Need help?",
+    asesor_rec: "Your adviser is {n}, who introduced you to isHere. Message them on WhatsApp or by email.",
+    asesor_is: "The isHere team supports you directly. Write to us and we'll reply.",
+    wa_msg: "Hi, I'm {c} on isHere. I need help with my listing.", mail_subject: "Help with my listing – {c}",
+    t_billing: "Payments, invoices and cancellation",
+    billing_txt: "To change your card, request an invoice or cancel, write to us and we'll handle it. No commitment: your listing stays visible until the end of the paid period.",
+    b_billing: "Write to isHere", billing_subject: "Payments / invoices / cancellation – {c}", legal: "Cancellations and complaints:",
+    st_active: "Active", st_courtesy: "Courtesy", st_off: "Not active",
+    plan_promo: "3-month promotion until {d}. Then €12.10/month (VAT included), no commitment.",
+    plan_month: "Monthly subscription of €12.10 (VAT included), no commitment.",
+    plan_courtesy: "Courtesy listing until {d}.", plan_courtesy_open: "Courtesy listing with no end date.",
+    plan_off: "Your listing isn't showing in search right now. Write to us if you'd like to reactivate it.",
+    err_email: "Enter a valid email.", err_send: "Couldn't send the code: {e}", err_code: "Wrong or expired code. Request a new one.",
+    err_load: "Couldn't load your data. Please try again."
+  }
+};
+const LOCALE = { ca: "ca-ES", es: "es-ES", en: "en-GB" };
+let lang = (() => {
+  try { const g = localStorage.getItem("ishere_lang"); if (I18N[g]) return g; } catch (e) {}
+  const n = (navigator.language || "es").toLowerCase();
+  return n.startsWith("ca") ? "ca" : n.startsWith("es") ? "es" : "en";
+})();
+const t = (k, v = {}) => ((I18N[lang] || {})[k] ?? I18N.es[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? "");
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function aplicarIdioma(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll(".flag-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (actual) pintarPanel();
+  if (emailEnviado) $("txt-enviado").textContent = t("sent", { e: emailEnviado });
+}
+document.querySelectorAll(".flag-btn").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang; try { localStorage.setItem("ishere_lang", lang); } catch (e) {} aplicarIdioma();
+}));
+
+/* ---------- vistas ---------- */
+const VISTAS = ["v-email", "v-codigo", "v-vacio", "v-panel"];
+const ver = (id) => VISTAS.forEach(v => $(v).classList.toggle("hidden", v !== id));
+function msg(id, texto, tipo = "err"){ const m = $(id); m.textContent = texto; m.className = "msg show " + tipo; }
+const limpiar = (id) => $(id).className = "msg";
+
+/* ---------- acceso con código ---------- */
+let emailEnviado = "";
+$("btn-enviar").addEventListener("click", async (e) => {
+  limpiar("m-email");
+  const email = $("email").value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg("m-email", t("err_email")); return; }
+  e.target.disabled = true;
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  e.target.disabled = false;
+  if (error){ msg("m-email", t("err_send", { e: error.message })); return; }
+  emailEnviado = email;
+  $("txt-enviado").textContent = t("sent", { e: email });
+  ver("v-codigo"); $("codigo").focus();
+});
+$("email").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-enviar").click(); });
+$("btn-verificar").addEventListener("click", async (e) => {
+  limpiar("m-codigo");
+  const token = $("codigo").value.replace(/\D/g, "");
+  if (token.length < 6) { msg("m-codigo", t("err_code")); return; }
+  e.target.disabled = true;
+  const { error } = await sb.auth.verifyOtp({ email: emailEnviado, token, type: "email" });
+  e.target.disabled = false;
+  if (error){ msg("m-codigo", t("err_code")); return; }
+  cargar();
+});
+$("btn-otro").addEventListener("click", () => { $("codigo").value = ""; ver("v-email"); });
+document.querySelectorAll("[data-salir]").forEach(b => b.addEventListener("click", async () => {
+  await sb.auth.signOut(); actual = null; comercios = []; ver("v-email");
+}));
+
+/* ---------- datos ---------- */
+let comercios = [], actual = null, catalogo = [], elegidos = new Map(), fotoNueva = null;
+
+async function cargarCatalogo(){
+  const { data } = await sb.from("catalogo").select("id, es, ca, en, claves").order("id");
+  catalogo = (data || []).map(p => ({ ...p, tokens: tokens([p.es, p.ca, p.en, p.claves].join(" ")) }));
+}
+function normalize(s){ return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+function tokens(s){ return normalize(s).split(/[^a-z0-9]+/).filter(w => w.length >= 3); }
+const nombreProd = (p) => p ? (p[lang] || p.es) : "";
+
+async function cargar(){
+  const { data, error } = await sb.rpc("mi_comercio");
+  if (error){ ver("v-email"); msg("m-email", t("err_load")); return; }
+  comercios = data || [];
+  if (!comercios.length){ ver("v-vacio"); return; }
+  if (!catalogo.length) await cargarCatalogo();
+  const sel = $("selector");
+  sel.innerHTML = comercios.map((c, i) => `<option value="${i}">${esc(c.name)} · ${esc(c.zone)}</option>`).join("");
+  $("selector-wrap").classList.toggle("hidden", comercios.length < 2);
+  elegir(0);
+  ver("v-panel");
+}
+$("selector").addEventListener("change", e => elegir(Number(e.target.value)));
+
+function elegir(i){
+  actual = comercios[i];
+  fotoNueva = null;
+  elegidos = new Map((actual.productos || []).map(p => [p.id, p.precio || ""]));
+  $("e-star").value = actual.star_product_name || "";
+  $("e-precio").value = actual.star_product_price || "";
+  $("e-tags").value = actual.tags || "";
+  $("e-address").value = actual.address || "";
+  $("e-web").value = actual.web || "";
+  $("e-foto-prev").hidden = !actual.logo_url;
+  if (actual.logo_url) $("e-foto-prev").src = actual.logo_url;
+  limpiar("m-guardar");
+  pintarPanel();
+}
+
+function fecha(f){ return f ? new Date(f).toLocaleDateString(LOCALE[lang], { day: "numeric", month: "long", year: "numeric" }) : ""; }
+
+function pintarPanel(){
+  const c = actual;
+  const thumb = $("p-thumb");
+  if (c.logo_url){ thumb.style.backgroundImage = `url("${c.logo_url}")`; thumb.textContent = ""; }
+  else { thumb.style.backgroundImage = ""; thumb.textContent = (c.name || "?").charAt(0).toUpperCase(); }
+  $("p-nombre").textContent = c.name;
+  $("p-producto").textContent = [c.star_product_name, c.star_product_price].filter(Boolean).join(" · ") + (c.zone ? ` · ${c.zone}` : "");
+
+  const activa = c.status === "beta_active";
+  const cortesia = c.plan === "courtesy";
+  const estado = $("p-estado");
+  estado.textContent = !activa ? t("st_off") : cortesia ? t("st_courtesy") : t("st_active");
+  estado.className = "pill " + (!activa ? "off" : cortesia ? "gold" : "on");
+  const futuro = c.expires_at && new Date(c.expires_at) > new Date();
+  $("p-plan").textContent = !activa ? t("plan_off")
+    : cortesia ? (c.expires_at ? t("plan_courtesy", { d: fecha(c.expires_at) }) : t("plan_courtesy_open"))
+    : futuro ? t("plan_promo", { d: fecha(c.expires_at) }) : t("plan_month");
+
+  $("s-7").textContent = c.vistas_7 ?? 0;
+  $("s-30").textContent = c.vistas_30 ?? 0;
+
+  const a = c.asesor || {};
+  const esRec = a.tipo === "reclutador";
+  $("p-asesor").textContent = esRec ? t("asesor_rec", { n: a.nombre || "" }) : t("asesor_is");
+  const tel = String(a.telefono || "").replace(/\D/g, "");
+  const wa = $("a-wa");
+  wa.classList.toggle("hidden", !tel);
+  if (tel) wa.href = `https://wa.me/${tel}?text=${encodeURIComponent(t("wa_msg", { c: c.name }))}`;
+  const correo = a.email || "isherebarcelona@gmail.com";
+  $("a-mail").href = `mailto:${correo}?subject=${encodeURIComponent(t("mail_subject", { c: c.name }))}`;
+  $("a-baja").href = `mailto:isherebarcelona@gmail.com?subject=${encodeURIComponent(t("billing_subject", { c: c.name }))}`;
+
+  renderElegidos(); renderSugerencias();
+  if (fotoNueva) $("e-foto-txt").textContent = t("photo_ready");
+}
+
+/* ---------- catálogo ---------- */
+function renderSugerencias(){
+  const q = tokens($("cat-q").value), list = $("cat-list");
+  list.innerHTML = "";
+  if (!q.length) return;
+  catalogo.map(p => ({ p, n: q.filter(w => p.tokens.some(nt => nt.includes(w) || w.includes(nt))).length }))
+    .filter(x => x.n > 0 && !elegidos.has(x.p.id)).sort((a, b) => b.n - a.n).slice(0, 6)
+    .forEach(({ p }) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "cat-opt";
+      b.innerHTML = `<span>${esc(nombreProd(p))}</span><span class="add">+ ${esc(t("cat_add"))}</span>`;
+      b.addEventListener("click", () => { elegidos.set(p.id, ""); $("cat-q").value = ""; list.innerHTML = ""; renderElegidos(); });
+      list.appendChild(b);
+    });
+}
+function renderElegidos(){
+  const box = $("cat-chosen"); box.innerHTML = "";
+  elegidos.forEach((precio, id) => {
+    const p = catalogo.find(x => x.id === id);
+    const fila = document.createElement("div"); fila.className = "cat-row";
+    fila.innerHTML = `<span class="nombre">${esc(nombreProd(p))}</span>
+      <input type="text" inputmode="decimal" placeholder="${esc(t("ph_price"))}" value="${esc(precio)}" aria-label="${esc(t("ph_price"))}">
+      <button type="button" class="quitar" aria-label="${esc(t("cat_remove"))}">×</button>`;
+    fila.querySelector("input").addEventListener("input", e => elegidos.set(id, e.target.value));
+    fila.querySelector(".quitar").addEventListener("click", () => { elegidos.delete(id); renderElegidos(); });
+    box.appendChild(fila);
+  });
+}
+$("cat-q").addEventListener("input", renderSugerencias);
+
+/* ---------- foto ---------- */
+function comprimir(file){
+  return new Promise((ok, mal) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1200 / Math.max(img.width, img.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      cv.toBlob(b => b ? ok(b) : mal(new Error("foto")), "image/jpeg", 0.82);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); mal(new Error("foto")); };
+    img.src = url;
+  });
+}
+$("e-foto").addEventListener("change", async () => {
+  const f = $("e-foto").files && $("e-foto").files[0];
+  if (!f) return;
+  try {
+    fotoNueva = await comprimir(f);
+    $("e-foto-prev").src = URL.createObjectURL(fotoNueva); $("e-foto-prev").hidden = false;
+    $("e-foto-txt").textContent = t("photo_ready");
+  } catch (e) { fotoNueva = null; }
+});
+
+/* ---------- guardar ---------- */
+$("btn-guardar").addEventListener("click", async (e) => {
+  limpiar("m-guardar");
+  const star = $("e-star").value.trim(), address = $("e-address").value.trim();
+  if (!star || !address){ msg("m-guardar", t("err_required")); return; }
+  e.target.disabled = true; e.target.textContent = t("saving");
+  try {
+    let logo = "";
+    if (fotoNueva){
+      const ruta = `${actual.id}-${Date.now()}.jpg`;
+      const up = await sb.storage.from("fotos-pymes").upload(ruta, fotoNueva, { contentType: "image/jpeg" });
+      if (up.error) throw up.error;
+      logo = sb.storage.from("fotos-pymes").getPublicUrl(ruta).data.publicUrl;
+    }
+    const productos = [...elegidos].map(([id, precio]) => ({ id, precio }));
+    const { error } = await sb.rpc("actualizar_mi_comercio", {
+      p_id: actual.id, p_star: star, p_precio: $("e-precio").value.trim(), p_tags: $("e-tags").value.trim(),
+      p_address: address, p_web: $("e-web").value.trim(), p_logo: logo, p_productos: productos
+    });
+    if (error) throw error;
+    const idx = comercios.indexOf(actual);
+    await cargar();
+    elegir(Math.max(0, idx)); $("selector").value = String(Math.max(0, idx));
+    msg("m-guardar", t("saved"), "ok");
+  } catch (err) {
+    msg("m-guardar", t("err_save", { e: err.message || err }));
+  } finally {
+    e.target.disabled = false; e.target.textContent = t("b_save");
+  }
+});
+
+/* ---------- inicio ---------- */
+(async () => {
+  aplicarIdioma();
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) cargar(); else ver("v-email");
+})();
+</script>
+</body>
+</html>
