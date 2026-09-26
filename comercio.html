@@ -63,6 +63,10 @@
   .cat-row .nombre{ flex:1; font-size:.88rem; min-width:0; }
   .cat-row input{ width:96px; padding:9px 10px; }
   .cat-row .quitar{ background:none; color:var(--danger); font-size:1.2rem; padding:4px 8px; }
+  .carta-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .carta-row .n{ flex:1; min-width:0; }
+  .carta-row .pr{ width:96px; }
+  .carta-row .quitar{ background:none; color:var(--danger); font-size:1.2rem; padding:4px 8px; }
   .acciones{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
   .btn-wa{ background:var(--wa); color:#0b2a17; font-weight:600; padding:11px 16px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
   .legal{ font-size:.76rem; color:var(--cream-dim); text-align:center; line-height:1.5; }
@@ -147,6 +151,14 @@
         <div><label for="e-star" data-i18n="l_star">Producto estrella</label><input id="e-star"></div>
         <div><label for="e-precio" data-i18n="l_price">Precio</label><input id="e-precio" inputmode="decimal"></div>
       </div>
+      <label for="e-desc" data-i18n="l_desc">Descripción corta de tu comercio</label>
+      <textarea id="e-desc" maxlength="300" data-i18n-ph="ph_desc" placeholder="Empanadas chilenas caseras, horneadas cada mañana. Opciones vegetarianas."></textarea>
+
+      <label data-i18n="l_carta">Tu carta: productos propios con su precio</label>
+      <p class="muted" data-i18n="carta_help" style="font-size:.8rem">Aparecen en tu ficha y también sirven para que te encuentren.</p>
+      <div id="carta"></div>
+      <button type="button" class="btn-sec" id="btn-add-item" style="margin-top:8px" data-i18n="b_add_item">+ Añadir producto</button>
+
       <label for="e-tags" data-i18n="l_tags">Palabras con las que te buscan (catalán, español e inglés), separadas por comas</label>
       <textarea id="e-tags"></textarea>
       <label for="e-address" data-i18n="l_address">Dirección exacta (calle y número)</label>
@@ -210,6 +222,7 @@ const I18N = {
     s_7: "veces que te encontraron esta semana", s_30: "en los últimos 30 días",
     t_edit: "Editar mi ficha", l_star: "Producto estrella", l_price: "Precio",
     l_tags: "Palabras con las que te buscan (catalán, español e inglés), separadas por comas",
+    l_desc: "Descripción corta de tu comercio", ph_desc: "Empanadas chilenas caseras, horneadas cada mañana. Opciones vegetarianas.", l_carta: "Tu carta: productos propios con su precio", carta_help: "Aparecen en tu ficha y también sirven para que te encuentren.", b_add_item: "+ Añadir producto", ph_item: "Producto",
     l_address: "Dirección exacta (calle y número)", l_web: "Página web o Instagram", l_photo: "Foto o logo",
     photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
     l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
@@ -240,6 +253,7 @@ const I18N = {
     s_7: "vegades que t'han trobat aquesta setmana", s_30: "en els darrers 30 dies",
     t_edit: "Editar la meva fitxa", l_star: "Producte estrella", l_price: "Preu",
     l_tags: "Paraules amb què et busquen (català, castellà i anglès), separades per comes",
+    l_desc: "Descripció breu del teu comerç", ph_desc: "Empanades xilenes casolanes, fetes cada matí. Opcions vegetarianes.", l_carta: "La teva carta: productes propis amb el seu preu", carta_help: "Apareixen a la teva fitxa i també serveixen perquè et trobin.", b_add_item: "+ Afegeix un producte", ph_item: "Producte",
     l_address: "Adreça exacta (carrer i número)", l_web: "Pàgina web o Instagram", l_photo: "Foto o logotip",
     photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
     l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
@@ -270,6 +284,7 @@ const I18N = {
     s_7: "times you were found this week", s_30: "in the last 30 days",
     t_edit: "Edit my listing", l_star: "Star product", l_price: "Price",
     l_tags: "Words people use to find you (Catalan, Spanish and English), separated by commas",
+    l_desc: "Short description of your business", ph_desc: "Homemade Chilean empanadas, baked every morning. Vegetarian options.", l_carta: "Your menu: your own products with prices", carta_help: "They appear on your listing and also help people find you.", b_add_item: "+ Add product", ph_item: "Product",
     l_address: "Exact address (street and number)", l_web: "Website or Instagram", l_photo: "Photo or logo",
     photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
     l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
@@ -348,7 +363,7 @@ document.querySelectorAll("[data-salir]").forEach(b => b.addEventListener("click
 }));
 
 /* ---------- datos ---------- */
-let comercios = [], actual = null, catalogo = [], elegidos = new Map(), fotoNueva = null;
+let comercios = [], actual = null, catalogo = [], elegidos = new Map(), fotoNueva = null, carta = [];
 
 async function cargarCatalogo(){
   const { data } = await sb.from("catalogo").select("id, es, ca, en, claves").order("id");
@@ -379,6 +394,8 @@ function elegir(i){
   $("e-star").value = actual.star_product_name || "";
   $("e-precio").value = actual.star_product_price || "";
   $("e-tags").value = actual.tags || "";
+  $("e-desc").value = actual.descripcion || "";
+  carta = (Array.isArray(actual.carta) ? actual.carta : []).map(x => ({ nombre: x.nombre || "", precio: x.precio || "" }));
   $("e-address").value = actual.address || "";
   $("e-web").value = actual.web || "";
   $("e-foto-prev").hidden = !actual.logo_url;
@@ -421,7 +438,7 @@ function pintarPanel(){
   $("a-mail").href = `mailto:${correo}?subject=${encodeURIComponent(t("mail_subject", { c: c.name }))}`;
   $("a-baja").href = `mailto:isherebarcelona@gmail.com?subject=${encodeURIComponent(t("billing_subject", { c: c.name }))}`;
 
-  renderElegidos(); renderSugerencias();
+  renderElegidos(); renderSugerencias(); renderCarta();
   if (fotoNueva) $("e-foto-txt").textContent = t("photo_ready");
 }
 
@@ -454,6 +471,26 @@ function renderElegidos(){
   });
 }
 $("cat-q").addEventListener("input", renderSugerencias);
+
+/* ---------- carta propia ---------- */
+function renderCarta(){
+  const box = $("carta"); box.innerHTML = "";
+  carta.forEach((it, i) => {
+    const fila = document.createElement("div"); fila.className = "carta-row";
+    fila.innerHTML = `<input class="n" maxlength="60" placeholder="${esc(t("ph_item"))}" value="${esc(it.nombre)}" aria-label="${esc(t("ph_item"))}">
+      <input class="pr" maxlength="20" inputmode="decimal" placeholder="${esc(t("ph_price"))}" value="${esc(it.precio)}" aria-label="${esc(t("ph_price"))}">
+      <button type="button" class="quitar" aria-label="${esc(t("cat_remove"))}">×</button>`;
+    fila.querySelector(".n").addEventListener("input", e => carta[i].nombre = e.target.value);
+    fila.querySelector(".pr").addEventListener("input", e => carta[i].precio = e.target.value);
+    fila.querySelector(".quitar").addEventListener("click", () => { carta.splice(i, 1); renderCarta(); });
+    box.appendChild(fila);
+  });
+}
+$("btn-add-item").addEventListener("click", () => {
+  if (carta.length >= 30) return;
+  carta.push({ nombre: "", precio: "" }); renderCarta();
+  const filas = $("carta").querySelectorAll(".n"); filas[filas.length - 1].focus();
+});
 
 /* ---------- foto ---------- */
 function comprimir(file){
@@ -498,7 +535,9 @@ $("btn-guardar").addEventListener("click", async (e) => {
     const productos = [...elegidos].map(([id, precio]) => ({ id, precio }));
     const { error } = await sb.rpc("actualizar_mi_comercio", {
       p_id: actual.id, p_star: star, p_precio: $("e-precio").value.trim(), p_tags: $("e-tags").value.trim(),
-      p_address: address, p_web: $("e-web").value.trim(), p_logo: logo, p_productos: productos
+      p_address: address, p_web: $("e-web").value.trim(), p_logo: logo, p_productos: productos,
+      p_descripcion: $("e-desc").value.trim(),
+      p_carta: carta.filter(x => x.nombre.trim()).map(x => ({ nombre: x.nombre.trim(), precio: x.precio.trim() }))
     });
     if (error) throw error;
     const idx = comercios.indexOf(actual);

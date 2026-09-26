@@ -367,6 +367,25 @@
     margin-top: 10px;
   }
   .result-card.show{ display: flex; animation: rise 0.4s ease; }
+
+  /* Ficha ampliada del comercio (solo visible cuando hay resultado) */
+  .ficha-turista{ display: none; background: var(--bg-panel); border: 1px solid rgba(217,164,65,0.18); border-radius: var(--radius-lg);
+                  margin-top: 10px; overflow: hidden; }
+  .result-card.show + .ficha-turista{ display: block; animation: rise 0.45s ease; }
+  .ficha-turista [hidden]{ display: none !important; }
+  .ft-foto{ width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+  .ft-body{ padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .ft-desc{ font-size: 0.92rem; line-height: 1.45; color: var(--cream); }
+  .ft-dir{ font-size: 0.86rem; color: var(--cream-dim); }
+  .ft-h{ font-size: 0.78rem; color: var(--gold); font-weight: 600; letter-spacing: 0.02em; margin-top: 2px; }
+  .ft-lista{ list-style: none; display: flex; flex-direction: column; }
+  .ft-lista li{ display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dashed rgba(242,233,216,0.12); font-size: 0.9rem; }
+  .ft-lista li:last-child{ border-bottom: none; }
+  .ft-lista .precio{ color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .ft-lista li.destacado{ font-weight: 600; }
+  .ft-links{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .ft-links a{ font-size: 0.84rem; color: var(--cream); text-decoration: none; border: 1px solid rgba(242,233,216,0.2);
+               border-radius: 999px; padding: 8px 13px; }
   @keyframes rise{ from{ opacity:0; transform: translateY(14px);} to{ opacity:1; transform: translateY(0);} }
 
   .product-thumb{
@@ -621,6 +640,21 @@
           <span data-i18n="map">MAPA</span>
         </a>
       </div>
+      <div class="ficha-turista" id="ficha-turista">
+        <img class="ft-foto" id="ft-foto" alt="" hidden>
+        <div class="ft-body">
+          <p class="ft-desc" id="ft-desc" hidden></p>
+          <p class="ft-dir" id="ft-dir"></p>
+          <div id="ft-vende-wrap">
+            <h4 class="ft-h" data-i18n="ft_vende">Lo que vende</h4>
+            <ul class="ft-lista" id="ft-lista"></ul>
+          </div>
+          <div class="ft-links">
+            <a id="ft-google" target="_blank" rel="noopener">⭐ <span data-i18n="ft_reviews">Reseñas en Google</span></a>
+            <a id="ft-web" target="_blank" rel="noopener" hidden>🌐 <span data-i18n="ft_web">Web / Instagram</span></a>
+          </div>
+        </div>
+      </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
 
       <section class="sugerencias" aria-labelledby="sug-title">
@@ -763,7 +797,7 @@ const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
 // Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
-const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at";
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng";
 
 let supabaseClient = null;
 try {
@@ -792,6 +826,9 @@ const I18N = {
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
+    ft_vende: "Lo que vende",
+    ft_reviews: "Reseñas en Google",
+    ft_web: "Web / Instagram",
     back: "← Volver a la búsqueda",
     form_title: "Da de alta tu comercio",
     form_sub: "Aparece cuando alguien cerca de ti busque justo lo que vendes.",
@@ -920,6 +957,9 @@ const I18N = {
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
+    ft_vende: "El que ven",
+    ft_reviews: "Ressenyes a Google",
+    ft_web: "Web / Instagram",
     back: "← Tornar a la cerca",
     form_title: "Dona d'alta el teu comerç",
     form_sub: "Apareix quan algú a prop teu busqui just el que vens.",
@@ -1048,6 +1088,9 @@ const I18N = {
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
+    ft_vende: "What they sell",
+    ft_reviews: "Google reviews",
+    ft_web: "Website / Instagram",
     back: "← Back to search",
     form_title: "List your shop",
     form_sub: "Show up when someone nearby searches for exactly what you sell.",
@@ -1542,7 +1585,10 @@ async function searchNearestProduct(userSpeech, userZone){
     .filter(p => !p.expires_at || new Date(p.expires_at).getTime() >= limite)
     .map(p => {
       // Busca en etiquetas, nombre del negocio y producto estrella.
-      const tags = [p.tags, p.name, p.star_product_name].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
+      const carta = Array.isArray(p.carta) ? p.carta : [];
+      const tags = [p.tags, p.name, p.star_product_name, carta.map(x => x.nombre).join(",")].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
+      // Producto de la carta propia que coincide con la búsqueda (para mostrarlo con su precio).
+      const cartaHit = carta.find(x => tokensDe(x.nombre || "").some(nt => words.some(w => coincide(w, nt)))) || null;
       // Coincide si una palabra contiene a la otra o comparten raíz (empanadas / empanades).
       const hits = tags.filter(tag => {
         const nt = normalize(tag);
@@ -1550,7 +1596,8 @@ async function searchNearestProduct(userSpeech, userZone){
       });
       // Productos del catálogo que la pyme marcó y que coinciden con la búsqueda (valen doble).
       const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
-      return { pyme: p, score: hits.length + suyos.length * 2, producto: suyos[0] || null };
+      return { pyme: p, score: hits.length + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos[0] || null, cartaHit,
+               productos: mapaProductos.get(p.id) || [] };
     })
     .filter(c => c.score > 0)
     .map(c => ({ ...c, km: kmDesdeUsuario(c.pyme, userZone) }))
@@ -1562,7 +1609,55 @@ async function searchNearestProduct(userSpeech, userZone){
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
   const mejor = candidates[0];
-  return { match: mejor ? mejor.pyme : null, km: mejor ? mejor.km : null, producto: mejor ? mejor.producto : null };
+  return { match: mejor ? mejor.pyme : null, km: mejor ? mejor.km : null, producto: mejor ? mejor.producto : null,
+           cartaHit: mejor ? mejor.cartaHit : null, productos: mejor ? mejor.productos : [] };
+}
+
+/* ---------- ficha ampliada del comercio para el turista ---------- */
+function enlaceWeb(w){
+  w = String(w || "").trim();
+  if (!w) return "";
+  if (w.startsWith("@")) return "https://instagram.com/" + w.slice(1);
+  return /^https?:\/\//i.test(w) ? w : "https://" + w;
+}
+function pintarFicha(match, res){
+  const foto = document.getElementById("ft-foto");
+  foto.hidden = !match.logo_url;
+  if (match.logo_url){ foto.src = match.logo_url; foto.alt = match.name; }
+
+  const desc = document.getElementById("ft-desc");
+  desc.hidden = !match.descripcion;
+  desc.textContent = match.descripcion || "";
+
+  document.getElementById("ft-dir").textContent = "📍 " + [match.address, match.zone].filter(Boolean).join(" · ");
+
+  // Lista: producto estrella, carta propia y productos del catálogo, cada uno con su precio.
+  const items = [];
+  const clave = (n) => normalize(n || "");
+  const vistos = new Set();
+  const add = (nombre, precio, destacado) => {
+    const k = clave(nombre);
+    if (!nombre || vistos.has(k)) return;
+    vistos.add(k); items.push({ nombre, precio, destacado });
+  };
+  if (res.cartaHit) add(res.cartaHit.nombre, res.cartaHit.precio, true);
+  add(match.star_product_name, match.star_product_price, !res.cartaHit);
+  (Array.isArray(match.carta) ? match.carta : []).forEach(x => add(x.nombre, x.precio, false));
+  (res.productos || []).forEach(r => {
+    const p = catalogo.find(c => c.id === r.producto_id);
+    if (p) add(nombreProducto(p), r.precio, false);
+  });
+  const lista = document.getElementById("ft-lista");
+  lista.innerHTML = items.slice(0, 12).map(x =>
+    `<li class="${x.destacado ? "destacado" : ""}"><span>${esc(x.nombre)}</span><span class="precio">${esc(x.precio || "")}</span></li>`).join("");
+  document.getElementById("ft-vende-wrap").hidden = !items.length;
+
+  const q = [match.name, match.address, "Barcelona"].filter(Boolean).join(", ");
+  document.getElementById("ft-google").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+  const web = document.getElementById("ft-web");
+  const url = enlaceWeb(match.web);
+  web.hidden = !url;
+  if (url) web.href = url;
 }
 
 const micWrap = document.getElementById("mic-wrap");
@@ -1667,7 +1762,11 @@ async function handleSpeechResult(speech){
     document.getElementById("result-name").textContent = match.name;
     const badge = resultCard.querySelector(".badge");
     const prod = res.producto ? catalogo.find(p => p.id === res.producto.producto_id) : null;
-    if (prod){
+    if (res.cartaHit){
+      document.getElementById("result-product").textContent =
+        res.cartaHit.precio ? `${res.cartaHit.nombre} · ${res.cartaHit.precio}` : res.cartaHit.nombre;
+      badge.textContent = t("badge_sells");
+    } else if (prod){
       document.getElementById("result-product").textContent =
         res.producto.precio ? `${nombreProducto(prod)} · ${res.producto.precio}` : nombreProducto(prod);
       badge.textContent = t("badge_sells");
@@ -1678,6 +1777,7 @@ async function handleSpeechResult(speech){
     }
     document.getElementById("result-distance").textContent =
       match.distance_m > 0 ? t("dist_m", { m: match.distance_m, z: match.zone }) : t("dist_zone", { z: match.zone });
+    pintarFicha(match, res);
 
     // Destino: coordenadas si las hay; si no, solo la dirección (el nombre del negocio confunde a Google Maps).
     const c = (match.lat != null && match.lng != null) ? `${match.lat},${match.lng}` : null;
