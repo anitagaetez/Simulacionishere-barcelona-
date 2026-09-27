@@ -9,7 +9,7 @@
 <meta property="og:description" content="Què busques? ¿Qué buscas? Encuentra lo que necesitas cerca de ti en Barcelona. Gratis.">
 <meta property="og:url" content="https://anitagaetez.github.io/Simulacionishere-barcelona-/">
 <meta name="theme-color" content="#0D2B3E">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -401,6 +401,7 @@
   .ft-lista li:last-child{ border-bottom: none; }
   .ft-lista .precio{ color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ft-lista li.destacado{ font-weight: 600; }
+  .ft-denunciar{ align-self: flex-end; font-size: 0.72rem; color: var(--cream-dim); opacity: 0.7; text-decoration: underline; margin-top: 2px; }
   .ft-wa{ display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #0b2a17;
            font-weight: 600; font-size: 0.95rem; border-radius: 12px; padding: 12px; text-decoration: none; }
   .ft-links{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
@@ -715,6 +716,7 @@
             <a id="ft-tt" target="_blank" rel="noopener" hidden>🎵 TikTok</a>
             <a id="ft-fb" target="_blank" rel="noopener" hidden>👍 Facebook</a>
           </div>
+          <a class="ft-denunciar" id="ft-denunciar" data-i18n="report">Denunciar esta ficha</a>
         </div>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
@@ -741,7 +743,9 @@
         <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
+        <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">💼 ¿Quieres ganar dinero extra? Hazte reclutador/a</a></div>
         <div class="business-link"><a href="comercio.html" data-i18n="portal_link">¿Ya estás en isHere? Entra a Mi comercio</a></div>
+        <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">Trabaja con nosotros · Hazte reclutador/a</a></div>
       </footer>
     </section>
 
@@ -912,7 +916,12 @@ const I18N = {
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
+    recruit_link: "💼 ¿Quieres ganar dinero extra? Hazte reclutador/a",
     ft_vende: "Lo que vende",
+    recruit_link: "Trabaja con nosotros · Hazte reclutador/a",
+    report: "Denunciar esta ficha",
+    report_subject: "Denuncia de ficha: {n} ({id})",
+    report_body: "Explica qué información es falsa, ilegal o inadecuada y por qué:\n\n",
     install: "📲 Instalar isHere en tu móvil",
     install_ios: "En iPhone: toca Compartir ⬆️ y después «Añadir a pantalla de inicio».",
     g_fiscal: "Datos para tu factura",
@@ -1047,7 +1056,7 @@ const I18N = {
     rot_security: "🎒 ¿Te preocupan los carteristas? Lleva el móvil a salvo en una riñonera antirrobo.",
     rot_thirst: "💧 ¿Te mueres de sed? Agua bien fría a la vuelta de la esquina.",
     rot_icecream: "🍦 ¿Calor de verdad? Un helado a pocos pasos.",
-    rot_beer: "🍺 ¿Te apetece una caña? Cerveza fría cerca de ti.",
+    rot_beer: "🍺 ¿Te apetece una caña? Cerveza fría cerca de ti. +18 · Consume con responsabilidad.",
     rot_sandwich: "🥪 ¿Hambre entre visita y visita? Un bocadillo recién hecho cerca.",
     rot_homefood: "🍲 ¿Echas de menos la comida de casa? Menú casero cerca de ti.",
     rot_coffee: "☕ ¿Necesitas un café para seguir? Café para llevar a pocos pasos.",
@@ -1070,7 +1079,12 @@ const I18N = {
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
+    recruit_link: "💼 Vols guanyar diners extra? Fes-te reclutador/a",
     ft_vende: "El que ven",
+    recruit_link: "Treballa amb nosaltres · Fes-te reclutador/a",
+    report: "Denunciar aquesta fitxa",
+    report_subject: "Denúncia de fitxa: {n} ({id})",
+    report_body: "Explica quina informació és falsa, il·legal o inadequada i per què:\n\n",
     install: "📲 Instal·la isHere al mòbil",
     install_ios: "A l'iPhone: toca Compartir ⬆️ i després «Afegir a la pantalla d'inici».",
     g_fiscal: "Dades per a la teva factura",
@@ -1205,7 +1219,7 @@ const I18N = {
     rot_security: "🎒 Et preocupen els carteristes? Porta el mòbil segur en una ronyonera antirobatori.",
     rot_thirst: "💧 Et mors de set? Aigua ben freda a la cantonada.",
     rot_icecream: "🍦 Fa calor de debò? Un gelat a pocs passos.",
-    rot_beer: "🍺 Et ve de gust una canya? Cervesa freda a prop teu.",
+    rot_beer: "🍺 Et ve de gust una canya? Cervesa freda a prop teu. +18 · Consum responsable.",
     rot_sandwich: "🥪 Gana entre visita i visita? Un entrepà acabat de fer a prop.",
     rot_homefood: "🍲 Trobes a faltar el menjar de casa? Menú casolà a prop teu.",
     rot_coffee: "☕ Necessites un cafè per continuar? Cafè per emportar a pocs passos.",
@@ -1228,7 +1242,12 @@ const I18N = {
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
+    recruit_link: "💼 Want to earn extra money? Become a recruiter",
     ft_vende: "What they sell",
+    recruit_link: "Work with us · Become a recruiter",
+    report: "Report this listing",
+    report_subject: "Listing report: {n} ({id})",
+    report_body: "Please explain what information is false, illegal or inappropriate, and why:\n\n",
     install: "📲 Install isHere on your phone",
     install_ios: "On iPhone: tap Share ⬆️ and then “Add to Home Screen”.",
     g_fiscal: "Invoice details",
@@ -1363,7 +1382,7 @@ const I18N = {
     rot_security: "🎒 Worried about pickpockets? Keep your phone safe in an anti-theft bum bag.",
     rot_thirst: "💧 Dying of thirst? Ice-cold water around the corner.",
     rot_icecream: "🍦 Seriously hot? Ice cream a few steps away.",
-    rot_beer: "🍺 Fancy a cold beer? There's one near you.",
+    rot_beer: "🍺 Fancy a cold beer? There's one near you. 18+ · Drink responsibly.",
     rot_sandwich: "🥪 Hungry between sights? A freshly made sandwich nearby.",
     rot_homefood: "🍲 Missing home cooking? Homemade food near you.",
     rot_coffee: "☕ Need a coffee to keep going? Coffee to go a few steps away.",
@@ -1914,6 +1933,10 @@ function pintarFicha(match, res){
   const waEl = document.getElementById("ft-wa");
   waEl.hidden = waNum.length < 8;
   if (waNum.length >= 8) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
+
+  // Denuncia de contenido (Reglamento de Servicios Digitales): va al correo oficial de isHere.
+  document.getElementById("ft-denunciar").href = "mailto:isherebarcelona@gmail.com?subject=" +
+    encodeURIComponent(t("report_subject", { n: match.name, id: match.id })) + "&body=" + encodeURIComponent(t("report_body"));
 
   const poner = (id, url) => { const a = document.getElementById(id); a.hidden = !url; if (url) a.href = url; };
   const redes = match.redes || {};
