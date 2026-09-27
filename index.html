@@ -401,6 +401,8 @@
   .ft-lista li:last-child{ border-bottom: none; }
   .ft-lista .precio{ color: var(--gold); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .ft-lista li.destacado{ font-weight: 600; }
+  .ft-nota{ font-size: 0.72rem; line-height: 1.4; color: var(--cream-dim); opacity: 0.8; margin-top: 4px; }
+  .ft-nota a{ color: inherit; }
   .ft-denunciar{ align-self: flex-end; font-size: 0.72rem; color: var(--cream-dim); opacity: 0.7; text-decoration: underline; margin-top: 2px; }
   .ft-wa{ display: flex; align-items: center; justify-content: center; gap: 8px; background: #25D366; color: #0b2a17;
            font-weight: 600; font-size: 0.95rem; border-radius: 12px; padding: 12px; text-decoration: none; }
@@ -433,7 +435,10 @@
   .horario-estado:empty{ display: none; }
   /* Otras opciones cercanas */
   .otras{ display: none; margin-top: 14px; }
-  .voice-guide-btn.show + .otras.hay{ display: block; }
+  .ruta-aviso{ display: none; font-size: 0.72rem; color: var(--cream-dim); opacity: 0.75; text-align: center; margin-top: 6px; }
+  .voice-guide-btn.show + .ruta-aviso{ display: block; }
+  .ruta-aviso + .otras.hay{ display: none; }
+  .voice-guide-btn.show + .ruta-aviso + .otras.hay{ display: block; }
   .otras h4{ font-size: 0.8rem; color: var(--cream-dim); font-weight: 500; margin-bottom: 8px; text-align: center; }
   .otra{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
          background: var(--bg-panel); border: 1px solid rgba(242,233,216,0.1); border-radius: 12px; padding: 11px 14px;
@@ -719,10 +724,12 @@
             <a id="ft-tt" target="_blank" rel="noopener" hidden>🎵 TikTok</a>
             <a id="ft-fb" target="_blank" rel="noopener" hidden>👍 Facebook</a>
           </div>
+          <p class="ft-nota"><span data-i18n="ft_nota">Información facilitada por el comercio. isHere actúa como intermediario de información y no vende ni garantiza sus productos.</span> <a href="legal.html#aviso" data-i18n="ft_nota_link">Más info</a></p>
           <a class="ft-denunciar" id="ft-denunciar" data-i18n="report">Denunciar esta ficha</a>
         </div>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
+      <p class="ruta-aviso" id="ruta-aviso" data-i18n="route_note">Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.</p>
       <div class="otras" id="otras">
         <h4 data-i18n="otras_title">Otras opciones cerca</h4>
         <div id="otras-lista"></div>
@@ -924,6 +931,9 @@ const I18N = {
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     recruit_link: "💼 ¿Quieres ganar dinero extra? Hazte reclutador/a",
     ft_vende: "Lo que vende",
+    ft_nota: "Información facilitada por el comercio. isHere actúa como intermediario de información y no vende ni garantiza sus productos.",
+    ft_nota_link: "Más info",
+    route_note: "Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.",
     inst_title: "📲 Instala isHere en tu móvil",
     inst_ios: "En Safari, toca el botón Compartir ⬆️ (abajo) y elige «Añadir a pantalla de inicio». Tendrás isHere como una app más.",
     inst_android: "En Chrome, toca ⋮ (arriba a la derecha) y elige «Instalar aplicación» o «Añadir a pantalla de inicio».",
@@ -1092,6 +1102,9 @@ const I18N = {
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     recruit_link: "💼 Vols guanyar diners extra? Fes-te reclutador/a",
     ft_vende: "El que ven",
+    ft_nota: "Informació facilitada pel comerç. isHere actua com a intermediari d'informació i no ven ni garanteix els seus productes.",
+    ft_nota_link: "Més info",
+    route_note: "Ruta calculada per Google Maps. Para sempre atenció al trànsit i al teu entorn.",
     inst_title: "📲 Instal·la isHere al mòbil",
     inst_ios: "A Safari, toca el botó Compartir ⬆️ (a baix) i tria «Afegir a la pantalla d'inici». Tindràs isHere com una app més.",
     inst_android: "A Chrome, toca ⋮ (a dalt a la dreta) i tria «Instal·lar l'aplicació» o «Afegir a la pantalla d'inici».",
@@ -1260,6 +1273,9 @@ const I18N = {
     portal_link: "Already on isHere? Go to My business",
     recruit_link: "💼 Want to earn extra money? Become a recruiter",
     ft_vende: "What they sell",
+    ft_nota: "Information provided by the business. isHere acts as an information intermediary and does not sell or guarantee its products.",
+    ft_nota_link: "More info",
+    route_note: "Route calculated by Google Maps. Always pay attention to traffic and your surroundings.",
     inst_title: "📲 Install isHere on your phone",
     inst_ios: "In Safari, tap the Share button ⬆️ (at the bottom) and choose “Add to Home Screen”. isHere will work like any other app.",
     inst_android: "In Chrome, tap ⋮ (top right) and choose “Install app” or “Add to Home screen”.",
