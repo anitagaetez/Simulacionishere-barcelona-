@@ -551,6 +551,11 @@
 
   .pay-methods{ text-align: center; font-size: 0.72rem; color: var(--cream-dim); margin-top: -8px; }
 
+  .acepto{ display: flex; gap: 10px; align-items: flex-start; font-size: 0.82rem; line-height: 1.45; color: var(--cream-dim); margin: 14px 0 4px; cursor: pointer; }
+  .acepto input{ width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--gold); }
+  .acepto a{ color: var(--gold); }
+  .legal-links{ font-size: 0.72rem; opacity: 0.75; margin-top: 8px; }
+  .legal-links a{ color: inherit; }
   .form-error{
     display: none;
     background: rgba(224,104,94,0.12);
@@ -709,6 +714,7 @@
 
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
+        <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
         <div class="business-link"><a href="comercio.html" data-i18n="portal_link">¿Ya estás en isHere? Entra a Mi comercio</a></div>
@@ -808,6 +814,17 @@
           </div>
         </div>
 
+        <h3 class="form-group-title" data-i18n="g_fiscal">Datos para tu factura</h3>
+        <p class="form-group-note" data-i18n="fiscal_note">Solo los ve isHere. Los necesitamos para emitir facturas con las que puedas deducirte el IVA.</p>
+        <div class="field">
+          <label for="f-razon"><span data-i18n="l_razon">Razón social o nombre del titular</span> <span class="req">*</span></label>
+          <input id="f-razon" type="text" placeholder="Rosa Pérez López / Empanadas Rosa, S.L." autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="f-nif"><span data-i18n="l_nif">NIF / NIE / CIF</span> <span class="req">*</span></label>
+          <input id="f-nif" type="text" placeholder="12345678Z · X1234567L · B12345678" autocapitalize="characters">
+        </div>
+
         <div class="field">
           <label for="f-ref" data-i18n="l_ref">Código de quien te recomendó (si tienes)</label>
           <input id="f-ref" type="text" placeholder="ANA01" autocapitalize="characters">
@@ -819,6 +836,11 @@
           <div class="price-line total"><span data-i18n="price_today">Pagas hoy</span><span>12,10 €</span></div>
           <p class="price-note" data-i18n="price_note">A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
         </div>
+
+        <label class="acepto">
+          <input type="checkbox" id="f-acepto">
+          <span data-i18n-html="accept_html">He leído y acepto las <a href="legal.html#condiciones" target="_blank" rel="noopener">Condiciones Generales</a> y la <a href="legal.html#privacidad" target="_blank" rel="noopener">Política de privacidad</a>. Actúo en nombre del comercio indicado y en el ámbito de su actividad empresarial.</span>
+        </label>
 
         <div class="form-error" id="form-error" role="alert"></div>
 
@@ -867,6 +889,17 @@ const I18N = {
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     ft_vende: "Lo que vende",
+    g_fiscal: "Datos para tu factura",
+    fiscal_note: "Solo los ve isHere. Los necesitamos para emitir facturas con las que puedas deducirte el IVA.",
+    l_razon: "Razón social o nombre del titular",
+    l_nif: "NIF / NIE / CIF",
+    accept_html: "He leído y acepto las <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condiciones Generales</a> y la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacidad</a>. Actúo en nombre del comercio indicado y en el ámbito de su actividad empresarial.",
+    err_nif: "El NIF, NIE o CIF no es válido. Revísalo: lo necesitamos para tu factura.",
+    err_accept: "Para continuar, marca la casilla de aceptación de las Condiciones Generales.",
+    lk_aviso: "Aviso legal",
+    lk_priv: "Privacidad",
+    lk_cookies: "Cookies",
+    lk_cond: "Condiciones",
     h_ver: "Ver horario",
     otras_title: "Otras opciones cerca",
     h_open: "Abierto · cierra a las {h}",
@@ -1012,6 +1045,17 @@ const I18N = {
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     ft_vende: "El que ven",
+    g_fiscal: "Dades per a la teva factura",
+    fiscal_note: "Només les veu isHere. Les necessitem per emetre factures amb què et puguis deduir l'IVA.",
+    l_razon: "Raó social o nom del titular",
+    l_nif: "NIF / NIE / CIF",
+    accept_html: "He llegit i accepto les <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condicions Generals</a> i la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacitat</a>. Actuo en nom del comerç indicat i en l'àmbit de la seva activitat empresarial.",
+    err_nif: "El NIF, NIE o CIF no és vàlid. Revisa'l: el necessitem per a la teva factura.",
+    err_accept: "Per continuar, marca la casella d'acceptació de les Condicions Generals.",
+    lk_aviso: "Avís legal",
+    lk_priv: "Privacitat",
+    lk_cookies: "Galetes",
+    lk_cond: "Condicions",
     h_ver: "Veure l'horari",
     otras_title: "Altres opcions a prop",
     h_open: "Obert · tanca a les {h}",
@@ -1157,6 +1201,17 @@ const I18N = {
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
     ft_vende: "What they sell",
+    g_fiscal: "Invoice details",
+    fiscal_note: "Only isHere sees these. We need them to issue invoices you can deduct VAT with.",
+    l_razon: "Company name or holder's full name",
+    l_nif: "Spanish tax ID (NIF / NIE / CIF)",
+    accept_html: "I have read and accept the <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">General Terms</a> and the <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a>. I act on behalf of the business indicated and within its business activity.",
+    err_nif: "That NIF, NIE or CIF isn't valid. Please check it: we need it for your invoice.",
+    err_accept: "To continue, tick the box accepting the General Terms.",
+    lk_aviso: "Legal notice",
+    lk_priv: "Privacy",
+    lk_cookies: "Cookies",
+    lk_cond: "Terms",
     h_ver: "See opening hours",
     otras_title: "Other options nearby",
     h_open: "Open · closes at {h}",
@@ -2183,6 +2238,18 @@ async function geocodificar(direccion){
   } catch (e) { return null; }
 }
 
+const CONDICIONES_VERSION = "1.0";
+// Valida DNI, NIE (con su letra de control) y el formato de CIF.
+function nifValido(v){
+  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+  if (/^\d{8}[A-Z]$/.test(v)) return letras[Number(v.slice(0, 8)) % 23] === v[8];
+  if (/^[XYZ]\d{7}[A-Z]$/.test(v)){
+    const n = Number(String("XYZ".indexOf(v[0])) + v.slice(1, 8));
+    return letras[n % 23] === v[8];
+  }
+  return /^[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]$/.test(v);
+}
+
 async function codigoReclutadorValido(cod){
   const { data, error } = await supabaseClient.rpc("codigo_reclutador_valido", { p_codigo: cod });
   if (error) throw new Error(t("err_ref_check"));
@@ -2203,10 +2270,12 @@ async function enviarAlta(){
     contacto: valor("f-contacto"),
     email: valor("f-email"),
     telefono: valor("f-telefono"),
-    ref: valor("f-ref").toUpperCase()
+    ref: valor("f-ref").toUpperCase(),
+    razon: valor("f-razon"),
+    nif: valor("f-nif").toUpperCase().replace(/[\s.\-]/g, "")
   };
 
-  if (!datos.name || !datos.product || !datos.address || !datos.contacto || !datos.email || !datos.telefono){
+  if (!datos.name || !datos.product || !datos.address || !datos.contacto || !datos.email || !datos.telefono || !datos.razon || !datos.nif){
     mostrarErrorForm(t("err_required"));
     return;
   }
@@ -2216,6 +2285,14 @@ async function enviarAlta(){
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)){
     mostrarErrorForm(t("err_email"));
+    return;
+  }
+  if (!nifValido(datos.nif)){
+    mostrarErrorForm(t("err_nif"));
+    return;
+  }
+  if (!document.getElementById("f-acepto").checked){
+    mostrarErrorForm(t("err_accept"));
     return;
   }
   if (!supabaseClient){
@@ -2255,6 +2332,10 @@ async function enviarAlta(){
       email: datos.email,
       telefono: datos.telefono,
       reclutador_codigo: datos.ref || null,
+      razon_social: datos.razon,
+      nif: datos.nif,
+      condiciones_version: CONDICIONES_VERSION,
+      condiciones_aceptadas_at: new Date().toISOString(),
       status: "pending_payment",
       plan_type: "paid"
     }]);

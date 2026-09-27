@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>isHere · Información legal</title>
+<style>
+  :root{ --bg:#0D2B3E; --panel:#123449; --gold:#D9A441; --cream:#F2E9D8; --dim:#B9C7CE; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--cream); font-family:-apple-system,'Segoe UI',sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:760px; margin:0 auto; padding:18px 18px 70px; }
+  header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .wordmark{ font-family:Georgia,serif; font-size:1.25rem; color:var(--cream); text-decoration:none; }
+  .wordmark b{ color:var(--gold); }
+  .flags{ display:flex; gap:8px; }
+  .flag-btn{ width:32px; height:22px; padding:0; border-radius:5px; overflow:hidden; border:2px solid transparent; background:none; cursor:pointer; opacity:.55; }
+  .flag-btn svg{ display:block; width:100%; height:100%; }
+  .flag-btn[aria-pressed="true"]{ opacity:1; border-color:var(--gold); }
+  nav{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  nav a{ color:var(--cream); text-decoration:none; border:1px solid rgba(242,233,216,.2); border-radius:999px; padding:7px 13px; font-size:.85rem; }
+  section{ background:var(--panel); border-radius:14px; padding:20px 18px; margin-bottom:18px; scroll-margin-top:12px; }
+  h1{ font-family:Georgia,serif; font-weight:500; font-size:1.6rem; margin-bottom:6px; }
+  h2{ font-family:Georgia,serif; font-weight:500; font-size:1.3rem; margin-bottom:12px; color:var(--gold); }
+  h3{ font-size:.95rem; margin:18px 0 8px; }
+  p{ font-size:.9rem; color:var(--dim); margin-bottom:10px; text-align:justify; }
+  p b{ color:var(--cream); }
+  .ap{ padding-left:18px; }
+  .cita{ font-style:italic; border-left:3px solid var(--gold); padding-left:12px; }
+  table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:8px 0 12px; }
+  td, th{ border-bottom:1px solid rgba(242,233,216,.12); padding:8px 6px; text-align:left; color:var(--dim); vertical-align:top; }
+  th{ color:var(--cream); font-weight:600; }
+  .nota{ background:rgba(217,164,65,.12); border:1px solid rgba(217,164,65,.35); color:var(--cream); border-radius:10px; padding:10px 12px; font-size:.85rem; margin-bottom:12px; }
+  a{ color:var(--gold); }
+  [data-l]{ display:none; }
+  html[lang="es"] [data-l="es"], html[lang="ca"] [data-l="ca"], html[lang="en"] [data-l="en"]{ display:block; }
+  html[lang="es"] span[data-l="es"], html[lang="ca"] span[data-l="ca"], html[lang="en"] span[data-l="en"]{ display:inline; }
+  .upd{ font-size:.8rem; color:var(--dim); margin-bottom:18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a class="wordmark" href="./">is<b>Here</b></a>
+<div class="flags" role="group" aria-label="Idioma / Language">
+      <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català">
+        <svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="es" aria-label="Español" title="Español">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="2" fill="#C60B1E"/><rect y="0.5" width="3" height="1" fill="#FFC400"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="en" aria-label="English" title="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>
+      </button>
+    </div>
+</header>
+
+<h1><span data-l="es">Información legal</span><span data-l="ca">Informació legal</span><span data-l="en">Legal information</span></h1>
+<p class="upd"><span data-l="es">Última actualización: </span><span data-l="ca">Darrera actualització: </span><span data-l="en">Last updated: </span><span data-cfg="fecha"></span></p>
+
+<nav>
+  <a href="#aviso"><span data-l="es">Aviso legal</span><span data-l="ca">Avís legal</span><span data-l="en">Legal notice</span></a>
+  <a href="#privacidad"><span data-l="es">Privacidad</span><span data-l="ca">Privacitat</span><span data-l="en">Privacy</span></a>
+  <a href="#cookies"><span data-l="es">Cookies</span><span data-l="ca">Galetes</span><span data-l="en">Cookies</span></a>
+  <a href="#condiciones"><span data-l="es">Condiciones para comercios</span><span data-l="ca">Condicions per a comerços</span><span data-l="en">Terms for businesses</span></a>
+</nav>
+
+<!-- ================= AVISO LEGAL ================= -->
+<section id="aviso">
+ <div data-l="es">
+  <h2>Aviso legal</h2>
+  <p>En cumplimiento del artículo 10 de la Ley 34/2002, de servicios de la sociedad de la información y de comercio electrónico (LSSI), se informa de los datos del titular de este sitio web:</p>
+  <table>
+   <tr><th>Titular</th><td data-cfg="soc"></td></tr>
+   <tr><th>CIF</th><td data-cfg="cif"></td></tr>
+   <tr><th>Domicilio</th><td data-cfg="domicilio"></td></tr>
+   <tr><th>Registro</th><td data-cfg="registro"></td></tr>
+   <tr><th>Correo</th><td><a data-cfg-mail></a></td></tr>
+  </table>
+  <h3>Objeto</h3>
+  <p>isHere es una plataforma que ayuda a los usuarios a localizar comercios cercanos que ofrecen los productos que buscan, y ofrece a dichos comercios un servicio de visibilidad. El uso de la plataforma por parte de los usuarios es gratuito y no requiere registro.</p>
+  <h3>Propiedad intelectual e industrial</h3>
+  <p>El diseño, el software, los textos, el catálogo de productos, las bases de datos y la marca «isHere» son titularidad de isHere o de sus licenciantes. Queda prohibida su reproducción, distribución o transformación sin autorización expresa. Los contenidos de cada ficha (nombre, fotografías, precios y descripciones) son responsabilidad del comercio que los publica.</p>
+  <h3>Responsabilidad</h3>
+  <p>isHere procura que la información sea correcta, pero los datos de cada comercio (productos, precios, horarios y disponibilidad) los facilita el propio comercio. Recomendamos confirmarlos directamente con él. Las rutas se muestran a través de Google Maps y los contactos se realizan mediante servicios de terceros (WhatsApp, redes sociales), que tienen sus propias condiciones.</p>
+  <h3>Legislación aplicable</h3>
+  <p>Este aviso legal se rige por la legislación española.</p>
+ </div>
+ <div data-l="ca">
+  <h2>Avís legal</h2>
+  <p>En compliment de l'article 10 de la Llei 34/2002, de serveis de la societat de la informació i de comerç electrònic (LSSI), s'informa de les dades del titular d'aquest lloc web:</p>
+  <table>
+   <tr><th>Titular</th><td data-cfg="soc"></td></tr>
+   <tr><th>CIF</th><td data-cfg="cif"></td></tr>
+   <tr><th>Domicili</th><td data-cfg="domicilio"></td></tr>
+   <tr><th>Registre</th><td data-cfg="registro"></td></tr>
+   <tr><th>Correu</th><td><a data-cfg-mail></a></td></tr>
+  </table>
+  <h3>Objecte</h3>
+  <p>isHere és una plataforma que ajuda els usuaris a localitzar comerços propers que ofereixen els productes que busquen, i ofereix a aquests comerços un servei de visibilitat. L'ús de la plataforma per part dels usuaris és gratuït i no requereix registre.</p>
+  <h3>Propietat intel·lectual i industrial</h3>
+  <p>El disseny, el programari, els textos, el catàleg de productes, les bases de dades i la marca «isHere» són titularitat d'isHere o dels seus llicenciants. Queda prohibida la seva reproducció, distribució o transformació sense autorització expressa. Els continguts de cada fitxa (nom, fotografies, preus i descripcions) són responsabilitat del comerç que els publica.</p>
+  <h3>Responsabilitat</h3>
+  <p>isHere procura que la informació sigui correcta, però les dades de cada comerç (productes, preus, horaris i disponibilitat) les facilita el mateix comerç. Recomanem confirmar-les directament amb ell. Les rutes es mostren a través de Google Maps i els contactes es fan mitjançant serveis de tercers (WhatsApp, xarxes socials), que tenen les seves pròpies condicions.</p>
+  <h3>Legislació aplicable</h3>
+  <p>Aquest avís legal es regeix per la legislació espanyola.</p>
+ </div>
+ <div data-l="en">
+  <h2>Legal notice</h2>
+  <p>In accordance with Article 10 of Spanish Law 34/2002 on information society services and electronic commerce (LSSI), the details of the owner of this website are:</p>
+  <table>
+   <tr><th>Owner</th><td data-cfg="soc"></td></tr>
+   <tr><th>Tax ID (CIF)</th><td data-cfg="cif"></td></tr>
+   <tr><th>Registered office</th><td data-cfg="domicilio"></td></tr>
+   <tr><th>Registry</th><td data-cfg="registro"></td></tr>
+   <tr><th>Email</th><td><a data-cfg-mail></a></td></tr>
+  </table>
+  <h3>Purpose</h3>
+  <p>isHere is a platform that helps users find nearby shops offering the products they are looking for, and offers those shops a visibility service. Use of the platform by users is free of charge and requires no registration.</p>
+  <h3>Intellectual and industrial property</h3>
+  <p>The design, software, texts, product catalogue, databases and the «isHere» trademark belong to isHere or its licensors. Their reproduction, distribution or transformation without express authorisation is prohibited. The content of each listing (name, photos, prices and descriptions) is the responsibility of the business that publishes it.</p>
+  <h3>Liability</h3>
+  <p>isHere strives to keep information accurate, but each business provides its own details (products, prices, opening hours and availability). We recommend confirming them directly with the business. Routes are shown through Google Maps, and contact takes place through third-party services (WhatsApp, social networks) that have their own terms.</p>
+  <h3>Governing law</h3>
+  <p>This legal notice is governed by Spanish law.</p>
+ </div>
+</section>
+
+<!-- ================= PRIVACIDAD ================= -->
+<section id="privacidad">
+ <div data-l="es">
+  <h2>Política de privacidad</h2>
+  <p><b>Responsable:</b> <span data-cfg="soc"></span>, CIF <span data-cfg="cif"></span>, con domicilio en <span data-cfg="domicilio"></span>. Contacto: <a data-cfg-mail></a>.</p>
+  <h3>1. Si usas isHere para buscar (usuarios y turistas)</h3>
+  <p>No necesitas registrarte ni darnos tu nombre o tu correo.</p>
+  <p><b>Ubicación:</b> si la permites, se usa solo en tu dispositivo para calcular distancias y ordenar resultados. No la guardamos.</p>
+  <p><b>Búsquedas sin resultado:</b> cuando una búsqueda no encuentra ningún comercio, guardamos el texto buscado, el barrio y el idioma, sin ningún dato que te identifique, para saber qué productos faltan. Base legal: interés legítimo en mejorar el servicio (art. 6.1.f RGPD).</p>
+  <p><b>Estadísticas de comercios:</b> contamos cuántas veces aparece cada comercio en los resultados, sin guardar datos sobre quién hizo la búsqueda.</p>
+  <p><b>Servicios de terceros:</b> al tocar «Guiarme», «Reseñas en Google», WhatsApp o redes sociales, sales de isHere hacia esos servicios, que tratan tus datos según sus propias políticas.</p>
+  <h3>2. Si eres un comercio</h3>
+  <p>Tratamos los datos que nos facilitas al darte de alta (nombre del contacto, correo, teléfono, razón social, NIF y datos del establecimiento) para gestionar el contrato, la facturación, el acceso a tu portal y las comunicaciones del servicio. Base legal: ejecución del contrato y cumplimiento de obligaciones legales (art. 6.1.b y 6.1.c RGPD). Son públicos en la plataforma el nombre comercial, la dirección, los productos, precios, horario, fotografía, redes y el WhatsApp para clientes que decidas publicar. El nombre de contacto, el correo, el teléfono privado, la razón social y el NIF no se publican.</p>
+  <h3>3. Si eres reclutador</h3>
+  <p>El tratamiento de tus datos se regula en tu contrato de prestación de servicios.</p>
+  <h3>4. Destinatarios y encargados del tratamiento</h3>
+  <table>
+   <tr><th>Proveedor</th><th>Finalidad</th></tr>
+   <tr><td>Supabase</td><td>Alojamiento de la base de datos y de los accesos</td></tr>
+   <tr><td>Stripe</td><td>Cobros, suscripciones y pago de comisiones</td></tr>
+   <tr><td>Google (Gmail)</td><td>Envío de los códigos de acceso y comunicaciones por correo</td></tr>
+   <tr><td>GitHub</td><td>Alojamiento de las páginas web</td></tr>
+   <tr><td>OpenStreetMap (Nominatim)</td><td>Ubicar en el mapa la dirección de los comercios (solo se envía la dirección)</td></tr>
+  </table>
+  <p>Cuando alguno de estos proveedores trate datos fuera del Espacio Económico Europeo, lo hará con las garantías previstas en el RGPD, como las cláusulas contractuales tipo de la Comisión Europea. También se comunicarán datos a las administraciones públicas cuando exista obligación legal.</p>
+  <h3>5. Conservación</h3>
+  <p>Los datos de los comercios se conservan mientras dure la relación y, después, durante los plazos legales (por ejemplo, seis años para la documentación mercantil y los plazos de prescripción fiscal). Las búsquedas sin resultado se conservan de forma agregada y anónima.</p>
+  <h3>6. Tus derechos</h3>
+  <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a data-cfg-mail></a>. Si consideras que no hemos atendido bien tu solicitud, puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>).</p>
+ </div>
+ <div data-l="ca">
+  <h2>Política de privacitat</h2>
+  <p><b>Responsable:</b> <span data-cfg="soc"></span>, CIF <span data-cfg="cif"></span>, amb domicili a <span data-cfg="domicilio"></span>. Contacte: <a data-cfg-mail></a>.</p>
+  <h3>1. Si fas servir isHere per cercar (usuaris i turistes)</h3>
+  <p>No cal registrar-te ni donar-nos el teu nom o el teu correu.</p>
+  <p><b>Ubicació:</b> si la permets, només es fa servir al teu dispositiu per calcular distàncies i ordenar els resultats. No la desem.</p>
+  <p><b>Cerques sense resultat:</b> quan una cerca no troba cap comerç, desem el text cercat, el barri i l'idioma, sense cap dada que t'identifiqui, per saber quins productes falten. Base legal: interès legítim a millorar el servei (art. 6.1.f RGPD).</p>
+  <p><b>Estadístiques de comerços:</b> comptem quantes vegades apareix cada comerç als resultats, sense desar dades sobre qui va fer la cerca.</p>
+  <p><b>Serveis de tercers:</b> en tocar «Guia'm», «Ressenyes a Google», WhatsApp o xarxes socials, surts d'isHere cap a aquests serveis, que tracten les teves dades segons les seves pròpies polítiques.</p>
+  <h3>2. Si ets un comerç</h3>
+  <p>Tractem les dades que ens facilites en donar-te d'alta (nom del contacte, correu, telèfon, raó social, NIF i dades de l'establiment) per gestionar el contracte, la facturació, l'accés al teu portal i les comunicacions del servei. Base legal: execució del contracte i compliment d'obligacions legals (art. 6.1.b i 6.1.c RGPD). Són públics a la plataforma el nom comercial, l'adreça, els productes, preus, horari, fotografia, xarxes i el WhatsApp per a clients que decideixis publicar. El nom de contacte, el correu, el telèfon privat, la raó social i el NIF no es publiquen.</p>
+  <h3>3. Si ets reclutador</h3>
+  <p>El tractament de les teves dades es regula al teu contracte de prestació de serveis.</p>
+  <h3>4. Destinataris i encarregats del tractament</h3>
+  <table>
+   <tr><th>Proveïdor</th><th>Finalitat</th></tr>
+   <tr><td>Supabase</td><td>Allotjament de la base de dades i dels accessos</td></tr>
+   <tr><td>Stripe</td><td>Cobraments, subscripcions i pagament de comissions</td></tr>
+   <tr><td>Google (Gmail)</td><td>Enviament dels codis d'accés i comunicacions per correu</td></tr>
+   <tr><td>GitHub</td><td>Allotjament de les pàgines web</td></tr>
+   <tr><td>OpenStreetMap (Nominatim)</td><td>Situar al mapa l'adreça dels comerços (només s'envia l'adreça)</td></tr>
+  </table>
+  <p>Quan algun d'aquests proveïdors tracti dades fora de l'Espai Econòmic Europeu, ho farà amb les garanties previstes al RGPD, com les clàusules contractuals tipus de la Comissió Europea. També es comunicaran dades a les administracions públiques quan hi hagi obligació legal.</p>
+  <h3>5. Conservació</h3>
+  <p>Les dades dels comerços es conserven mentre duri la relació i, després, durant els terminis legals (per exemple, sis anys per a la documentació mercantil i els terminis de prescripció fiscal). Les cerques sense resultat es conserven de manera agregada i anònima.</p>
+  <h3>6. Els teus drets</h3>
+  <p>Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació i portabilitat escrivint a <a data-cfg-mail></a>. Si consideres que no hem atès bé la teva sol·licitud, pots reclamar davant l'Agència Espanyola de Protecció de Dades (<a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>).</p>
+ </div>
+ <div data-l="en">
+  <h2>Privacy policy</h2>
+  <p><b>Controller:</b> <span data-cfg="soc"></span>, tax ID <span data-cfg="cif"></span>, registered office at <span data-cfg="domicilio"></span>. Contact: <a data-cfg-mail></a>.</p>
+  <h3>1. If you use isHere to search (users and tourists)</h3>
+  <p>You don't need to register or give us your name or email.</p>
+  <p><b>Location:</b> if you allow it, it is used only on your device to calculate distances and sort results. We do not store it.</p>
+  <p><b>Searches with no results:</b> when a search finds no business, we store the search text, neighbourhood and language, with no data that identifies you, to learn which products are missing. Legal basis: legitimate interest in improving the service (Art. 6(1)(f) GDPR).</p>
+  <p><b>Business statistics:</b> we count how many times each business appears in results, without storing any data about who searched.</p>
+  <p><b>Third-party services:</b> when you tap "Walk me there", "Google reviews", WhatsApp or social networks, you leave isHere for those services, which process your data under their own policies.</p>
+  <h3>2. If you are a business</h3>
+  <p>We process the data you provide when signing up (contact name, email, phone, company name, tax ID and establishment details) to manage the contract, invoicing, access to your portal and service communications. Legal basis: performance of the contract and compliance with legal obligations (Art. 6(1)(b) and 6(1)(c) GDPR). Public on the platform: trade name, address, products, prices, opening hours, photo, social networks and any customer WhatsApp number you choose to publish. The contact name, email, private phone, company name and tax ID are not published.</p>
+  <h3>3. If you are a recruiter</h3>
+  <p>The processing of your data is governed by your services agreement.</p>
+  <h3>4. Recipients and processors</h3>
+  <table>
+   <tr><th>Provider</th><th>Purpose</th></tr>
+   <tr><td>Supabase</td><td>Database and sign-in hosting</td></tr>
+   <tr><td>Stripe</td><td>Payments, subscriptions and commission payouts</td></tr>
+   <tr><td>Google (Gmail)</td><td>Sending access codes and email communications</td></tr>
+   <tr><td>GitHub</td><td>Website hosting</td></tr>
+   <tr><td>OpenStreetMap (Nominatim)</td><td>Placing business addresses on the map (only the address is sent)</td></tr>
+  </table>
+  <p>Where any of these providers processes data outside the European Economic Area, it does so with the safeguards provided in the GDPR, such as the European Commission's standard contractual clauses. Data will also be disclosed to public authorities where required by law.</p>
+  <h3>5. Retention</h3>
+  <p>Business data is kept for the duration of the relationship and afterwards for the statutory periods (for example, six years for commercial records and the tax limitation periods). Searches with no results are kept in aggregated, anonymous form.</p>
+  <h3>6. Your rights</h3>
+  <p>You can exercise your rights of access, rectification, erasure, objection, restriction and portability by writing to <a data-cfg-mail></a>. If you believe your request has not been properly handled, you may complain to the Spanish Data Protection Agency (<a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>).</p>
+ </div>
+</section>
+
+<!-- ================= COOKIES ================= -->
+<section id="cookies">
+ <div data-l="es">
+  <h2>Cookies</h2>
+  <p>isHere <b>no utiliza cookies de publicidad, de analítica ni de terceros</b>. Solo guarda en tu dispositivo la información técnica imprescindible para que la app funcione, que está exenta de consentimiento según el artículo 22.2 de la LSSI:</p>
+  <table>
+   <tr><th>Elemento</th><th>Para qué sirve</th><th>Duración</th></tr>
+   <tr><td>ishere_lang</td><td>Recordar el idioma que elegiste</td><td>Hasta que lo borres</td></tr>
+   <tr><td>ishere_ultima_pyme</td><td>Mostrar la confirmación al volver del pago</td><td>Se borra al confirmar</td></tr>
+   <tr><td>Sesión de acceso</td><td>Mantener abierta la sesión del portal «Mi comercio»</td><td>Hasta que cierres sesión</td></tr>
+  </table>
+  <p>Puedes borrar estos datos en cualquier momento desde la configuración de tu navegador (datos de sitios).</p>
+ </div>
+ <div data-l="ca">
+  <h2>Galetes</h2>
+  <p>isHere <b>no fa servir galetes de publicitat, d'analítica ni de tercers</b>. Només desa al teu dispositiu la informació tècnica imprescindible perquè l'app funcioni, que està exempta de consentiment segons l'article 22.2 de la LSSI:</p>
+  <table>
+   <tr><th>Element</th><th>Per a què serveix</th><th>Durada</th></tr>
+   <tr><td>ishere_lang</td><td>Recordar l'idioma que vas triar</td><td>Fins que l'esborris</td></tr>
+   <tr><td>ishere_ultima_pyme</td><td>Mostrar la confirmació en tornar del pagament</td><td>S'esborra en confirmar</td></tr>
+   <tr><td>Sessió d'accés</td><td>Mantenir oberta la sessió del portal «El meu comerç»</td><td>Fins que tanquis la sessió</td></tr>
+  </table>
+  <p>Pots esborrar aquestes dades en qualsevol moment des de la configuració del teu navegador (dades de llocs).</p>
+ </div>
+ <div data-l="en">
+  <h2>Cookies</h2>
+  <p>isHere <b>does not use advertising, analytics or third-party cookies</b>. It only stores on your device the technical information strictly needed for the app to work, which is exempt from consent under Article 22.2 of the LSSI:</p>
+  <table>
+   <tr><th>Item</th><th>Purpose</th><th>Duration</th></tr>
+   <tr><td>ishere_lang</td><td>Remember the language you chose</td><td>Until you delete it</td></tr>
+   <tr><td>ishere_ultima_pyme</td><td>Show the confirmation when you return from payment</td><td>Deleted once confirmed</td></tr>
+   <tr><td>Sign-in session</td><td>Keep you signed in to the "My business" portal</td><td>Until you sign out</td></tr>
+  </table>
+  <p>You can delete this data at any time from your browser settings (site data).</p>
+ </div>
+</section>
+
+<!-- ================= CONDICIONES ================= -->
+<section id="condiciones">
+ <h2><span data-l="es">Condiciones Generales para comercios</span><span data-l="ca">Condicions Generals per a comerços</span><span data-l="en">General Terms for businesses</span></h2>
+ <p class="nota" data-l="ca">La versió completa en català d'aquestes condicions s'està preparant. Mentrestant, es mostra la versió en castellà, que és la que preval.</p>
+ <p class="nota" data-l="en">The full English version of these terms is being prepared. In the meantime, the Spanish version is shown, which is the one that prevails.</p>
+ <p><b>Versión 1.0.</b> Prestador: <span data-cfg="soc"></span>, CIF <span data-cfg="cif"></span>, domicilio en <span data-cfg="domicilio"></span>, <span data-cfg="registro"></span>, correo <a data-cfg-mail></a>.</p>
+<h3>PRIMERA.- DEFINICIONES</h3>
+<p><b>1.1.</b> A los efectos de las presentes Condiciones Generales, los términos que a continuación se relacionan tendrán el significado siguiente, tanto en singular como en plural:</p>
+<p class="ap"><b>«Plataforma»</b>: el sitio web y la aplicación web denominados «isHere», titularidad de isHere, accesibles a través de la dirección <span data-cfg="web"></span> o de cualquier otra que la sustituya.</p>
+<p class="ap"><b>«Servicio»</b>: el servicio de visibilidad comercial descrito en la Estipulación Tercera.</p>
+<p class="ap"><b>«Comercio»</b>: la persona física o jurídica que, en el ejercicio de su actividad empresarial o profesional, contrata el Servicio para uno o varios establecimientos abiertos al público.</p>
+<p class="ap"><b>«Usuario»</b>: toda persona que utiliza la Plataforma para localizar productos o establecimientos.</p>
+<p class="ap"><b>«Ficha»</b>: el espacio de la Plataforma en el que se muestran los datos públicos del Comercio.</p>
+<p class="ap"><b>«Periodo Promocional»</b>: los tres (3) meses siguientes a la activación de la Ficha, cubiertos por el pago de alta.</p>
+<p class="ap"><b>«Suscripción»</b>: la relación de renovación mensual automática que comienza al término del Periodo Promocional.</p>
+<p class="ap"><b>«Catálogo»</b>: el listado de productos de referencia elaborado por isHere, sobre el que el Comercio puede indicar los productos que ofrece y su precio.</p>
+<p class="ap"><b>«Reclutador»</b>: el profesional independiente que, en virtud de relación mercantil con isHere, da a conocer la Plataforma a los comercios.</p>
+<p class="ap"><b>«Código de Recomendación»</b>: el identificador alfanumérico asignado a cada Reclutador.</p>
+<h3>SEGUNDA.- OBJETO, ÁMBITO DE APLICACIÓN Y NATURALEZA DEL CONTRATO</h3>
+<p><b>2.1.</b> Las presentes Condiciones Generales tienen por objeto regular la prestación del Servicio por isHere al Comercio, así como los derechos y obligaciones de las partes derivados de ella.</p>
+<p><b>2.2.</b> El Comercio declara contratar en el marco de su actividad empresarial o profesional. En consecuencia, no ostenta la condición de consumidor o usuario a los efectos del Real Decreto Legislativo 1/2007, de 16 de noviembre, por el que se aprueba el texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios, ni de la Ley 22/2010, de 20 de julio, del Código de consumo de Cataluña, cuyas disposiciones sobre protección de consumidores no serán de aplicación a la presente relación.</p>
+<p><b>2.3.</b> Las presentes Condiciones Generales se rigen por la Ley 7/1998, de 13 de abril, sobre condiciones generales de la contratación, y por el Reglamento (UE) 2019/1150 del Parlamento Europeo y del Consejo, de 20 de junio de 2019, sobre el fomento de la equidad y la transparencia para los usuarios profesionales de servicios de intermediación en línea (en adelante, «Reglamento P2B»), en la medida en que resulte aplicable.</p>
+<h3>TERCERA.- DESCRIPCIÓN DEL SERVICIO</h3>
+<p><b>3.1.</b> El Servicio consiste en la inclusión de la Ficha del Comercio en el sistema de búsqueda por voz y texto de la Plataforma, que orienta a los Usuarios hacia establecimientos próximos que ofrecen el producto buscado y les facilita indicaciones de ruta a través de servicios de cartografía de terceros.</p>
+<p><b>3.2.</b> isHere actúa exclusivamente como prestador de un servicio de visibilidad. isHere no es parte en las relaciones comerciales que el Comercio mantenga con los Usuarios, no interviene en la compraventa de productos ni en su cobro, y no percibe comisión alguna sobre las ventas del Comercio.</p>
+<p><b>3.3.</b> Las obligaciones de isHere en virtud del presente contrato son de medios y no de resultado.</p>
+<h3>CUARTA.- PROCEDIMIENTO DE CONTRATACIÓN Y PERFECCIÓN DEL CONTRATO</h3>
+<p><b>4.1.</b> A los efectos del artículo 27 de la LSSI, isHere informa de que el procedimiento de contratación se compone de los siguientes trámites:</p>
+<p class="ap">a) cumplimentación por el Comercio del formulario de alta, con los datos de su establecimiento y sus datos fiscales;</p>
+<p class="ap">b) visualización del resumen económico de la contratación, con desglose del Impuesto sobre el Valor Añadido;</p>
+<p class="ap">c) aceptación expresa de las presentes Condiciones Generales y de la Política de Privacidad mediante la casilla habilitada al efecto, que no aparece premarcada;</p>
+<p class="ap">d) pago del importe de alta a través de la pasarela de pago del proveedor Stripe; y</p>
+<p class="ap">e) confirmación de la contratación por isHere mediante correo electrónico, de conformidad con el artículo 28 de la LSSI.</p>
+<p><b>4.2.</b> El contrato se entenderá perfeccionado en el momento en que el proveedor de pagos confirme el cobro del importe de alta.</p>
+<p><b>4.3.</b> Con carácter previo a la contratación, las presentes Condiciones Generales se ponen a disposición del Comercio de forma que puedan ser almacenadas y reproducidas. isHere archivará en formato electrónico el documento de aceptación de cada contratación, que estará accesible para el Comercio previa solicitud.</p>
+<p><b>4.4.</b> Las presentes Condiciones Generales se encuentran disponibles en lengua catalana, castellana e inglesa. El Comercio puede elegir cualquiera de ellas para contratar. En caso de discrepancia interpretativa, prevalecerá la versión en lengua castellana.</p>
+<h3>QUINTA.- PRECIO, IMPUESTOS Y RENOVACIÓN</h3>
+<p><b>5.1.</b> El precio del Servicio es el siguiente:</p>
+<p class="ap">a) Alta: DIEZ EUROS (10,00 €), más el Impuesto sobre el Valor Añadido al tipo vigente, que da derecho al Periodo Promocional.</p>
+<p class="ap">b) Suscripción: DIEZ EUROS (10,00 €) al mes, más el Impuesto sobre el Valor Añadido al tipo vigente.</p>
+<p><b>5.2.</b> Al término del Periodo Promocional, el contrato se renovará automáticamente por periodos mensuales sucesivos, salvo que el Comercio comunique su baja conforme a la Estipulación Octava.</p>
+<p><b>5.3.</b> Los importes se abonarán mediante tarjeta de pago a través de la pasarela del proveedor Stripe, que realizará los cargos de la Suscripción al inicio de cada periodo mensual. isHere no almacena los datos de las tarjetas de pago.</p>
+<p><b>5.4.</b> isHere podrá modificar el precio del Servicio notificándolo al Comercio con una antelación mínima de treinta (30) días naturales. El Comercio que no acepte la modificación podrá resolver el contrato, sin penalización alguna, antes de la fecha de su entrada en vigor.</p>
+<h3>SEXTA.- FACTURACIÓN</h3>
+<p><b>6.1.</b> isHere expedirá la factura correspondiente a cada cobro de conformidad con el Real Decreto 1619/2012, de 30 de noviembre, por el que se aprueba el Reglamento por el que se regulan las obligaciones de facturación.</p>
+<p><b>6.2.</b> El Comercio presta su consentimiento expreso a la recepción de facturas en formato electrónico en la dirección de correo electrónico facilitada.</p>
+<p><b>6.3.</b> El Comercio garantiza la exactitud de sus datos fiscales y se obliga a comunicar cualquier modificación de los mismos. isHere no será responsable de las consecuencias derivadas de la inexactitud de dichos datos.</p>
+<h3>SÉPTIMA.- IMPAGO</h3>
+<p><b>7.1.</b> En caso de que no pueda realizarse el cobro de un periodo de Suscripción, isHere podrá suspender la Ficha hasta la regularización del pago, sin perjuicio de su facultad de resolver el contrato si el impago persiste durante más de treinta (30) días naturales.</p>
+<h3>OCTAVA.- DURACIÓN Y BAJA</h3>
+<p><b>8.1.</b> El contrato tiene duración indefinida y no establece periodo de permanencia alguno.</p>
+<p><b>8.2.</b> El Comercio podrá darse de baja en cualquier momento a través de su portal privado en la Plataforma o mediante comunicación dirigida a isherebarcelona@gmail.com, sin necesidad de alegar causa. El procedimiento de baja no será más complejo que el de alta.</p>
+<p><b>8.3.</b> La baja producirá efectos al término del periodo ya abonado, durante el cual la Ficha permanecerá visible. No procederá el reembolso de los importes correspondientes a periodos iniciados, salvo que una norma imperativa disponga lo contrario.</p>
+<h3>NOVENA.- OBLIGACIONES DEL COMERCIO</h3>
+<p><b>9.1.</b> El Comercio se obliga a:</p>
+<p class="ap">a) facilitar información veraz, completa y actualizada sobre su establecimiento, productos, precios, dirección y horarios;</p>
+<p class="ap">b) garantizar que los precios indicados en la Ficha coinciden con los efectivamente aplicados en su establecimiento e incluyen los impuestos aplicables, de conformidad con la normativa de protección de los consumidores;</p>
+<p class="ap">c) disponer de las licencias, autorizaciones y registros exigibles para el ejercicio de su actividad;</p>
+<p class="ap">d) abstenerse de ofrecer productos o servicios ilícitos, falsificados o cuya publicidad esté prohibida o restringida, así como de incluir contenidos contrarios a la Ley 34/1988, de 11 de noviembre, General de Publicidad, o a la Ley 3/1991, de 10 de enero, de Competencia Desleal; y</p>
+<p class="ap">e) atender a los Usuarios con arreglo a la normativa que resulte aplicable a su actividad.</p>
+<h3>DÉCIMA.- CONTENIDOS Y PROPIEDAD INTELECTUAL E INDUSTRIAL</h3>
+<p><b>10.1.</b> El Comercio declara ser titular de los derechos de propiedad intelectual e industrial sobre las fotografías, logotipos, marcas y textos que aporte a la Plataforma, o disponer de autorización suficiente para su uso, conforme al Real Decreto Legislativo 1/1996, de 12 de abril, por el que se aprueba el texto refundido de la Ley de Propiedad Intelectual, y a la Ley 17/2001, de 7 de diciembre, de Marcas.</p>
+<p><b>10.2.</b> El Comercio concede a isHere una licencia no exclusiva, gratuita, para todo el mundo y por el tiempo de vigencia del contrato más treinta (30) días naturales, para reproducir, comunicar públicamente y adaptar técnicamente dichos contenidos en la Plataforma y en los materiales promocionales de isHere. El Comercio podrá oponerse en cualquier momento a su uso promocional mediante comunicación a isHere.</p>
+<p><b>10.3.</b> El Comercio mantendrá indemne a isHere frente a cualquier reclamación de terceros derivada de los contenidos aportados, asumiendo los daños, gastos y honorarios que de ella se deriven.</p>
+<p><b>10.4.</b> La Plataforma, su software, el Catálogo, sus bases de datos y la marca «isHere» son titularidad exclusiva de isHere. El presente contrato no transmite al Comercio derecho alguno sobre ellos.</p>
+<h3>UNDÉCIMA.- TRANSPARENCIA EN LA CLASIFICACIÓN DE RESULTADOS</h3>
+<p><b>11.1.</b> En cumplimiento del artículo 5 del Reglamento P2B, isHere informa de que los principales parámetros que determinan la presentación de una Ficha en respuesta a una búsqueda, por orden de importancia relativa, son los siguientes:</p>
+<p class="ap">a) el barrio seleccionado por el Usuario y la proximidad del establecimiento a su ubicación;</p>
+<p class="ap">b) la coincidencia entre los términos de la búsqueda y las palabras clave, el producto estrella y los productos del Catálogo indicados por el Comercio; y</p>
+<p class="ap">c) como criterio de desempate, la inclusión de una fotografía en la Ficha.</p>
+<p><b>11.2.</b> La Plataforma no ofrece posicionamiento preferente a cambio de remuneración. isHere podrá incluir gratuitamente determinados establecimientos en virtud de acuerdos específicos; dichas Fichas se clasifican con arreglo a los mismos parámetros, a los efectos del artículo 7 del Reglamento P2B.</p>
+<h3>DUODÉCIMA.- RESTRICCIÓN, SUSPENSIÓN Y TERMINACIÓN</h3>
+<p><b>12.1.</b> isHere podrá restringir, suspender o retirar la Ficha del Comercio en los siguientes supuestos: impago; inclusión de información falsa o engañosa; contenidos ilícitos o que vulneren derechos de terceros; oferta de productos prohibidos; utilización fraudulenta de la Plataforma; o reclamaciones reiteradas y fundadas de Usuarios.</p>
+<p><b>12.2.</b> De conformidad con el artículo 4 del Reglamento P2B, isHere comunicará al Comercio, en soporte duradero, la exposición de motivos de la restricción o suspensión antes de que esta surta efecto o en el momento en que lo haga. La terminación definitiva del Servicio se notificará con una antelación mínima de treinta (30) días naturales, salvo en los supuestos de incumplimiento grave o reiterado, obligación legal o reglamentaria, o razones imperiosas de seguridad.</p>
+<p><b>12.3.</b> El Comercio podrá aclarar los hechos y circunstancias que hayan motivado la decisión a través del sistema de reclamaciones previsto en la Estipulación Decimonovena.</p>
+<h3>DECIMOTERCERA.- SERVICIOS COMPLEMENTARIOS</h3>
+<p><b>13.1.</b> isHere podrá ofrecer a los Comercios con el Servicio activo, sin coste adicional, una sesión grupal trimestral de orientación en materia de marketing, que se realizará por medios telemáticos.</p>
+<p><b>13.2.</b> Dicha sesión tiene carácter meramente orientativo, no constituye asesoramiento profesional individualizado ni garantiza resultado alguno, y no forma parte esencial del objeto del contrato. isHere podrá modificar su formato, periodicidad o contenido, o suprimirla, sin que ello afecte al precio ni otorgue derecho a compensación.</p>
+<h3>DECIMOCUARTA.- RESPONSABILIDAD</h3>
+<p><b>14.1.</b> isHere no garantiza un número determinado de búsquedas, visitas, clientes ni ventas, ni la disponibilidad ininterrumpida de la Plataforma, que podrá verse afectada por tareas de mantenimiento, actualizaciones o causas ajenas a su control.</p>
+<p><b>14.2.</b> Las indicaciones de ruta son prestadas por proveedores de cartografía de terceros, cuya exactitud y disponibilidad no dependen de isHere.</p>
+<p><b>14.3.</b> En su condición de prestador de servicios de alojamiento de datos, isHere no será responsable de los contenidos aportados por el Comercio en los términos previstos en el artículo 16 de la LSSI.</p>
+<p><b>14.4.</b> Salvo en los supuestos de dolo o culpa grave, la responsabilidad total de isHere derivada del presente contrato quedará limitada al importe efectivamente abonado por el Comercio en los doce (12) meses anteriores al hecho que origine la reclamación. En ningún caso responderá isHere por lucro cesante, pérdida de oportunidades de negocio ni daños indirectos.</p>
+<h3>DECIMOQUINTA.- RECLUTADORES INDEPENDIENTES</h3>
+<p><b>15.1.</b> Los Reclutadores son profesionales independientes vinculados a isHere por una relación de naturaleza mercantil. No ostentan la condición de empleados, agentes ni representantes de isHere y carecen de facultades para percibir cantidades, conceder descuentos, modificar las presentes Condiciones Generales o asumir obligaciones en nombre de isHere.</p>
+<p><b>15.2.</b> El único medio de pago válido es la pasarela integrada en la Plataforma. isHere no responderá de las cantidades que el Comercio abone a terceros por cualquier otra vía.</p>
+<p><b>15.3.</b> El Código de Recomendación se emplea para liquidar la retribución del Reclutador. isHere no comunica al Reclutador los datos de contacto del Comercio.</p>
+<p><b>15.4.</b> Cuando el Comercio haya sido presentado por un Reclutador con relación vigente con isHere, el portal privado del Comercio podrá incluir un enlace de contacto con dicho Reclutador, que actuará como interlocutor de orientación para consultas operativas. Dicha asistencia tiene carácter voluntario y no sustituye el canal oficial de isHere. En defecto de Reclutador, o cuando este haya cesado en su relación con isHere, el enlace de contacto se dirigirá a isHere.</p>
+<p><b>15.5.</b> Las solicitudes de baja, las reclamaciones y cualesquiera comunicaciones con efectos contractuales deberán dirigirse a isHere a través de isherebarcelona@gmail.com o del portal privado del Comercio. Las comunicaciones dirigidas únicamente al Reclutador no surtirán efectos frente a isHere.</p>
+<h3>DECIMOSEXTA.- PROTECCIÓN DE DATOS PERSONALES</h3>
+<p><b>16.1.</b> De conformidad con el Reglamento (UE) 2016/679 (en adelante, «RGPD») y con la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales, se informa al Comercio de lo siguiente:</p>
+<p class="ap">a) Responsable: isHere, con los datos identificativos recogidos en el apartado I.</p>
+<p class="ap">b) Finalidades: la gestión de la relación contractual, la facturación, el envío de comunicaciones relativas al Servicio y la invitación a los servicios complementarios.</p>
+<p class="ap">c) Legitimación: la ejecución del contrato (artículo 6.1.b RGPD) y el cumplimiento de obligaciones legales (artículo 6.1.c RGPD).</p>
+<p class="ap">d) Destinatarios: los proveedores de alojamiento (Supabase) y de pago (Stripe), en calidad de encargados del tratamiento, así como las Administraciones Públicas cuando exista obligación legal. Las transferencias internacionales que, en su caso, se produzcan se ampararán en decisiones de adecuación o en cláusulas contractuales tipo aprobadas por la Comisión Europea.</p>
+<p class="ap">e) Conservación: durante la vigencia del contrato y, posteriormente, durante los plazos de prescripción de las acciones y obligaciones legales aplicables.</p>
+<p class="ap">f) Derechos: acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, que podrán ejercitarse mediante comunicación a isherebarcelona@gmail.com, así como el derecho a presentar una reclamación ante la Agencia Española de Protección de Datos.</p>
+<p><b>16.2.</b> Tendrán carácter público en la Plataforma el nombre comercial, la dirección, el barrio, los productos, los precios indicados y la fotografía del establecimiento. Los datos de la persona de contacto, su correo electrónico y su teléfono no serán objeto de publicación.</p>
+<p><b>16.3.</b> La información completa se encuentra disponible en la Política de Privacidad de la Plataforma.</p>
+<h3>DECIMOSÉPTIMA.- FUERZA MAYOR</h3>
+<p><b>17.1.</b> Ninguna de las partes será responsable del incumplimiento de sus obligaciones cuando obedezca a causas de fuerza mayor o caso fortuito, en los términos del artículo 1105 del Código Civil, incluidas las caídas de los servicios de telecomunicaciones o de los proveedores tecnológicos de terceros.</p>
+<h3>DECIMOCTAVA.- MODIFICACIÓN DE LAS CONDICIONES GENERALES</h3>
+<p><b>18.1.</b> De conformidad con el artículo 3 del Reglamento P2B, isHere notificará al Comercio, en soporte duradero, cualquier modificación de las presentes Condiciones Generales con una antelación mínima de quince (15) días naturales, o de treinta (30) días naturales cuando afecte al precio. El Comercio podrá resolver el contrato antes de la entrada en vigor de la modificación, sin penalización alguna.</p>
+<h3>DECIMONOVENA.- SISTEMA INTERNO DE RECLAMACIONES</h3>
+<p><b>19.1.</b> El Comercio podrá dirigir sus consultas, incidencias y reclamaciones a isherebarcelona@gmail.com o a través del portal privado del Comercio en la Plataforma. isHere acusará recibo y resolverá la reclamación en un plazo máximo de treinta (30) días naturales, comunicando su decisión de forma individualizada y motivada.</p>
+<h3>VIGÉSIMA.- CESIÓN</h3>
+<p><b>20.1.</b> El Comercio no podrá ceder su posición contractual sin el consentimiento previo y por escrito de isHere. isHere podrá ceder su posición contractual a cualquier sociedad de su grupo o a un tercero que le suceda en la explotación de la Plataforma, previa comunicación al Comercio.</p>
+<h3>VIGÉSIMO PRIMERA.- COMUNICACIONES</h3>
+<p><b>21.1.</b> Las comunicaciones entre las partes se realizarán por correo electrónico a las direcciones que consten en la Plataforma, que tendrá la consideración de soporte duradero a los efectos del presente contrato.</p>
+<h3>VIGÉSIMO SEGUNDA.- NULIDAD PARCIAL E INTEGRIDAD</h3>
+<p><b>22.1.</b> La declaración de nulidad o ineficacia de cualquiera de las estipulaciones no afectará a la validez de las restantes, que conservarán su plena eficacia.</p>
+<p><b>22.2.</b> Las presentes Condiciones Generales, junto con la Política de Privacidad, constituyen la totalidad del acuerdo entre las partes en relación con su objeto.</p>
+<h3>VIGÉSIMO TERCERA.- LEY APLICABLE Y JURISDICCIÓN</h3>
+<p><b>23.1.</b> Las presentes Condiciones Generales se rigen e interpretan de conformidad con la legislación española.</p>
+<p><b>23.2.</b> Las controversias que pudieran derivarse de su interpretación o cumplimiento se someterán a los Juzgados y Tribunales que resulten competentes conforme a la Ley 1/2000, de 7 de enero, de Enjuiciamiento Civil. Sin perjuicio de lo anterior, las partes podrán acordar someter la controversia a mediación con carácter previo al ejercicio de acciones judiciales.</p>
+<h3>ANEXO — FÓRMULA DE ACEPTACIÓN</h3>
+<p>Texto de la casilla de aceptación, que no aparecerá premarcada:</p>
+<p class="cita">«He leído y acepto las Condiciones Generales de Contratación del Servicio isHere para Establecimientos Comerciales y la Política de Privacidad. Declaro actuar en nombre y representación del establecimiento indicado y en el ámbito de su actividad empresarial o profesional.»</p>
+
+</section>
+
+<p style="text-align:center;font-size:.8rem"><a href="./">← isHere</a></p>
+</div>
+
+<script>
+/* Datos de la sociedad: completar cuando esté constituida. Es el único lugar que hay que editar. */
+const EMPRESA = {
+  soc: "[Denominación social], S.L.",
+  cif: "[CIF]",
+  domicilio: "[Domicilio social], Barcelona",
+  registro: "Registro Mercantil de Barcelona, [tomo, folio, hoja]",
+  email: "isherebarcelona@gmail.com",
+  web: "https://anitagaetez.github.io/Simulacionishere-barcelona-/",
+  fecha: "2026-09-27"
+};
+document.querySelectorAll("[data-cfg]").forEach(el => el.textContent = EMPRESA[el.dataset.cfg] || "");
+document.querySelectorAll("[data-cfg-mail]").forEach(a => { a.href = "mailto:" + EMPRESA.email; a.textContent = EMPRESA.email; });
+
+let lang = (() => {
+  try { const g = localStorage.getItem("ishere_lang"); if (["es", "ca", "en"].includes(g)) return g; } catch (e) {}
+  const n = (navigator.language || "es").toLowerCase();
+  return n.startsWith("ca") ? "ca" : n.startsWith("es") ? "es" : "en";
+})();
+function aplicar(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".flag-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+}
+document.querySelectorAll(".flag-btn").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang; try { localStorage.setItem("ishere_lang", lang); } catch (e) {} aplicar();
+}));
+aplicar();
+</script>
+</body>
+</html>
