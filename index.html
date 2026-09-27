@@ -3,7 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>isHere Barcelona</title>
+<title>isHere Barcelona · Look for it</title>
+<meta name="description" content="¿Se te olvidó algo? Dime qué necesitas y te llevo a la tienda más cercana de Barcelona. Gratis, en catalán, castellano e inglés.">
+<meta property="og:title" content="isHere Barcelona · Look for it">
+<meta property="og:description" content="Què busques? ¿Qué buscas? Encuentra lo que necesitas cerca de ti en Barcelona. Gratis.">
+<meta property="og:url" content="https://anitagaetez.github.io/Simulacionishere-barcelona-/">
+<meta name="theme-color" content="#0D2B3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="isHere">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="isHere Barcelona">
+<meta property="og:image" content="https://anitagaetez.github.io/Simulacionishere-barcelona-/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://anitagaetez.github.io/Simulacionishere-barcelona-/og.png">
 <style>
   :root{
     --bg-deep: #0D2B3E;
@@ -554,6 +572,10 @@
   .acepto{ display: flex; gap: 10px; align-items: flex-start; font-size: 0.82rem; line-height: 1.45; color: var(--cream-dim); margin: 14px 0 4px; cursor: pointer; }
   .acepto input{ width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: var(--gold); }
   .acepto a{ color: var(--gold); }
+  .instalar{ display: block; margin: 14px auto 4px; background: transparent; color: var(--gold); border: 1px solid rgba(217,164,65,0.5);
+             border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 0.85rem; cursor: pointer; }
+  .instalar[hidden], .instalar-ios[hidden]{ display: none; }
+  .instalar-ios{ font-size: 0.78rem; color: var(--cream-dim); margin: 10px auto 0; max-width: 280px; }
   .legal-links{ font-size: 0.72rem; opacity: 0.75; margin-top: 8px; }
   .legal-links a{ color: inherit; }
   .form-error{
@@ -592,7 +614,7 @@
 
   <header>
     <div class="wordmark">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z" stroke="#D9A441" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.4" stroke="#D9A441" stroke-width="1.6"/></svg>
+      <img src="logo-mark.png" alt="" width="28" height="28" style="border-radius:50%;flex-shrink:0">
       <span>is<b>Here</b> Barcelona</span>
     </div>
     <div class="flags" role="group" aria-label="Idioma / Language">
@@ -714,6 +736,8 @@
 
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
+        <button type="button" class="instalar" id="btn-instalar" hidden data-i18n="install">📲 Instalar isHere en tu móvil</button>
+        <p class="instalar-ios" id="ios-hint" hidden data-i18n="install_ios">En iPhone: toca Compartir ⬆️ y después «Añadir a pantalla de inicio».</p>
         <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
@@ -889,6 +913,8 @@ const I18N = {
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     ft_vende: "Lo que vende",
+    install: "📲 Instalar isHere en tu móvil",
+    install_ios: "En iPhone: toca Compartir ⬆️ y después «Añadir a pantalla de inicio».",
     g_fiscal: "Datos para tu factura",
     fiscal_note: "Solo los ve isHere. Los necesitamos para emitir facturas con las que puedas deducirte el IVA.",
     l_razon: "Razón social o nombre del titular",
@@ -1045,6 +1071,8 @@ const I18N = {
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     ft_vende: "El que ven",
+    install: "📲 Instal·la isHere al mòbil",
+    install_ios: "A l'iPhone: toca Compartir ⬆️ i després «Afegir a la pantalla d'inici».",
     g_fiscal: "Dades per a la teva factura",
     fiscal_note: "Només les veu isHere. Les necessitem per emetre factures amb què et puguis deduir l'IVA.",
     l_razon: "Raó social o nom del titular",
@@ -1201,6 +1229,8 @@ const I18N = {
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
     ft_vende: "What they sell",
+    install: "📲 Install isHere on your phone",
+    install_ios: "On iPhone: tap Share ⬆️ and then “Add to Home Screen”.",
     g_fiscal: "Invoice details",
     fiscal_note: "Only isHere sees these. We need them to issue invoices you can deduct VAT with.",
     l_razon: "Company name or holder's full name",
@@ -2436,6 +2466,23 @@ async function manejarRetorno(){
 
   if ([...params.keys()].length) history.replaceState(null, "", window.location.pathname);
 }
+
+/* ---------- app instalable ---------- */
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+let avisoInstalar = null;
+const yaInstalada = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); avisoInstalar = e;
+  if (!yaInstalada) document.getElementById("btn-instalar").hidden = false;
+});
+document.getElementById("btn-instalar").addEventListener("click", async () => {
+  if (!avisoInstalar) return;
+  avisoInstalar.prompt();
+  await avisoInstalar.userChoice.catch(() => {});
+  avisoInstalar = null;
+  document.getElementById("btn-instalar").hidden = true;
+});
+if (!yaInstalada && /iphone|ipad|ipod/i.test(navigator.userAgent)) document.getElementById("ios-hint").hidden = false;
 
 aplicarIdioma();
 cargarCatalogo();
