@@ -575,8 +575,11 @@
   .acepto a{ color: var(--gold); }
   .instalar{ display: block; margin: 14px auto 4px; background: transparent; color: var(--gold); border: 1px solid rgba(217,164,65,0.5);
              border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 0.85rem; cursor: pointer; }
-  .instalar[hidden], .instalar-ios[hidden]{ display: none; }
-  .instalar-ios{ font-size: 0.78rem; color: var(--cream-dim); margin: 10px auto 0; max-width: 280px; }
+  .instalar[hidden]{ display: none; }
+  .instalar-guia{ background: var(--bg-panel); border: 1px solid rgba(217,164,65,0.35); border-radius: 14px; padding: 12px 14px;
+                  margin: 14px auto 4px; max-width: 320px; text-align: left; font-size: 0.82rem; line-height: 1.5; color: var(--cream-dim); }
+  .instalar-guia b{ color: var(--gold); display: block; margin-bottom: 4px; }
+  .instalar-guia[hidden]{ display: none; }
   .legal-links{ font-size: 0.72rem; opacity: 0.75; margin-top: 8px; }
   .legal-links a{ color: inherit; }
   .form-error{
@@ -739,7 +742,10 @@
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
         <button type="button" class="instalar" id="btn-instalar" hidden data-i18n="install">📲 Instalar isHere en tu móvil</button>
-        <p class="instalar-ios" id="ios-hint" hidden data-i18n="install_ios">En iPhone: toca Compartir ⬆️ y después «Añadir a pantalla de inicio».</p>
+        <div class="instalar-guia" id="guia-instalar" hidden>
+          <b data-i18n="inst_title">📲 Instala isHere en tu móvil</b>
+          <p id="guia-texto"></p>
+        </div>
         <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
@@ -918,6 +924,11 @@ const I18N = {
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
     recruit_link: "💼 ¿Quieres ganar dinero extra? Hazte reclutador/a",
     ft_vende: "Lo que vende",
+    inst_title: "📲 Instala isHere en tu móvil",
+    inst_ios: "En Safari, toca el botón Compartir ⬆️ (abajo) y elige «Añadir a pantalla de inicio». Tendrás isHere como una app más.",
+    inst_android: "En Chrome, toca ⋮ (arriba a la derecha) y elige «Instalar aplicación» o «Añadir a pantalla de inicio».",
+    inst_inapp_ios: "Abriste el enlace dentro de otra app. Toca ⋯ o ⬆️ y elige «Abrir en Safari»; después, Compartir ⬆️ → «Añadir a pantalla de inicio».",
+    inst_inapp_android: "Abriste el enlace dentro de otra app. Toca ⋮ y elige «Abrir en Chrome»; después, ⋮ → «Instalar aplicación».",
     recruit_link: "Trabaja con nosotros · Hazte reclutador/a",
     report: "Denunciar esta ficha",
     report_subject: "Denuncia de ficha: {n} ({id})",
@@ -1081,6 +1092,11 @@ const I18N = {
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
     recruit_link: "💼 Vols guanyar diners extra? Fes-te reclutador/a",
     ft_vende: "El que ven",
+    inst_title: "📲 Instal·la isHere al mòbil",
+    inst_ios: "A Safari, toca el botó Compartir ⬆️ (a baix) i tria «Afegir a la pantalla d'inici». Tindràs isHere com una app més.",
+    inst_android: "A Chrome, toca ⋮ (a dalt a la dreta) i tria «Instal·lar l'aplicació» o «Afegir a la pantalla d'inici».",
+    inst_inapp_ios: "Has obert l'enllaç dins d'una altra app. Toca ⋯ o ⬆️ i tria «Obrir a Safari»; després, Compartir ⬆️ → «Afegir a la pantalla d'inici».",
+    inst_inapp_android: "Has obert l'enllaç dins d'una altra app. Toca ⋮ i tria «Obrir a Chrome»; després, ⋮ → «Instal·lar l'aplicació».",
     recruit_link: "Treballa amb nosaltres · Fes-te reclutador/a",
     report: "Denunciar aquesta fitxa",
     report_subject: "Denúncia de fitxa: {n} ({id})",
@@ -1244,6 +1260,11 @@ const I18N = {
     portal_link: "Already on isHere? Go to My business",
     recruit_link: "💼 Want to earn extra money? Become a recruiter",
     ft_vende: "What they sell",
+    inst_title: "📲 Install isHere on your phone",
+    inst_ios: "In Safari, tap the Share button ⬆️ (at the bottom) and choose “Add to Home Screen”. isHere will work like any other app.",
+    inst_android: "In Chrome, tap ⋮ (top right) and choose “Install app” or “Add to Home screen”.",
+    inst_inapp_ios: "You opened this link inside another app. Tap ⋯ or ⬆️ and choose “Open in Safari”; then Share ⬆️ → “Add to Home Screen”.",
+    inst_inapp_android: "You opened this link inside another app. Tap ⋮ and choose “Open in Chrome”; then ⋮ → “Install app”.",
     recruit_link: "Work with us · Become a recruiter",
     report: "Report this listing",
     report_subject: "Listing report: {n} ({id})",
@@ -1742,6 +1763,8 @@ function renderLluvia(){
 }
 
 function refrescarDinamicos(){
+  const guia = document.getElementById("guia-instalar");
+  if (guia && guia.dataset.clave) document.getElementById("guia-texto").textContent = t(guia.dataset.clave);
   if (ultimaDeteccion) locateStatus.textContent = t(ultimaDeteccion.auto ? "detected_auto" : "detected", { z: ultimaDeteccion.zone });
   renderPortada();
   renderNube();
@@ -2496,7 +2519,10 @@ let avisoInstalar = null;
 const yaInstalada = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault(); avisoInstalar = e;
-  if (!yaInstalada) document.getElementById("btn-instalar").hidden = false;
+  if (!yaInstalada){
+    document.getElementById("btn-instalar").hidden = false;
+    document.getElementById("guia-instalar").hidden = true;
+  }
 });
 document.getElementById("btn-instalar").addEventListener("click", async () => {
   if (!avisoInstalar) return;
@@ -2505,7 +2531,20 @@ document.getElementById("btn-instalar").addEventListener("click", async () => {
   avisoInstalar = null;
   document.getElementById("btn-instalar").hidden = true;
 });
-if (!yaInstalada && /iphone|ipad|ipod/i.test(navigator.userAgent)) document.getElementById("ios-hint").hidden = false;
+// Guía para quien no ve el botón: iPhone (Apple no permite el botón) o navegadores dentro de WhatsApp/Instagram/Facebook.
+function mostrarGuiaInstalar(){
+  if (yaInstalada || avisoInstalar) return;
+  const ua = navigator.userAgent;
+  const esIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const enApp = /FBAN|FBAV|Instagram|WhatsApp|Line\/|TikTok|musical_ly|Snapchat/i.test(ua) || (/Android/i.test(ua) && /; wv\)/.test(ua));
+  const clave = enApp ? (esIOS ? "inst_inapp_ios" : "inst_inapp_android") : esIOS ? "inst_ios" : /Android/i.test(ua) ? "inst_android" : null;
+  if (!clave) return;
+  document.getElementById("guia-texto").textContent = t(clave);
+  document.getElementById("guia-instalar").dataset.clave = clave;
+  document.getElementById("guia-instalar").hidden = false;
+}
+// Android da unos segundos para ofrecer el botón; si no llega, se muestra la guía.
+setTimeout(mostrarGuiaInstalar, 2500);
 
 aplicarIdioma();
 cargarCatalogo();
