@@ -234,8 +234,10 @@
     <div class="card">
       <h2 data-i18n="t_billing">Pagos, facturas y baja</h2>
       <p class="muted" data-i18n="billing_txt">Para cambiar la tarjeta, pedir una factura o darte de baja, escríbenos y lo gestionamos. Sin permanencia: tu ficha sigue visible hasta el final del periodo pagado.</p>
-      <button class="btn" id="btn-portal" style="margin-top:12px" data-i18n="b_portal">Gestionar pagos, facturas y baja</button>
+      <button class="btn" data-flujo="tarjeta" style="margin-top:12px" data-i18n="b_card">💳 Actualizar mi tarjeta</button>
+      <button class="btn-sec" data-flujo="facturas" style="margin-top:10px;width:100%;justify-content:center" data-i18n="b_invoices">🧾 Ver mis facturas y datos de facturación</button>
       <div class="msg" id="m-portal"></div>
+      <p style="text-align:center;margin-top:14px"><button class="link" data-flujo="baja" style="font-size:.8rem;color:var(--cream-dim)" data-i18n="b_cancel">Darme de baja</button></p>
       <div class="acciones"><a class="btn-sec" id="a-baja" data-i18n="b_billing">Escribir a isHere</a></div>
     </div>
 
@@ -281,6 +283,7 @@ const I18N = {
     wa_msg: "Hola, soy {c}, de isHere. Necesito ayuda con mi ficha.", mail_subject: "Ayuda con mi ficha – {c}",
     t_billing: "Pagos, facturas y baja",
     billing_txt: "Cambia tu tarjeta, descarga tus facturas o date de baja cuando quieras, de forma segura en Stripe. Sin permanencia: tu ficha sigue visible hasta el final del periodo pagado.", b_portal: "Gestionar pagos, facturas y baja", portal_opening: "Abriendo tu portal de pagos…", portal_courtesy: "Tu ficha es de cortesía, así que no tiene pagos que gestionar.", portal_err: "No se pudo abrir el portal de pagos. Escríbenos y lo gestionamos.",
+    b_card: "💳 Actualizar mi tarjeta", b_invoices: "🧾 Ver mis facturas y datos de facturación", b_cancel: "Darme de baja",
     b_billing: "Escribir a isHere", billing_subject: "Pagos / facturas / baja – {c}", legal: "Bajas y reclamaciones:",
     st_active: "Activa", st_courtesy: "Cortesía", st_off: "No activa",
     plan_promo: "Promoción de 3 meses hasta el {d}. Después, 12,10 €/mes (IVA incluido), sin permanencia.",
@@ -315,6 +318,7 @@ const I18N = {
     wa_msg: "Hola, soc {c}, d'isHere. Necessito ajuda amb la meva fitxa.", mail_subject: "Ajuda amb la meva fitxa – {c}",
     t_billing: "Pagaments, factures i baixa",
     billing_txt: "Canvia la targeta, descarrega les teves factures o dona't de baixa quan vulguis, de manera segura a Stripe. Sense permanència: la teva fitxa continua visible fins al final del període pagat.", b_portal: "Gestionar pagaments, factures i baixa", portal_opening: "Obrint el teu portal de pagaments…", portal_courtesy: "La teva fitxa és de cortesia, així que no té pagaments per gestionar.", portal_err: "No s'ha pogut obrir el portal de pagaments. Escriu-nos i ho gestionem.",
+    b_card: "💳 Actualitzar la meva targeta", b_invoices: "🧾 Veure les meves factures i dades de facturació", b_cancel: "Donar-me de baixa",
     b_billing: "Escriure a isHere", billing_subject: "Pagaments / factures / baixa – {c}", legal: "Baixes i reclamacions:",
     st_active: "Activa", st_courtesy: "Cortesia", st_off: "No activa",
     plan_promo: "Promoció de 3 mesos fins al {d}. Després, 12,10 €/mes (IVA inclòs), sense permanència.",
@@ -349,6 +353,7 @@ const I18N = {
     wa_msg: "Hi, I'm {c} on isHere. I need help with my listing.", mail_subject: "Help with my listing – {c}",
     t_billing: "Payments, invoices and cancellation",
     billing_txt: "Change your card, download your invoices or cancel whenever you like, securely on Stripe. No commitment: your listing stays visible until the end of the paid period.", b_portal: "Manage payments, invoices and cancellation", portal_opening: "Opening your payments portal…", portal_courtesy: "Your listing is a courtesy listing, so there are no payments to manage.", portal_err: "The payments portal couldn't be opened. Write to us and we'll handle it.",
+    b_card: "💳 Update my card", b_invoices: "🧾 See my invoices and billing details", b_cancel: "Cancel my subscription",
     b_billing: "Write to isHere", billing_subject: "Payments / invoices / cancellation – {c}", legal: "Cancellations and complaints:",
     st_active: "Active", st_courtesy: "Courtesy", st_off: "Not active",
     plan_promo: "3-month promotion until {d}. Then €12.10/month (VAT included), no commitment.",
@@ -688,7 +693,8 @@ $("btn-guardar").addEventListener("click", async (e) => {
 });
 
 /* ---------- portal de pagos de Stripe ---------- */
-$("btn-portal").addEventListener("click", async (e) => {
+document.querySelectorAll("[data-flujo]").forEach(b => b.addEventListener("click", async (e) => {
+  const flujo = b.dataset.flujo;
   limpiar("m-portal");
   if (actual.plan === "courtesy"){ msg("m-portal", t("portal_courtesy"), "ok"); return; }
   e.target.disabled = true;
@@ -699,7 +705,7 @@ $("btn-portal").addEventListener("click", async (e) => {
       method: "POST",
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
                  "Authorization": "Bearer " + (session ? session.access_token : "") },
-      body: JSON.stringify({ pyme_id: actual.id, volver: location.href.split("#")[0] })
+      body: JSON.stringify({ pyme_id: actual.id, volver: location.href.split("#")[0], flujo })
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.url) throw new Error(data.error || res.status);
@@ -708,7 +714,7 @@ $("btn-portal").addEventListener("click", async (e) => {
     msg("m-portal", t("portal_err"));
     e.target.disabled = false;
   }
-});
+}));
 
 /* ---------- inicio ---------- */
 (async () => {
