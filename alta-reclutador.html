@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>isHere · Alta de reclutador/a</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="theme-color" content="#0D2B3E">
+<style>
+  :root{ --bg:#0D2B3E; --panel:#123449; --gold:#D9A441; --cream:#F2E9D8; --dim:#B9C7CE; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--cream); font-family:-apple-system,'Segoe UI',sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:760px; margin:0 auto; padding:18px 18px 70px; }
+  header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .wordmark{ font-family:Georgia,serif; font-size:1.25rem; color:var(--cream); text-decoration:none; }
+  .wordmark b{ color:var(--gold); }
+  .flags{ display:flex; gap:8px; }
+  .flag-btn{ width:32px; height:22px; padding:0; border-radius:5px; overflow:hidden; border:2px solid transparent; background:none; cursor:pointer; opacity:.55; }
+  .flag-btn svg{ display:block; width:100%; height:100%; }
+  .flag-btn[aria-pressed="true"]{ opacity:1; border-color:var(--gold); }
+  nav{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  nav a{ color:var(--cream); text-decoration:none; border:1px solid rgba(242,233,216,.2); border-radius:999px; padding:7px 13px; font-size:.85rem; }
+  section{ background:var(--panel); border-radius:14px; padding:20px 18px; margin-bottom:18px; scroll-margin-top:12px; }
+  h1{ font-family:Georgia,serif; font-weight:500; font-size:1.6rem; margin-bottom:6px; }
+  h2{ font-family:Georgia,serif; font-weight:500; font-size:1.3rem; margin-bottom:12px; color:var(--gold); }
+  h3{ font-size:.95rem; margin:18px 0 8px; }
+  p{ font-size:.9rem; color:var(--dim); margin-bottom:10px; text-align:justify; }
+  p b{ color:var(--cream); }
+  .ap{ padding-left:18px; }
+  .cita{ font-style:italic; border-left:3px solid var(--gold); padding-left:12px; }
+  table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:8px 0 12px; }
+  td, th{ border-bottom:1px solid rgba(242,233,216,.12); padding:8px 6px; text-align:left; color:var(--dim); vertical-align:top; }
+  th{ color:var(--cream); font-weight:600; }
+  .nota{ background:rgba(217,164,65,.12); border:1px solid rgba(217,164,65,.35); color:var(--cream); border-radius:10px; padding:10px 12px; font-size:.85rem; margin-bottom:12px; }
+  a{ color:var(--gold); }
+  [data-l]{ display:none; }
+  html[lang="es"] [data-l="es"], html[lang="ca"] [data-l="ca"], html[lang="en"] [data-l="en"]{ display:block; }
+  html[lang="es"] span[data-l="es"], html[lang="ca"] span[data-l="ca"], html[lang="en"] span[data-l="en"]{ display:inline; }
+  .upd{ font-size:.8rem; color:var(--dim); margin-bottom:18px; }
+
+  td.n{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--cream); }
+  tr.tot td{ color:var(--cream); font-weight:700; border-bottom:2px solid rgba(217,164,65,.5); }
+  ul{ list-style:none; margin:4px 0 12px; }
+  li{ font-size:.88rem; color:var(--dim); padding:5px 0 5px 24px; position:relative; line-height:1.5; }
+  li::before{ content:"•"; position:absolute; left:8px; color:var(--gold); font-weight:700; }
+  li b, p b{ color:var(--cream); }
+  .check{ display:flex; gap:10px; align-items:flex-start; font-size:.86rem; color:var(--dim); margin:12px 0; cursor:pointer; line-height:1.45; }
+  .check input{ width:22px; height:22px; flex-shrink:0; margin-top:1px; accent-color:var(--gold); }
+  .btn{ display:block; width:100%; background:var(--gold); color:#1b1b1b; border:none; border-radius:12px; padding:14px; font:inherit; font-weight:700; font-size:1rem; cursor:pointer; margin-top:10px; }
+  .btn:disabled{ opacity:.6; }
+  .msg{ font-size:.86rem; margin-top:10px; color:#E0685E; min-height:1em; }
+  .msg.ok{ color:#4CAF7D; }
+  .hidden{ display:none !important; }
+  .lab{ display:block; font-size:.8rem; color:var(--dim); margin:12px 0 5px; }
+  .inp{ width:100%; background:var(--bg); border:1px solid rgba(242,233,216,.18); color:var(--cream); padding:12px; border-radius:10px; font:inherit; font-size:.95rem; }
+  .check input[type=radio]{ width:20px; height:20px; }
+  details.contrato summary{ cursor:pointer; color:var(--gold); font-weight:600; font-size:.95rem; }
+  details.contrato[open] summary{ margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a class="wordmark" href="./" style="display:flex;align-items:center;gap:8px"><img src="logo-mark.png" alt="" width="26" height="26" style="border-radius:50%">is<b>Here</b></a>
+<div class="flags" role="group" aria-label="Idioma / Language">
+      <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català">
+        <svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="es" aria-label="Español" title="Español">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="2" fill="#C60B1E"/><rect y="0.5" width="3" height="1" fill="#FFC400"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="en" aria-label="English" title="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>
+      </button>
+    </div>
+</header>
+
+<h1 id="saludo"></h1>
+<p class="upd" id="codigo"></p>
+
+<div id="contenido" class="hidden">
+<section>
+ <div data-l="es">
+  <h2>Tu forma de pago</h2>
+  <p>Por cada comercio que se dé de alta con tu código y pague su alta:</p>
+  <table>
+   <tr><td>Tu comisión</td><td class="n">5,00 €</td></tr>
+   <tr><td>IVA (21 %), que paga isHere</td><td class="n">1,05 €</td></tr>
+   <tr class="tot"><td>Recibes en tu cuenta de Stripe</td><td class="n">6,05 €</td></tr>
+   <tr><td>IVA que declaras e ingresas a Hacienda (tu modelo 303)</td><td class="n">− 1,05 €</td></tr>
+   <tr class="tot"><td>Te quedan limpios</td><td class="n">5,00 €</td></tr>
+  </table>
+  <ul>
+   <li>El pago es <b>automático, al activarse el comercio</b> (cuando Stripe confirma su pago de alta). El paso a tu cuenta bancaria sigue el calendario de pagos de Stripe, normalmente unos días.</li>
+   <li>Es una <b>comisión única por comercio</b>: las renovaciones mensuales no generan nuevas comisiones.</li>
+   <li>El <b>IVA lo paga íntegramente isHere</b>. Tú solo lo recibes y lo ingresas a Hacienda: no sale de tu bolsillo.</li>
+   <li><b>No aplicamos retención de IRPF</b> si estás de alta en una actividad empresarial. Si la ley obligara a retener por tu actividad, isHere asumirá ese importe para que sigas recibiendo 5,00 € netos.</li>
+   <li>Si en los 120 días siguientes el pago del comercio se reembolsa, se anula por contracargo o se demuestra fraude, esa comisión se descuenta de tus comisiones futuras.</li>
+  </ul>
+  <h2>Facturación de tus servicios</h2>
+  <p>Para que no tengas que hacer facturas, <b>isHere emitirá en tu nombre y por tu cuenta la factura de cada comisión</b> (autofacturación, artículo 5 del Real Decreto 1619/2012), con una serie específica, y te la enviará por email. Tendrás 15 días para rechazarla si algún dato no es correcto; si no, se entiende aceptada. Tú eres responsable de declarar el IVA y tus ingresos.</p>
+  <h2>Marco legal</h2>
+  <p>La relación es una <b>colaboración mercantil independiente</b> de prestación de servicios de intermediación: <b>no es un contrato laboral</b> (no se aplica el Estatuto de los Trabajadores) ni un contrato de agencia (Ley 12/1992). Se rige por el contrato y, supletoriamente, por el Código de Comercio y el Código Civil; en Cataluña, en lo civil no regulado por la legislación estatal, por el <i>Codi civil de Catalunya</i> (Llibre sisè, Llei 3/2017).</p>
+  <p>En lo fiscal se aplican la Ley 37/1992 del IVA, la Ley 35/2006 del IRPF y el Real Decreto 1619/2012 de facturación. Tus datos se tratan conforme al RGPD y la Ley Orgánica 3/2018. Tu aceptación electrónica tiene plena validez legal (artículo 23 de la Ley 34/2002 y Reglamento (UE) 910/2014) y queda registrada con fecha, hora y versión.</p>
+  <h2>Requisitos</h2>
+  <ul><li>Ser mayor de edad y estar de alta como autónomo/a en Hacienda y en la Seguridad Social.</li><li>Tener una cuenta de Stripe a tu nombre (la creas en el siguiente paso).</li><li>Firmar tu contrato de colaboración mercantil con isHere.</li></ul>
+ </div>
+ <div data-l="ca">
+  <h2>La teva forma de pagament</h2>
+  <p>Per cada comerç que es doni d'alta amb el teu codi i pagui l'alta:</p>
+  <table>
+   <tr><td>La teva comissió</td><td class="n">5,00 €</td></tr>
+   <tr><td>IVA (21 %), que paga isHere</td><td class="n">1,05 €</td></tr>
+   <tr class="tot"><td>Reps al teu compte de Stripe</td><td class="n">6,05 €</td></tr>
+   <tr><td>IVA que declares i ingresses a Hisenda (el teu model 303)</td><td class="n">− 1,05 €</td></tr>
+   <tr class="tot"><td>Et queden nets</td><td class="n">5,00 €</td></tr>
+  </table>
+  <ul>
+   <li>El pagament és <b>automàtic, quan s'activa el comerç</b> (quan Stripe confirma el seu pagament d'alta). El pas al teu compte bancari segueix el calendari de pagaments de Stripe, normalment uns quants dies.</li>
+   <li>És una <b>comissió única per comerç</b>: les renovacions mensuals no generen noves comissions.</li>
+   <li><b>L'IVA el paga íntegrament isHere</b>. Tu només el reps i l'ingresses a Hisenda: no surt de la teva butxaca.</li>
+   <li><b>No apliquem retenció d'IRPF</b> si estàs d'alta en una activitat empresarial. Si la llei obligués a retenir per la teva activitat, isHere assumirà aquest import perquè continuïs rebent 5,00 € nets.</li>
+   <li>Si en els 120 dies següents el pagament del comerç es reemborsa, s'anul·la per devolució o es demostra frau, aquesta comissió es descompta de les teves comissions futures.</li>
+  </ul>
+  <h2>Facturació dels teus serveis</h2>
+  <p>Perquè no hagis de fer factures, <b>isHere emetrà en nom teu i per compte teu la factura de cada comissió</b> (autofacturació, article 5 del Reial decret 1619/2012), amb una sèrie específica, i te l'enviarà per correu. Tindràs 15 dies per rebutjar-la si alguna dada no és correcta; si no, s'entén acceptada. Tu ets responsable de declarar l'IVA i els teus ingressos.</p>
+  <h2>Marc legal</h2>
+  <p>La relació és una <b>col·laboració mercantil independent</b> de prestació de serveis d'intermediació: <b>no és un contracte laboral</b> (no s'aplica l'Estatut dels Treballadors) ni un contracte d'agència (Llei 12/1992). Es regeix pel contracte i, supletòriament, pel Codi de comerç i el Codi civil; a Catalunya, en allò civil no regulat per la legislació estatal, pel <i>Codi civil de Catalunya</i> (Llibre sisè, Llei 3/2017).</p>
+  <p>En l'àmbit fiscal s'apliquen la Llei 37/1992 de l'IVA, la Llei 35/2006 de l'IRPF i el Reial decret 1619/2012 de facturació. Les teves dades es tracten d'acord amb el RGPD i la Llei orgànica 3/2018. La teva acceptació electrònica té plena validesa legal (article 23 de la Llei 34/2002 i Reglament (UE) 910/2014) i queda registrada amb data, hora i versió.</p>
+  <h2>Requisits</h2>
+  <ul><li>Ser major d'edat i estar d'alta com a autònom/a a Hisenda i a la Seguretat Social.</li><li>Tenir un compte de Stripe al teu nom (el crees en el pas següent).</li><li>Signar el teu contracte de col·laboració mercantil amb isHere.</li></ul>
+ </div>
+ <div data-l="en">
+  <h2>How you get paid</h2>
+  <p>For every business that signs up with your code and pays its sign-up fee:</p>
+  <table>
+   <tr><td>Your commission</td><td class="n">5,00 €</td></tr>
+   <tr><td>VAT (21%), paid by isHere</td><td class="n">1,05 €</td></tr>
+   <tr class="tot"><td>You receive in your Stripe account</td><td class="n">6,05 €</td></tr>
+   <tr><td>VAT you declare and pay to the tax office (your form 303)</td><td class="n">− 1,05 €</td></tr>
+   <tr class="tot"><td>You keep, net</td><td class="n">5,00 €</td></tr>
+  </table>
+  <ul>
+   <li>Payment is <b>automatic when the business is activated</b> (once Stripe confirms its sign-up payment). The transfer to your bank account follows Stripe's payout schedule, usually a few days.</li>
+   <li>It is a <b>one-off commission per business</b>: monthly renewals do not generate new commissions.</li>
+   <li><b>isHere pays the full VAT</b>. You only receive it and pass it on to the tax office: it never comes out of your pocket.</li>
+   <li><b>No income tax (IRPF) is withheld</b> if you are registered under a business activity. If the law required withholding for your activity, isHere will cover that amount so you still receive €5.00 net.</li>
+   <li>If within 120 days the business's payment is refunded, charged back or proven fraudulent, that commission will be deducted from your future commissions.</li>
+  </ul>
+  <h2>Invoicing your services</h2>
+  <p>So you don't have to issue invoices, <b>isHere will issue the invoice for each commission in your name and on your behalf</b> (self-billing, Article 5 of Royal Decree 1619/2012), in a specific series, and email it to you. You will have 15 days to reject it if any detail is wrong; otherwise it is deemed accepted. You are responsible for declaring the VAT and your income.</p>
+  <h2>Legal framework</h2>
+  <p>This is an <b>independent commercial collaboration</b> for intermediation services: it is <b>not an employment contract</b> (the Workers' Statute does not apply) nor an agency contract (Law 12/1992). It is governed by the agreement and, on a supplementary basis, by the Spanish Commercial Code and Civil Code; in Catalonia, for civil matters not governed by state law, by the <i>Codi civil de Catalunya</i> (Book Six, Law 3/2017).</p>
+  <p>For tax purposes, the VAT Law 37/1992, the Personal Income Tax Law 35/2006 and Royal Decree 1619/2012 on invoicing apply. Your data is processed under the GDPR and Organic Law 3/2018. Your electronic acceptance is fully legally valid (Article 23 of Law 34/2002 and Regulation (EU) 910/2014) and is recorded with date, time and version.</p>
+  <h2>Requirements</h2>
+  <ul><li>Be over 18 and registered as self-employed with the Spanish tax office and Social Security.</li><li>Have a Stripe account in your name (you create it in the next step).</li><li>Sign your commercial collaboration agreement with isHere.</li></ul>
+ </div>
+</section>
+
+<section>
+  <h2 data-t="fis_t"></h2>
+  <p data-t="fis_p"></p>
+  <label class="lab" for="f-nombre" data-t="l_nombre"></label>
+  <input class="inp" id="f-nombre" autocomplete="name">
+  <label class="lab" for="f-nif" data-t="l_nif"></label>
+  <input class="inp" id="f-nif" autocapitalize="characters" placeholder="12345678Z · X1234567L">
+  <label class="lab" for="f-dom" data-t="l_dom"></label>
+  <input class="inp" id="f-dom" autocomplete="street-address" data-tp="ph_dom">
+  <label class="lab" data-t="l_tipo"></label>
+  <label class="check"><input type="radio" name="tipo" value="empresarial" checked><span data-t="t_emp"></span></label>
+  <label class="check"><input type="radio" name="tipo" value="profesional"><span data-t="t_pro"></span></label>
+  <label class="check"><input type="radio" name="tipo" value="pendiente"><span data-t="t_pen"></span></label>
+</section>
+
+<section>
+  <details class="contrato">
+    <summary data-t="ver_contrato"></summary>
+    <p class="nota" data-l="ca">La versió completa en català del contracte s'està preparant; mentrestant es mostra la versió en castellà, que és la que preval.</p>
+    <p class="nota" data-l="en">The full English version of the agreement is being prepared; in the meantime the Spanish version is shown, which prevails.</p>
+    <p><b>Partes:</b> <span data-cfg="soc"></span> («isHere») y la persona titular de los datos fiscales indicados en este formulario («el Prestador»). Fecha: la de la aceptación electrónica.</p>
+<h3>PRIMERA.- DEFINICIONES</h3>
+<p class="ap"><b>«Plataforma»</b>: la definida en el Expositivo I.</p>
+<p class="ap"><b>«Establecimiento»</b>: la persona física o jurídica titular de un establecimiento comercial que contrata el servicio de la Plataforma.</p>
+<p class="ap"><b>«Código»</b>: el identificador alfanumérico único asignado por isHere al Prestador, así como el enlace personal asociado al mismo.</p>
+<p class="ap"><b>«Establecimiento Captado»</b>: el Establecimiento que complete el proceso de alta en la Plataforma utilizando el Código y cuyo pago de alta sea confirmado por el proveedor de pagos.</p>
+<p class="ap"><b>«Proveedor de Pagos»</b>: Stripe Payments Europe, Ltd., o la entidad que la sustituya, incluido su servicio Stripe Connect.</p>
+<h3>SEGUNDA.- OBJETO</h3>
+<p><b>2.1.</b> Por el presente contrato, el Prestador se obliga a realizar actos de intermediación consistentes en dar a conocer la Plataforma a Establecimientos, facilitándoles su Código, e isHere se obliga a retribuir cada Establecimiento Captado en los términos de la Estipulación Sexta.</p>
+<p><b>2.2.</b> La prestación se entenderá realizada, a todos los efectos, en el momento en que un Establecimiento adquiera la condición de Establecimiento Captado.</p>
+<h3>TERCERA.- NATURALEZA JURÍDICA E INDEPENDENCIA</h3>
+<p><b>3.1.</b> El presente contrato tiene naturaleza mercantil y se rige por lo pactado en él y, supletoriamente, por los artículos 1544 y siguientes del Código Civil. Las Partes excluyen expresamente la existencia de relación laboral alguna, por concurrir en la prestación las notas de independencia, ajenidad del riesgo y ausencia de dependencia, sin que le resulte de aplicación el Real Decreto Legislativo 2/2015, de 23 de octubre, por el que se aprueba el texto refundido de la Ley del Estatuto de los Trabajadores.</p>
+<p><b>3.2.</b> En particular, las Partes acuerdan que:</p>
+<p class="ap">a) el Prestador determinará libremente el tiempo, el lugar, la forma y los medios de su actividad, sin sujeción a horario ni jornada;</p>
+<p class="ap">b) isHere no impondrá al Prestador número mínimo de captaciones, objetivos, ni resultados;</p>
+<p class="ap">c) el Prestador no asume obligación alguna de promoción continuada o estable; cada captación constituye un acto de intermediación independiente;</p>
+<p class="ap">d) la relación no tiene carácter exclusivo para ninguna de las Partes, por lo que el Prestador podrá desarrollar cualesquiera otras actividades, por cuenta propia o ajena; y</p>
+<p class="ap">e) el Prestador asumirá los gastos, costes y riesgos derivados de su actividad.</p>
+<p><b>3.3.</b> Las Partes manifiestan expresamente que no es su voluntad celebrar un contrato de agencia en los términos de la Ley 12/1992, de 27 de mayo, sobre Contrato de Agencia, al no asumir el Prestador el encargo de promover de manera continuada o estable los actos u operaciones de isHere.</p>
+<p><b>3.4.</b> El Prestador no ostenta la representación de isHere y carece de facultades para suscribir contratos, percibir cantidades, conceder descuentos o asumir obligaciones en su nombre.</p>
+<p><b>3.5.</b> El Prestador declara que no percibe de isHere, al menos, el setenta y cinco por ciento (75 %) de sus ingresos por rendimientos de trabajo y de actividades económicas o profesionales, y se obliga a comunicar a isHere de inmediato cualquier circunstancia que pudiera determinar su condición de trabajador autónomo económicamente dependiente conforme a la Ley 20/2007, de 11 de julio, del Estatuto del trabajo autónomo.</p>
+<h3>CUARTA.- OBLIGACIONES DEL PRESTADOR</h3>
+<p><b>4.1.</b> El Prestador se obliga a:</p>
+<p class="ap">a) hallarse de alta en el Censo de Empresarios, Profesionales y Retenedores y en el régimen de la Seguridad Social que legalmente le corresponda, y acreditarlo a requerimiento de isHere;</p>
+<p class="ap">b) disponer de una cuenta del Proveedor de Pagos a su nombre, debidamente verificada, para la recepción de su retribución;</p>
+<p class="ap">c) informar a los Establecimientos de forma veraz, completa y conforme a los materiales facilitados por isHere, identificándose como profesional independiente;</p>
+<p class="ap">d) abstenerse de prometer resultados, ventas, visitas, posiciones preferentes o condiciones económicas distintas de las publicadas en la Plataforma, así como de utilizar expresiones como «el mejor precio» u otras análogas no acreditables;</p>
+<p class="ap">e) abstenerse de realizar prácticas comerciales agresivas, engañosas o desleales en los términos de la Ley 3/1991, de 10 de enero, de Competencia Desleal, así como de remitir comunicaciones comerciales no solicitadas;</p>
+<p class="ap">f) abstenerse de percibir pagos de los Establecimientos, de recabar datos de sus medios de pago y de cumplimentar formularios en su nombre sin su consentimiento expreso;</p>
+<p class="ap">g) respetar la libre decisión de los Establecimientos y dispensarles un trato no discriminatorio; y</p>
+<p class="ap">h) comunicar a isHere cualquier modificación de sus datos fiscales o bancarios.</p>
+<p><b>4.2.</b> Contacto de orientación. El Prestador autoriza a isHere a incorporar su número de teléfono y su dirección de correo electrónico, mediante enlace de contacto no visible en pantalla, en el portal privado de cada Establecimiento Captado, a fin de que estos puedan dirigirle consultas operativas sobre la Plataforma. El Prestador reconoce que, al utilizarse dicho enlace, sus datos de contacto resultarán conocidos por el Establecimiento.</p>
+<p><b>4.3.</b> La atención de dichas consultas tiene carácter voluntario, no está sujeta a disponibilidad, horario, plazos de respuesta ni resultados, no genera retribución adicional y no confiere al Prestador facultad de representación alguna. El Prestador remitirá a isHere, sin demora, cualquier solicitud de baja, reclamación o comunicación con efectos contractuales que reciba de un Establecimiento.</p>
+<p><b>4.4.</b> El Prestador podrá revocar en cualquier momento la autorización prevista en la Estipulación 4.2 mediante comunicación a isHere, que retirará el enlace en un plazo máximo de cinco (5) días hábiles.</p>
+<h3>QUINTA.- OBLIGACIONES DE ISHERE</h3>
+<p><b>5.1.</b> isHere se obliga a asignar al Prestador un Código, facilitarle los materiales informativos de la Plataforma, abonar puntualmente la retribución pactada e informarle de las altas de Establecimientos Captados a su nombre.</p>
+<h3>SEXTA.- RETRIBUCIÓN</h3>
+<p><b>6.1.</b> Como única contraprestación por sus servicios, el Prestador percibirá la cantidad de CINCO EUROS (5,00 €) por cada Establecimiento Captado. Dicho importe se entiende excluido de impuestos.</p>
+<p><b>6.2.</b> Sobre la cantidad anterior se repercutirá el Impuesto sobre el Valor Añadido al tipo vigente en cada momento, conforme a la Ley 37/1992, de 28 de diciembre, cuyo importe será íntegramente satisfecho por isHere junto con la retribución.</p>
+<p><b>6.3.</b> Cada Establecimiento generará una única retribución. No devengarán retribución alguna las renovaciones, reactivaciones o modificaciones posteriores del servicio contratado por el Establecimiento. En caso de concurrencia de Códigos, solo computará el empleado en el alta que haya sido efectivamente abonada.</p>
+<p><b>6.4.</b> La retribución se devengará en el momento en que el Proveedor de Pagos confirme el cobro del pago de alta del Establecimiento Captado.</p>
+<p><b>6.5.</b> El Prestador no tendrá derecho a percibir cantidad alguna por otros conceptos, incluidos gastos, dietas, desplazamientos o suplidos.</p>
+<h3>SÉPTIMA.- LIQUIDACIÓN Y PAGO</h3>
+<p><b>7.1.</b> La retribución se abonará de forma automática en el momento de su devengo, mediante transferencia a la cuenta del Prestador en el Proveedor de Pagos. El registro electrónico de la transferencia tendrá valor de justificante de pago.</p>
+<p><b>7.2.</b> Los costes de la transferencia serán a cargo de isHere. Los costes que, en su caso, repercuta la entidad financiera del Prestador por la recepción o disposición de los fondos serán de cuenta de este.</p>
+<h3>OCTAVA.- FISCALIDAD Y RETENCIONES</h3>
+<p><b>8.1.</b> Cuando la actividad del Prestador tenga la consideración de actividad profesional a los efectos del Impuesto sobre la Renta de las Personas Físicas, isHere practicará sobre la base de la retribución la retención a cuenta que corresponda conforme a la Ley 35/2006, de 28 de noviembre, y al Real Decreto 439/2007, de 30 de marzo, por el que se aprueba su Reglamento, al tipo general vigente o al tipo reducido cuando el Prestador acredite reunir los requisitos para su aplicación.</p>
+<p><b>8.2.</b> Cuando proceda practicar retención, isHere asumirá su coste económico elevando al íntegro la base de la retribución, de forma que el importe neto que perciba el Prestador, una vez deducidas la retención y la cuota de IVA que deba ingresar, sea de CINCO EUROS (5,00 €) por cada Establecimiento Captado. isHere ingresará las retenciones en la Agencia Estatal de Administración Tributaria y expedirá al Prestador el correspondiente certificado anual.</p>
+<p><b>8.3 bis.</b> A título ilustrativo, con los tipos vigentes a la fecha de este contrato: (i) sin retención, isHere transferirá 6,05 € (5,00 € de base y 1,05 € de IVA); (ii) con retención del 15 %, la base se elevará a 5,88 €, con IVA de 1,24 € y retención de 0,88 €, y isHere transferirá 6,24 €. En ambos casos el Prestador conserva 5,00 € netos tras ingresar el IVA.</p>
+<p><b>8.3.</b> El Prestador será el único responsable del cumplimiento de sus obligaciones tributarias y de Seguridad Social, incluidas la declaración e ingreso del Impuesto sobre el Valor Añadido repercutido y la tributación de su retribución en el Impuesto sobre la Renta de las Personas Físicas, y mantendrá indemne a isHere frente a cualquier responsabilidad derivada de su incumplimiento.</p>
+<h3>NOVENA.- FACTURACIÓN POR EL DESTINATARIO</h3>
+<p><b>9.1.</b> De conformidad con el artículo 5 del Real Decreto 1619/2012, de 30 de noviembre, el Prestador autoriza expresamente a isHere a expedir, en su nombre y por su cuenta, las facturas correspondientes a las retribuciones devengadas, que se emitirán en una serie específica.</p>
+<p><b>9.2.</b> isHere remitirá cada factura al Prestador por correo electrónico. El Prestador dispondrá de un plazo de quince (15) días naturales desde su recepción para rechazarla de forma motivada. Transcurrido dicho plazo sin rechazo, la factura se entenderá aceptada.</p>
+<p><b>9.3.</b> El Prestador podrá revocar la presente autorización mediante comunicación escrita, en cuyo caso deberá expedir y remitir las facturas por sí mismo como requisito previo para el pago.</p>
+<h3>DÉCIMA.- CARÁCTER DEFINITIVO DE LA RETRIBUCIÓN Y REGULARIZACIÓN</h3>
+<p><b>10.1.</b> La retribución devengada tendrá carácter definitivo y no será objeto de devolución por la posterior baja o falta de renovación del Establecimiento Captado.</p>
+<p><b>10.2.</b> No obstante lo anterior, la retribución se tendrá por no devengada cuando, dentro de los ciento veinte (120) días naturales siguientes al alta, el pago del Establecimiento sea reembolsado, anulado o retrocedido, o se acredite que el alta obedeció a fraude, incluidos los supuestos de establecimiento inexistente, datos falsos, utilización de medios de pago sin autorización de su titular o alta sin consentimiento del Establecimiento.</p>
+<p><b>10.3.</b> En tales supuestos, isHere expedirá la factura rectificativa correspondiente y podrá compensar el importe indebidamente percibido con las retribuciones futuras del Prestador, de conformidad con los artículos 1195 y siguientes del Código Civil, o requerir su devolución en el plazo de quince (15) días naturales.</p>
+<h3>UNDÉCIMA.- PROPIEDAD INTELECTUAL E INDUSTRIAL</h3>
+<p><b>11.1.</b> La Plataforma, su software, código fuente, diseño, catálogo de productos, bases de datos, modelo de negocio, marcas y demás signos distintivos son titularidad exclusiva de isHere. El presente contrato no implica cesión ni transmisión de derecho alguno sobre ellos.</p>
+<p><b>11.2.</b> isHere concede al Prestador una licencia de uso no exclusiva, intransferible, gratuita y revocable sobre la marca «isHere» y los materiales que le facilite, con el único fin de dar a conocer la Plataforma durante la vigencia del contrato. El Prestador no podrá modificar dichos signos ni registrar o utilizar nombres de dominio, perfiles en redes sociales o signos idénticos o confundibles con ellos.</p>
+<h3>DUODÉCIMA.- CONFIDENCIALIDAD</h3>
+<p><b>12.1.</b> El Prestador guardará secreto sobre toda la información no pública relativa a isHere a la que tenga acceso con ocasión del contrato, incluidos precios y condiciones futuras, datos de Establecimientos, información técnica, estrategias comerciales y cualquier información que tenga la consideración de secreto empresarial conforme a la Ley 1/2019, de 20 de febrero, de Secretos Empresariales.</p>
+<p><b>12.2.</b> Esta obligación permanecerá vigente durante la duración del contrato y los dos (2) años siguientes a su terminación, y, respecto de los secretos empresariales, mientras mantengan tal condición.</p>
+<h3>DECIMOTERCERA.- PROTECCIÓN DE DATOS PERSONALES</h3>
+<p><b>13.1.</b> Los datos personales del Prestador serán tratados por isHere, como responsable, con la finalidad de gestionar el presente contrato, la liquidación de su retribución y el cumplimiento de las obligaciones fiscales derivadas, con base en la ejecución del contrato y en el cumplimiento de obligaciones legales (artículos 6.1.b y 6.1.c del RGPD), así como para facilitar sus datos de contacto a los Establecimientos Captados conforme a la Estipulación 4.2, con base en su consentimiento (artículo 6.1.a del RGPD), que podrá retirar en cualquier momento. Los datos se comunicarán al Proveedor de Pagos para la ejecución de las transferencias y a la Administración Tributaria en cumplimiento de obligaciones legales, y se conservarán durante los plazos legalmente exigibles. El Prestador podrá ejercitar sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad mediante comunicación a isherebarcelona@gmail.com, así como presentar una reclamación ante la Agencia Española de Protección de Datos.</p>
+<p><b>13.2.</b> El Prestador no tendrá acceso a los datos personales de los Establecimientos registrados en la Plataforma. En el supuesto de que el desarrollo de su actividad requiriera el tratamiento de datos personales por cuenta de isHere, las Partes suscribirán con carácter previo el correspondiente contrato de encargo del tratamiento conforme al artículo 28 del RGPD.</p>
+<p><b>13.3.</b> Los datos personales que el Prestador obtenga por su cuenta en el ejercicio de su actividad serán tratados bajo su exclusiva responsabilidad.</p>
+<h3>DECIMOCUARTA.- DURACIÓN Y TERMINACIÓN</h3>
+<p><b>14.1.</b> El presente contrato entrará en vigor en la fecha de su firma y tendrá duración indefinida.</p>
+<p><b>14.2.</b> Cualquiera de las Partes podrá desistir del contrato en cualquier momento, mediante comunicación escrita dirigida a la otra Parte con una antelación mínima de siete (7) días naturales.</p>
+<p><b>14.3.</b> isHere podrá resolver el contrato con efectos inmediatos, conforme al artículo 1124 del Código Civil, en caso de incumplimiento por el Prestador de las obligaciones previstas en las Estipulaciones Cuarta, Décima, Undécima, Duodécima o Decimotercera, o de acreditarse fraude.</p>
+<p><b>14.4.</b> A la terminación del contrato, por cualquier causa, isHere desactivará el Código, retirará el enlace de contacto previsto en la Estipulación 4.2 y abonará las retribuciones devengadas y pendientes de pago, sin que proceda indemnización alguna por la terminación, sin perjuicio de lo dispuesto con carácter imperativo por la legislación aplicable. El Prestador cesará de inmediato en el uso de la marca y los materiales de isHere.</p>
+<h3>DECIMOQUINTA.- RESPONSABILIDAD</h3>
+<p><b>15.1.</b> Cada Parte responderá de los daños y perjuicios derivados del incumplimiento de sus obligaciones. El Prestador mantendrá indemne a isHere frente a cualquier reclamación de terceros derivada de su actuación contraria al presente contrato o a la legislación aplicable.</p>
+<h3>DECIMOSEXTA.- CESIÓN</h3>
+<p><b>16.1.</b> El presente contrato tiene carácter personal para el Prestador, que no podrá cederlo ni subcontratar su ejecución sin el consentimiento previo y por escrito de isHere.</p>
+<h3>DECIMOSÉPTIMA.- NOTIFICACIONES</h3>
+<p><b>17.1.</b> Las notificaciones entre las Partes se realizarán por escrito a las siguientes direcciones de correo electrónico, que tendrán la consideración de soporte duradero: isHere: isherebarcelona@gmail.com; Prestador: [●]. Cualquier cambio deberá ser comunicado a la otra Parte.</p>
+<h3>DECIMOCTAVA.- NULIDAD PARCIAL E INTEGRIDAD</h3>
+<p><b>18.1.</b> La declaración de nulidad o ineficacia de cualquiera de las estipulaciones no afectará a la validez de las restantes.</p>
+<p><b>18.2.</b> El presente contrato, junto con su Anexo, constituye la totalidad del acuerdo entre las Partes en relación con su objeto y sustituye cualquier acuerdo anterior, verbal o escrito. Cualquier modificación deberá formalizarse por escrito.</p>
+<h3>DECIMONOVENA.- LEGISLACIÓN APLICABLE Y JURISDICCIÓN</h3>
+<p><b>19.1.</b> El presente contrato se rige por la legislación española. En las materias de naturaleza civil no reguladas por la legislación estatal será de aplicación, con carácter supletorio, el Código Civil de Cataluña, en particular su Libro Sexto relativo a las obligaciones y los contratos (Ley 3/2017, de 15 de febrero).</p>
+<p><b>19.2.</b> Para la resolución de cualquier controversia derivada de su interpretación o cumplimiento, las Partes, con renuncia expresa a cualquier otro fuero que pudiera corresponderles, se someten a los Juzgados y Tribunales de la ciudad de Barcelona, en la medida en que la ley lo permita.</p>
+<h3>VIGÉSIMA.- ACEPTACIÓN ELECTRÓNICA</h3>
+<p><b>20.1.</b> El presente contrato podrá aceptarse por medios electrónicos a través del formulario habilitado por isHere, en el que el Prestador facilitará los datos del Anexo I y marcará expresamente las casillas de aceptación del contrato, de la forma de pago y de la autofacturación. Dicha aceptación tendrá plena validez y eficacia conforme al artículo 23 de la Ley 34/2002 y al Reglamento (UE) 910/2014, e isHere conservará registro de la fecha, la hora y la versión aceptada, que pondrá a disposición del Prestador a su solicitud.</p>
+  </details>
+</section>
+
+<section>
+  <label class="check"><input type="checkbox" class="acepto"><span data-t="c0"></span></label>
+  <label class="check"><input type="checkbox" class="acepto"><span data-t="c1"></span></label>
+  <label class="check"><input type="checkbox" class="acepto"><span data-t="c2"></span></label>
+  <label class="check"><input type="checkbox" class="acepto"><span data-t="c3"></span></label>
+  <button class="btn" id="btn-aceptar" data-t="btn"></button>
+  <p class="msg" id="msg"></p>
+  <p style="font-size:.8rem;text-align:center;margin-top:10px"><a href="legal.html#privacidad"><span data-l="es">Privacidad</span><span data-l="ca">Privacitat</span><span data-l="en">Privacy</span></a></p>
+</section>
+</div>
+<p class="msg" id="msg-error"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
+const VERSION = "1.0";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+const T = {"es": {"c1": "He leído y acepto la forma de pago y el desglose de mis comisiones.", "c2": "Autorizo a isHere a emitir en mi nombre las facturas de mis comisiones (autofacturación).", "c3": "Declaro estar de alta como autónomo/a (o darme de alta antes de mi primer cobro) y soy responsable de declarar el IVA y mis ingresos.", "btn": "Aceptar y continuar a Stripe", "hola": "Hola", "falta": "Completa tus datos fiscales y marca las cuatro casillas para continuar.", "invalida": "Esta invitación no es válida o ha caducado. Pide una nueva a isHere.", "abriendo": "Abriendo tu registro en Stripe…", "error": "No se pudo continuar. Inténtalo de nuevo en unos minutos.", "fis_t": "Tus datos fiscales", "fis_p": "Los necesitamos para emitir tus facturas y cumplir con Hacienda. Solo los ve isHere.", "l_nombre": "Nombre y apellidos (tal como figuran en tu alta de autónomo)", "l_nif": "NIF / NIE", "l_dom": "Domicilio fiscal", "ph_dom": "Calle, número, código postal y ciudad", "l_tipo": "¿En qué tipo de actividad estás (o estarás) de alta?", "t_emp": "Actividad empresarial (lo recomendado): sin retención de IRPF.", "t_pro": "Actividad profesional: la ley obliga a retener IRPF; isHere lo asume para que recibas igualmente 5,00 € netos.", "t_pen": "Aún no lo sé: lo confirmaré con mi gestor antes del primer pago.", "ver_contrato": "📄 Leer el contrato completo", "c0": "He leído y acepto el contrato de prestación de servicios de intermediación con isHere.", "nif_mal": "El NIF o NIE no es válido. Revísalo."}, "ca": {"c1": "He llegit i accepto la forma de pagament i el desglossament de les meves comissions.", "c2": "Autoritzo isHere a emetre en nom meu les factures de les meves comissions (autofacturació).", "c3": "Declaro que estic d'alta com a autònom/a (o que m'hi donaré abans del meu primer cobrament) i que soc responsable de declarar l'IVA i els meus ingressos.", "btn": "Acceptar i continuar a Stripe", "hola": "Hola", "falta": "Completa les teves dades fiscals i marca les quatre caselles per continuar.", "invalida": "Aquesta invitació no és vàlida o ha caducat. Demana'n una de nova a isHere.", "abriendo": "Obrint el teu registre a Stripe…", "error": "No s'ha pogut continuar. Torna-ho a provar d'aquí a uns minuts.", "fis_t": "Les teves dades fiscals", "fis_p": "Les necessitem per emetre les teves factures i complir amb Hisenda. Només les veu isHere.", "l_nombre": "Nom i cognoms (tal com figuren a la teva alta d'autònom)", "l_nif": "NIF / NIE", "l_dom": "Domicili fiscal", "ph_dom": "Carrer, número, codi postal i ciutat", "l_tipo": "En quin tipus d'activitat estàs (o estaràs) d'alta?", "t_emp": "Activitat empresarial (la recomanada): sense retenció d'IRPF.", "t_pro": "Activitat professional: la llei obliga a retenir IRPF; isHere l'assumeix perquè rebis igualment 5,00 € nets.", "t_pen": "Encara no ho sé: ho confirmaré amb el meu gestor abans del primer pagament.", "ver_contrato": "📄 Llegir el contracte complet", "c0": "He llegit i accepto el contracte de prestació de serveis d'intermediació amb isHere.", "nif_mal": "El NIF o NIE no és vàlid. Revisa'l."}, "en": {"c1": "I have read and accept the payment terms and the breakdown of my commissions.", "c2": "I authorise isHere to issue invoices for my commissions on my behalf (self-billing).", "c3": "I declare that I am registered as self-employed (or will register before my first payment) and am responsible for declaring VAT and my income.", "btn": "Accept and continue to Stripe", "hola": "Hi", "falta": "Complete your tax details and tick all four boxes to continue.", "invalida": "This invitation is not valid or has expired. Ask isHere for a new one.", "abriendo": "Opening your Stripe registration…", "error": "We couldn't continue. Please try again in a few minutes.", "fis_t": "Your tax details", "fis_p": "We need them to issue your invoices and comply with the tax office. Only isHere can see them.", "l_nombre": "Full name (as in your self-employed registration)", "l_nif": "Spanish tax ID (NIF / NIE)", "l_dom": "Tax address", "ph_dom": "Street, number, postcode and city", "l_tipo": "What type of activity are you (or will you be) registered under?", "t_emp": "Business activity (recommended): no income tax withholding.", "t_pro": "Professional activity: the law requires income tax withholding; isHere covers it so you still receive €5.00 net.", "t_pen": "I don't know yet: I'll confirm with my tax adviser before the first payment.", "ver_contrato": "📄 Read the full agreement", "c0": "I have read and accept the intermediation services agreement with isHere.", "nif_mal": "That NIF or NIE isn't valid. Please check it."}};
+const $ = (id) => document.getElementById(id);
+/* Datos de la sociedad: completar cuando esté constituida (los mismos que en legal.html). */
+const EMPRESA = { soc: "[Denominación social], S.L." };
+document.querySelectorAll("[data-cfg]").forEach(el => el.textContent = EMPRESA[el.dataset.cfg] || "");
+function nifValido(v){
+  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+  if (/^\d{8}[A-Z]$/.test(v)) return letras[Number(v.slice(0, 8)) % 23] === v[8];
+  if (/^[XYZ]\d{7}[A-Z]$/.test(v)) return letras[Number(String("XYZ".indexOf(v[0])) + v.slice(1, 8)) % 23] === v[8];
+  return false;
+}
+const token = new URLSearchParams(location.search).get("invitacion") || "";
+let lang = (() => {
+  try { const g = localStorage.getItem("ishere_lang"); if (T[g]) return g; } catch (e) {}
+  const n = (navigator.language || "es").toLowerCase();
+  return n.startsWith("ca") ? "ca" : n.startsWith("es") ? "es" : "en";
+})();
+let reclutador = null;
+function aplicar(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".flag-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = T[lang][el.dataset.t]);
+  document.querySelectorAll("[data-tp]").forEach(el => el.placeholder = T[lang][el.dataset.tp]);
+  if (reclutador){
+    $("saludo").textContent = `${T[lang].hola}, ${reclutador.nombre || ""}`;
+    $("codigo").textContent = reclutador.codigo ? `Código: ${reclutador.codigo}` : "";
+  }
+}
+document.querySelectorAll(".flag-btn").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang; try { localStorage.setItem("ishere_lang", lang); } catch (e) {} aplicar();
+}));
+
+async function irAStripe(){
+  $("msg").className = "msg ok"; $("msg").textContent = T[lang].abriendo;
+  const { data, error } = await sb.functions.invoke("onboarding-reclutador", { body: { invitacion: token } });
+  if (error || !data || !data.url) throw new Error("stripe");
+  location.href = data.url;
+}
+
+$("btn-aceptar").addEventListener("click", async (e) => {
+  const todas = [...document.querySelectorAll(".acepto")].every(c => c.checked);
+  const nombre = $("f-nombre").value.trim(), dom = $("f-dom").value.trim();
+  const nif = $("f-nif").value.toUpperCase().replace(/[\s.\-]/g, "");
+  const tipo = (document.querySelector('input[name="tipo"]:checked') || {}).value || "pendiente";
+  if (!todas || !nombre || !nif || !dom){ $("msg").className = "msg"; $("msg").textContent = T[lang].falta; return; }
+  if (!nifValido(nif)){ $("msg").className = "msg"; $("msg").textContent = T[lang].nif_mal; return; }
+  e.target.disabled = true;
+  try {
+    const { data, error } = await sb.rpc("aceptar_condiciones_reclutador", {
+      p_token: token, p_version: VERSION, p_nombre_fiscal: nombre, p_nif: nif, p_domicilio: dom, p_tipo: tipo });
+    if (error || !data) throw new Error("aceptar");
+    await irAStripe();
+  } catch (err) {
+    $("msg").className = "msg"; $("msg").textContent = T[lang].error;
+    e.target.disabled = false;
+  }
+});
+
+(async () => {
+  aplicar();
+  if (!token){ $("msg-error").textContent = T[lang].invalida; return; }
+  const { data, error } = await sb.rpc("reclutador_por_invitacion", { p_token: token });
+  if (error || !data){ $("msg-error").textContent = T[lang].invalida; return; }
+  reclutador = data;
+  aplicar();
+  // Si ya aceptó antes (por ejemplo, vuelve porque caducó el enlace de Stripe), va directo a Stripe.
+  if (data.aceptado){
+    try { await irAStripe(); } catch (e) { $("contenido").classList.remove("hidden"); }
+    return;
+  }
+  $("contenido").classList.remove("hidden");
+})();
+</script>
+</body>
+</html>

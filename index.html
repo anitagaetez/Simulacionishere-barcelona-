@@ -872,10 +872,10 @@
         </div>
 
         <div class="price-card">
-          <div class="price-line"><span data-i18n="price_promo">Promoción de 3 meses</span><span>10,00 €</span></div>
+          <div class="price-line"><span data-i18n="price_promo">Promoción de 90 días</span><span>10,00 €</span></div>
           <div class="price-line"><span data-i18n="price_vat">IVA (21 %)</span><span>2,10 €</span></div>
           <div class="price-line total"><span data-i18n="price_today">Pagas hoy</span><span>12,10 €</span></div>
-          <p class="price-note" data-i18n="price_note">A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
+          <p class="price-note" data-i18n="price_note">Al terminar los 90 días, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.</p>
         </div>
 
         <label class="acepto">
@@ -998,10 +998,10 @@ const I18N = {
     l_email: "Email",
     l_phone: "Teléfono",
     l_ref: "Código de quien te recomendó (si tienes)",
-    price_promo: "Promoción de 3 meses",
+    price_promo: "Promoción de 90 días",
     price_vat: "IVA (21 %)",
     price_today: "Pagas hoy",
-    price_note: "A partir del cuarto mes, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.",
+    price_note: "Al terminar los 90 días, 10 € + IVA al mes (12,10 €), con cobro automático. Sin permanencia: puedes darte de baja cuando quieras y tu ficha sigue visible hasta el final del período pagado.",
     pay_btn: "Pagar 12,10 € y activar mi ficha",
     pay_methods: "Pago seguro con tarjeta a través de Stripe",
     searching: "Buscando cerca de ti…",
@@ -1169,10 +1169,10 @@ const I18N = {
     l_email: "Correu electrònic",
     l_phone: "Telèfon",
     l_ref: "Codi de qui t'ha recomanat (si en tens)",
-    price_promo: "Promoció de 3 mesos",
+    price_promo: "Promoció de 90 dies",
     price_vat: "IVA (21 %)",
     price_today: "Pagues avui",
-    price_note: "A partir del quart mes, 10 € + IVA al mes (12,10 €), amb cobrament automàtic. Sense permanència: et pots donar de baixa quan vulguis i la teva fitxa continua visible fins al final del període pagat.",
+    price_note: "En acabar els 90 dies, 10 € + IVA al mes (12,10 €), amb cobrament automàtic. Sense permanència: et pots donar de baixa quan vulguis i la teva fitxa continua visible fins al final del període pagat.",
     pay_btn: "Paga 12,10 € i activa la meva fitxa",
     pay_methods: "Pagament segur amb targeta a través de Stripe",
     searching: "Cercant a prop teu…",
@@ -1340,10 +1340,10 @@ const I18N = {
     l_email: "Email",
     l_phone: "Phone",
     l_ref: "Referral code (if you have one)",
-    price_promo: "3-month promotion",
+    price_promo: "90-day promotion",
     price_vat: "VAT (21%)",
     price_today: "You pay today",
-    price_note: "From month four, €10 + VAT per month (€12.10), charged automatically. No commitment: cancel anytime and your listing stays visible until the end of the paid period.",
+    price_note: "After the 90 days, €10 + VAT per month (€12.10), charged automatically. No commitment: cancel anytime and your listing stays visible until the end of the paid period.",
     pay_btn: "Pay €12.10 and activate my listing",
     pay_methods: "Secure card payment via Stripe",
     searching: "Searching near you…",
@@ -2503,7 +2503,8 @@ async function manejarRetorno(){
   const params = new URLSearchParams(window.location.search);
 
   const invitacion = params.get("invitacion");
-  if (invitacion){ await abrirInvitacion(invitacion); return; }
+  // Antes de ir a Stripe, el reclutador debe aceptar la forma de pago y la autofacturación.
+  if (invitacion){ location.replace("alta-reclutador.html?invitacion=" + encodeURIComponent(invitacion)); return; }
 
   const reclutador = params.get("reclutador");
   if (reclutador === "listo") mostrarAviso(t("rec_ready"), "ok");
