@@ -41,7 +41,6 @@
            font-size:1rem; letter-spacing:.06em; margin-top:8px; user-select:all; }
   .qr{ background:#fff; border-radius:10px; padding:8px; width:170px; margin-top:10px; }
   .qr img{ width:100%; display:block; }
-
   .stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
   .stat{ background:var(--bg-panel); border-radius:var(--r); padding:14px; border:1px solid rgba(242,233,216,.08); }
   .stat .n{ font-family:'Fraunces',Georgia,serif; font-size:1.7rem; line-height:1.1; }
@@ -50,7 +49,6 @@
   .stat.big .n{ color:var(--gold); font-size:2.1rem; }
   .row-money{ display:flex; justify-content:space-between; font-size:.88rem; padding:6px 0; border-bottom:1px solid rgba(242,233,216,.06); }
   .row-money:last-child{ border-bottom:none; }
-
   .table{ width:100%; border-collapse:collapse; font-size:.84rem; }
   .table th{ text-align:left; color:var(--cream-dim); font-weight:500; font-size:.72rem; padding:6px 6px; border-bottom:1px solid rgba(242,233,216,.1); }
   .table td{ padding:8px 6px; border-bottom:1px solid rgba(242,233,216,.06); vertical-align:top; }
@@ -70,11 +68,19 @@
   details summary::after{ content:" ＋"; color:var(--gold); }
   details[open] summary::after{ content:" －"; }
   .hidden{ display:none !important; }
+  /* En revisión */
+  .rev{ display:flex; gap:12px; }
+  .rev img{ width:64px; height:64px; object-fit:cover; border-radius:10px; flex-shrink:0; background:var(--bg-raise); }
+  .rev-cuerpo{ flex:1; min-width:0; }
+  .rev-motivo{ margin-top:6px; font-size:.84rem; color:var(--gold); line-height:1.4; }
+  .rev-desc{ margin-top:4px; font-size:.8rem; color:var(--cream-dim); line-height:1.4; }
+  .btn-ok{ background:var(--success); color:#0b2a17; font-weight:600; padding:9px 14px; font-size:.85rem; }
+  .btn-no{ background:rgba(224,104,94,.18); color:var(--danger); font-weight:600; padding:9px 14px; font-size:.85rem; border:1px solid rgba(224,104,94,.4); }
+  .semana{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header>
     <div class="wordmark">is<b>Here</b> <small>administración</small></div>
     <button class="btn-sec hidden" id="btn-salir">Salir</button>
@@ -118,7 +124,6 @@
 
   <!-- 4. Panel -->
   <div class="hidden" id="v-panel" style="display:flex; flex-direction:column; gap:22px;">
-
     <section>
       <div class="stats">
         <div class="stat big"><div class="n" id="s-mes">—</div><div class="l">Cobrado este mes (con IVA)</div></div>
@@ -127,6 +132,13 @@
         <div class="stat"><div class="n" id="s-pendientes">—</div><div class="l">Pagos sin terminar</div></div>
         <div class="stat"><div class="n" id="s-bajas">—</div><div class="l">Bajas</div></div>
       </div>
+    </section>
+
+    <section class="card" id="sec-revision">
+      <h2>En revisión <span class="pill gold" id="rev-total">0</span></h2>
+      <div class="semana" id="rev-semana"></div>
+      <div id="l-revision"><p class="muted">Cargando…</p></div>
+      <div class="msg" id="m-revision"></div>
     </section>
 
     <section class="card">
@@ -204,7 +216,6 @@
 
     <button class="btn-sec" id="btn-recargar">Actualizar datos</button>
   </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -238,10 +249,8 @@ let factorId = null;
 async function decidir(){
   const { data: { session } } = await sb.auth.getSession();
   if (!session){ ver("v-login"); return; }
-
   const { data: aal } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
   if (aal && aal.currentLevel === "aal2"){ ver("v-panel"); cargarPanel(); return; }
-
   const { data: factores } = await sb.auth.mfa.listFactors();
   const verificado = (factores?.totp || []).find(f => f.status === "verified");
   if (verificado){ factorId = verificado.id; ver("v-mfa"); $("c-code").focus(); return; }
@@ -287,12 +296,12 @@ $("btn-enroll").addEventListener("click", (e) => verificar("e-code", "m-enroll",
 $("btn-mfa").addEventListener("click", (e) => verificar("c-code", "m-mfa", e.target));
 $("c-code").addEventListener("input", e => { if (e.target.value.replace(/\D/g, "").length === 6) $("btn-mfa").click(); });
 $("btn-copiar-secret").addEventListener("click", (e) => copiar($("e-secret").textContent, e.target));
-
 $("btn-salir").addEventListener("click", async () => { await sb.auth.signOut(); ver("v-login"); });
 $("btn-recargar").addEventListener("click", cargarPanel);
 
 /* ---------- panel ---------- */
 async function cargarPanel(){
+  cargarRevision();
   const { data, error } = await sb.rpc("admin_panel");
   if (error){
     if (/autorizado/i.test(error.message)){ await sb.auth.signOut(); ver("v-login"); msg("m-login", "Esta cuenta no es administradora."); }
@@ -332,7 +341,7 @@ async function cargarPanel(){
       <div class="muted">${esc(p.contacto || "")}</div>
       <div class="actions">
         ${p.telefono ? `<a class="btn-sec" href="https://wa.me/${esc(String(p.telefono).replace(/\D/g, ""))}" target="_blank" rel="noopener">WhatsApp</a>
-                        <a class="btn-sec" href="tel:${esc(p.telefono)}">Llamar</a>` : ""}
+        <a class="btn-sec" href="tel:${esc(p.telefono)}">Llamar</a>` : ""}
         ${p.email ? `<a class="btn-sec" href="mailto:${esc(p.email)}">Email</a>` : ""}
       </div>
     </div>`).join("") : '<p class="muted">Ninguna baja por ahora. 🎉</p>';
@@ -343,6 +352,60 @@ async function cargarPanel(){
     return `<tr><td>${esc(p.name)}<div class="muted">${esc(p.zone)}${p.reclutador ? " · " + esc(p.reclutador) : ""}${p.plan === "courtesy" ? " · cortesía" : ""}</div></td>
       <td><span class="pill ${cls}">${esc(txt)}</span></td><td>${p.expira ? fecha(p.expira) : "—"}</td></tr>`;
   }).join("");
+}
+
+/* ---------- en revisión (fichas dudosas y bloqueadas por la IA) ---------- */
+const ESTADO_REV = { revision: ["en revisión", "gold"], bloqueada: ["bloqueada", "off"], pendiente: ["pendiente IA", ""] };
+
+async function cargarRevision(){
+  const { data, error } = await sb.rpc("admin_revision");
+  if (error){ $("l-revision").innerHTML = '<p class="muted">No se pudo cargar la revisión: ' + esc(error.message) + '</p>'; return; }
+  const fichas = data.fichas || [];
+  const s = data.semana || {};
+  $("rev-total").textContent = fichas.length;
+  $("rev-semana").innerHTML = `
+    <span class="pill on">${s.aprobada || 0} aprobadas</span>
+    <span class="pill gold">${s.revision || 0} en revisión</span>
+    <span class="pill off">${s.bloqueada || 0} bloqueadas</span>
+    <span class="muted">· últimos 7 días</span>`;
+  $("l-revision").innerHTML = fichas.length ? fichas.map(f => {
+    const [txt, cls] = ESTADO_REV[f.estado] || [f.estado, ""];
+    const foto = f.logo && /^https?:\/\//i.test(f.logo) ? `<img src="${esc(f.logo)}" alt="" loading="lazy">` : "";
+    const desc = String(f.descripcion || "");
+    return `
+    <div class="item rev">
+      ${foto}
+      <div class="rev-cuerpo">
+        <b>${esc(f.name)}</b> <span class="pill ${cls}">${esc(txt)}</span>
+        ${Number(f.denuncias) > 0 ? `<span class="pill off">${f.denuncias} denuncia${Number(f.denuncias) > 1 ? "s" : ""}</span>` : ""}
+        <div class="muted">${esc(f.zone || "")}${f.address ? " · " + esc(f.address) : ""} · ${fecha(f.at)}</div>
+        ${f.motivo ? `<div class="rev-motivo">${esc(f.motivo)}</div>` : ""}
+        <div class="rev-desc">${esc(f.star || "")}${f.precio ? " · " + esc(f.precio) : ""}${desc ? " — " + esc(desc.slice(0, 160)) + (desc.length > 160 ? "…" : "") : ""}</div>
+        ${f.web ? `<div class="rev-desc">Web: <a href="${esc(f.web)}" target="_blank" rel="noopener nofollow">${esc(f.web)}</a></div>` : ""}
+        <div class="actions">
+          <button class="btn-ok" data-ok="${esc(f.id)}">Aprobar</button>
+          <button class="btn-no" data-no="${esc(f.id)}">Rechazar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">Nada que revisar. 🎉</p>';
+
+  document.querySelectorAll("[data-ok]").forEach(b => b.addEventListener("click", () => decidirFicha(b.dataset.ok, "aprobada", null, b)));
+  document.querySelectorAll("[data-no]").forEach(b => b.addEventListener("click", () => {
+    const motivo = prompt("Motivo del rechazo (la pyme lo verá en Mi comercio):", "");
+    if (motivo === null) return;
+    decidirFicha(b.dataset.no, "bloqueada", motivo, b);
+  }));
+}
+
+async function decidirFicha(id, estado, motivo, boton){
+  limpiar("m-revision");
+  boton.disabled = true;
+  const { data, error } = await sb.rpc("admin_decidir_ficha", { p_id: id, p_estado: estado, p_motivo: motivo });
+  boton.disabled = false;
+  if (error || !data){ msg("m-revision", "No se pudo guardar: " + (error ? error.message : "ficha no encontrada")); return; }
+  msg("m-revision", estado === "aprobada" ? "Ficha aprobada: ya aparece en el buscador." : "Ficha rechazada.", "ok");
+  cargarRevision();
 }
 
 /* ---------- crear reclutador ---------- */
