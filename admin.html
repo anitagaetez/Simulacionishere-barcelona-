@@ -77,6 +77,11 @@
   .btn-ok{ background:var(--success); color:#0b2a17; font-weight:600; padding:9px 14px; font-size:.85rem; }
   .btn-no{ background:rgba(224,104,94,.18); color:var(--danger); font-weight:600; padding:9px 14px; font-size:.85rem; border:1px solid rgba(224,104,94,.4); }
   .semana{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  /* Lo que buscan */
+  .busq{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid rgba(242,233,216,.06); font-size:.88rem; }
+  .busq:last-child{ border-bottom:none; }
+  .busq .veces{ color:var(--gold); font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  h3.sub{ font-size:.8rem; color:var(--cream-dim); font-weight:500; margin:14px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
 </style>
 </head>
 <body>
@@ -139,6 +144,15 @@
       <div class="semana" id="rev-semana"></div>
       <div id="l-revision"><p class="muted">Cargando…</p></div>
       <div class="msg" id="m-revision"></div>
+    </section>
+
+    <section class="card" id="sec-busquedas">
+      <h2>Lo que buscan y no hay</h2>
+      <p class="muted">Últimos 30 días. Úsalo para saber qué comercios captar y en qué barrio.</p>
+      <h3 class="sub">Sin resultado</h3>
+      <div id="l-sinres"><p class="muted">Cargando…</p></div>
+      <h3 class="sub">Lo más buscado</h3>
+      <div id="l-top"></div>
     </section>
 
     <section class="card">
@@ -302,6 +316,7 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 /* ---------- panel ---------- */
 async function cargarPanel(){
   cargarRevision();
+  cargarBusquedas();
   const { data, error } = await sb.rpc("admin_panel");
   if (error){
     if (/autorizado/i.test(error.message)){ await sb.auth.signOut(); ver("v-login"); msg("m-login", "Esta cuenta no es administradora."); }
@@ -406,6 +421,21 @@ async function decidirFicha(id, estado, motivo, boton){
   if (error || !data){ msg("m-revision", "No se pudo guardar: " + (error ? error.message : "ficha no encontrada")); return; }
   msg("m-revision", estado === "aprobada" ? "Ficha aprobada: ya aparece en el buscador." : "Ficha rechazada.", "ok");
   cargarRevision();
+}
+
+/* ---------- lo que buscan y no hay ---------- */
+async function cargarBusquedas(){
+  const { data, error } = await sb.rpc("admin_busquedas");
+  if (error){ $("l-sinres").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const sin = data.sin_resultado || [], top = data.top || [];
+  $("l-sinres").innerHTML = sin.length ? sin.map(b => `
+    <div class="busq"><span>${esc(b.texto)} <span class="muted">· ${esc(b.zona || "sin barrio")}</span></span>
+    <span class="veces">${b.veces} ${Number(b.veces) === 1 ? "vez" : "veces"}</span></div>`).join("")
+    : '<p class="muted">Todo lo que buscaron se encontró. 🎉</p>';
+  $("l-top").innerHTML = top.length ? top.map(b => `
+    <div class="busq"><span>${esc(b.texto)}</span>
+    <span class="veces">${b.veces} · <span class="${Number(b.pct_encontrado) < 50 ? "pill off" : "pill on"}">${b.pct_encontrado}% encontrado</span></span></div>`).join("")
+    : '<p class="muted">Aún no hay búsquedas registradas.</p>';
 }
 
 /* ---------- crear reclutador ---------- */
