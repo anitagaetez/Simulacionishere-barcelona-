@@ -625,6 +625,48 @@
                   margin: 14px auto 4px; max-width: 320px; text-align: left; font-size: 0.82rem; line-height: 1.5; color: var(--cream-dim); }
   .instalar-guia b{ color: var(--gold); display: block; margin-bottom: 4px; }
   .instalar-guia[hidden]{ display: none; }
+  /* Tarjeta «Lleva isHere en tu móvil» */
+  .app-card{ position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; max-width: 360px;
+             margin: 18px auto 6px; padding: 14px 40px 14px 14px; text-align: left;
+             background: linear-gradient(135deg, var(--bg-panel-raise), var(--bg-panel));
+             border: 1px solid rgba(31,139,255,0.35); border-radius: 18px; }
+  .app-card[hidden]{ display: none; }
+  .app-card img{ border-radius: 12px; flex-shrink: 0; }
+  .app-txt{ flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 3px; }
+  .app-txt b{ color: var(--cream); font-size: 0.98rem; }
+  .app-txt span{ color: var(--cream-dim); font-size: 0.76rem; line-height: 1.35; }
+  .app-btn{ background: var(--confianza); color: #fff; border: none; border-radius: 999px; padding: 10px 20px;
+            font: inherit; font-weight: 700; font-size: 0.92rem; cursor: pointer; }
+  .app-btn:active{ transform: scale(0.96); }
+  .app-guia{ flex-basis: 100%; font-size: 0.8rem; color: var(--cream-dim); line-height: 1.5;
+             border-top: 1px solid rgba(242,233,216,0.1); padding-top: 10px; }
+  .app-guia[hidden]{ display: none; }
+  /* Botón flotante «¡Descárgame!»: siempre visible desde que se entra */
+  .btn-descarga{ position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 50;
+    width: 74px; height: 74px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.9); cursor: pointer;
+    background: var(--confianza); color: #fff; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,139,255,0.6);
+    animation: descarga-pulso 2s ease-out 1s infinite; }
+  .btn-descarga[hidden]{ display: none; }
+  .btn-descarga svg{ width: 24px; height: 24px; }
+  .btn-descarga span{ font-size: 0.66rem; font-weight: 700; line-height: 1.05; text-align: center; }
+  .btn-descarga:active{ transform: scale(0.95); }
+  @keyframes descarga-pulso{
+    0%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,139,255,0.6); }
+    70%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 16px rgba(31,139,255,0); }
+    100%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,139,255,0); }
+  }
+  @media (prefers-reduced-motion: reduce){ .btn-descarga{ animation: none; } }
+  body.con-descarga footer.hint{ padding-bottom: 96px; }
+  body.en-comercio .btn-descarga{ display: none; }
+  /* Invitación tras volver de la ruta */
+  .app-panel{ text-align: center; }
+  .app-panel img{ display: block; margin: 0 auto 12px; border-radius: 16px; }
+  .app-panel p{ color: var(--cream-dim); font-size: 0.92rem; line-height: 1.45; margin: -4px 0 16px; }
+  .app-btn-xl{ width: 100%; padding: 15px; font-size: 1.05rem; }
+  .app-cerrar{ position: absolute; top: 6px; right: 6px; background: none; border: none; color: var(--cream-dim);
+               font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 6px 8px; }
   .legal-links{ font-size: 0.72rem; opacity: 0.75; margin-top: 8px; }
   .legal-links a{ color: inherit; }
   .form-error{
@@ -771,6 +813,16 @@
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
       <p class="ruta-aviso" id="ruta-aviso" data-i18n="route_note">Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.</p>
+      <div class="ruta-sheet" id="app-sheet" hidden>
+        <div class="ruta-panel app-panel" role="dialog" aria-modal="true" aria-labelledby="app-sheet-t">
+          <img src="icon-192.png" alt="" width="64" height="64">
+          <h3 id="app-sheet-t" data-i18n="appx_t">¿Te llevé bien? 🎉</h3>
+          <p data-i18n="appx_s">Instala isHere y la próxima vez te llevo en un solo toque.</p>
+          <button type="button" class="app-btn app-btn-xl" id="app-sheet-si" data-i18n="appx_btn">Instalar gratis</button>
+          <div class="app-guia" id="app-sheet-guia" hidden></div>
+          <button type="button" class="ruta-cancel" id="app-sheet-no" data-i18n="app_close">Ahora no</button>
+        </div>
+      </div>
       <div class="ruta-sheet" id="ruta-sheet" hidden>
         <div class="ruta-panel" role="dialog" aria-modal="true" aria-labelledby="ruta-titulo">
           <h3 id="ruta-titulo" data-i18n="go_title">¿Cómo quieres ir?</h3>
@@ -798,17 +850,21 @@
 
       <footer class="hint">
         <span data-i18n="hint">Google Maps te guía por voz hasta la puerta.</span>
-        <button type="button" class="instalar" id="btn-instalar" hidden data-i18n="install">📲 Instalar isHere en tu móvil</button>
-        <div class="instalar-guia" id="guia-instalar" hidden>
-          <b data-i18n="inst_title">📲 Instala isHere en tu móvil</b>
-          <p id="guia-texto"></p>
+        <div class="app-card" id="app-card" hidden>
+          <img src="icon-192.png" alt="" width="52" height="52">
+          <div class="app-txt">
+            <b data-i18n="app_t">Lleva isHere en tu móvil</b>
+            <span data-i18n="app_s">Gratis, sin tienda de apps. Se abre en un toque.</span>
+          </div>
+          <button type="button" class="app-btn" id="btn-instalar" data-i18n="app_btn">Instalar</button>
+          <div class="app-guia" id="guia-instalar" hidden><p id="guia-texto"></p></div>
+          <button type="button" class="app-cerrar" id="app-cerrar" data-i18n-aria="app_close" aria-label="Ahora no">×</button>
         </div>
         <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
         <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">💼 ¿Quieres ganar dinero extra? Hazte reclutador/a</a></div>
         <div class="business-link"><a href="comercio.html" data-i18n="portal_link">¿Ya estás en isHere? Entra a Mi comercio</a></div>
-        <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">Trabaja con nosotros · Hazte reclutador/a</a></div>
       </footer>
     </section>
 
@@ -941,6 +997,18 @@
 
     </section>
 
+    <button type="button" class="btn-descarga" id="btn-descarga" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+      <span data-i18n="dl_btn">¡Descárgame!</span>
+    </button>
+    <div class="ruta-sheet" id="dl-sheet" hidden>
+      <div class="ruta-panel app-panel" role="dialog" aria-modal="true" aria-labelledby="dl-sheet-t">
+        <img src="icon-192.png" alt="" width="64" height="64">
+        <h3 id="dl-sheet-t" data-i18n="app_t">Te llevo en un toque</h3>
+        <p id="dl-sheet-guia"></p>
+        <button type="button" class="ruta-cancel" id="dl-sheet-ok" data-i18n="dl_ok">Entendido</button>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -979,7 +1047,6 @@ const I18N = {
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
     portal_link: "¿Ya estás en isHere? Entra a Mi comercio",
-    recruit_link: "💼 ¿Quieres ganar dinero extra? Hazte reclutador/a",
     ft_vende: "Lo que vende",
     ft_nota: "Información facilitada por el comercio. isHere actúa como intermediario de información y no vende ni garantiza sus productos.",
     ft_nota_link: "Más info",
@@ -994,6 +1061,9 @@ const I18N = {
     report_subject: "Denuncia de ficha: {n} ({id})",
     report_body: "Explica qué información es falsa, ilegal o inadecuada y por qué:\n\n",
     install: "📲 Instalar isHere en tu móvil",
+    app_t: "Te llevo en un toque", app_s: "Instala isHere gratis: sin registro, sin tienda de apps y sin ocupar espacio.", app_btn: "Instalar gratis", app_close: "Ahora no",
+    dl_btn: "¡Descárgame!", dl_ok: "Entendido", inst_desktop: "Abre isHere en tu móvil y toca «¡Descárgame!» para tenerla como app.",
+    appx_t: "¿Te llevé bien? 🎉", appx_s: "Instala isHere y la próxima vez te llevo en un solo toque.", appx_btn: "Instalar gratis",
     install_ios: "En iPhone: toca Compartir ⬆️ y después «Añadir a pantalla de inicio».",
     g_fiscal: "Datos para tu factura",
     fiscal_note: "Solo los ve isHere. Los necesitamos para emitir facturas con las que puedas deducirte el IVA.",
@@ -1152,7 +1222,6 @@ const I18N = {
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
     portal_link: "Ja ets a isHere? Entra a El meu comerç",
-    recruit_link: "💼 Vols guanyar diners extra? Fes-te reclutador/a",
     ft_vende: "El que ven",
     ft_nota: "Informació facilitada pel comerç. isHere actua com a intermediari d'informació i no ven ni garanteix els seus productes.",
     ft_nota_link: "Més info",
@@ -1167,6 +1236,9 @@ const I18N = {
     report_subject: "Denúncia de fitxa: {n} ({id})",
     report_body: "Explica quina informació és falsa, il·legal o inadequada i per què:\n\n",
     install: "📲 Instal·la isHere al mòbil",
+    app_t: "T'hi porto amb un toc", app_s: "Instal·la isHere gratis: sense registre, sense botiga d'apps i sense ocupar espai.", app_btn: "Instal·la gratis", app_close: "Ara no",
+    dl_btn: "Descarrega'm!", dl_ok: "Entesos", inst_desktop: "Obre isHere al mòbil i toca «Descarrega'm!» per tenir-la com a app.",
+    appx_t: "T'hi he portat bé? 🎉", appx_s: "Instal·la isHere i la propera vegada t'hi porto amb un sol toc.", appx_btn: "Instal·la gratis",
     install_ios: "A l'iPhone: toca Compartir ⬆️ i després «Afegir a la pantalla d'inici».",
     g_fiscal: "Dades per a la teva factura",
     fiscal_note: "Només les veu isHere. Les necessitem per emetre factures amb què et puguis deduir l'IVA.",
@@ -1325,7 +1397,6 @@ const I18N = {
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
     portal_link: "Already on isHere? Go to My business",
-    recruit_link: "💼 Want to earn extra money? Become a recruiter",
     ft_vende: "What they sell",
     ft_nota: "Information provided by the business. isHere acts as an information intermediary and does not sell or guarantee its products.",
     ft_nota_link: "More info",
@@ -1340,6 +1411,9 @@ const I18N = {
     report_subject: "Listing report: {n} ({id})",
     report_body: "Please explain what information is false, illegal or inappropriate, and why:\n\n",
     install: "📲 Install isHere on your phone",
+    app_t: "One tap and I'll take you there", app_s: "Install isHere free: no sign-up, no app store, no storage used.", app_btn: "Install free", app_close: "Not now",
+    dl_btn: "Get me!", dl_ok: "Got it", inst_desktop: "Open isHere on your phone and tap “Get me!” to have it as an app.",
+    appx_t: "Did I get you there? 🎉", appx_s: "Install isHere and next time I'll take you there in a single tap.", appx_btn: "Install free",
     install_ios: "On iPhone: tap Share ⬆️ and then “Add to Home Screen”.",
     g_fiscal: "Invoice details",
     fiscal_note: "Only isHere sees these. We need them to issue invoices you can deduct VAT with.",
@@ -1590,6 +1664,7 @@ function mostrarAviso(texto, tipo){
 function mostrarVista(vista){
   document.getElementById("view-turista").style.display = vista === "turista" ? "flex" : "none";
   document.getElementById("view-comercio").style.display = vista === "comercio" ? "flex" : "none";
+  document.body.classList.toggle("en-comercio", vista === "comercio");
   window.scrollTo(0, 0);
 }
 document.getElementById("link-to-comercio").addEventListener("click", (e) => { e.preventDefault(); mostrarVista("comercio"); });
@@ -1666,6 +1741,7 @@ async function registrarSinResultado(texto, zona){
 
 // Registro anónimo de búsquedas y clics (sin datos del turista). Nunca bloquea la app si falla.
 let pymeActualId = null;
+let volvioDeRuta = false;
 function registrarEvento(tipo, pymeId, texto, zona, conResultado){
   if (!supabaseClient) return;
   try {
@@ -2268,6 +2344,7 @@ function irRuta(modo){
   registrarEvento("ruta", pymeActualId);
   const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoActual)}&travelmode=${modo}`;
   hablar(L => t(modo === "walking" ? "open_walk" : "open_transit", {}, L));
+  volvioDeRuta = true;
   window.open(url, "_blank", "noopener");
 }
 document.getElementById("btn-vamos").addEventListener("click", abrirRuta);
@@ -2637,34 +2714,99 @@ async function manejarRetorno(){
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 let avisoInstalar = null;
 const yaInstalada = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault(); avisoInstalar = e;
-  if (!yaInstalada){
-    document.getElementById("btn-instalar").hidden = false;
-    document.getElementById("guia-instalar").hidden = true;
-  }
-});
-document.getElementById("btn-instalar").addEventListener("click", async () => {
-  if (!avisoInstalar) return;
-  avisoInstalar.prompt();
-  await avisoInstalar.userChoice.catch(() => {});
-  avisoInstalar = null;
-  document.getElementById("btn-instalar").hidden = true;
-});
-// Guía para quien no ve el botón: iPhone (Apple no permite el botón) o navegadores dentro de WhatsApp/Instagram/Facebook.
-function mostrarGuiaInstalar(){
-  if (yaInstalada || avisoInstalar) return;
+const appCard = document.getElementById("app-card");
+function appDescartada(){ try { return localStorage.getItem("ishere_app_no") === "1"; } catch (e) { return false; } }
+// Guía para quien no tiene el botón automático: iPhone (Apple no lo permite) o navegadores dentro de WhatsApp/Instagram/Facebook.
+function claveGuia(){
   const ua = navigator.userAgent;
   const esIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const enApp = /FBAN|FBAV|Instagram|WhatsApp|Line\/|TikTok|musical_ly|Snapchat/i.test(ua) || (/Android/i.test(ua) && /; wv\)/.test(ua));
-  const clave = enApp ? (esIOS ? "inst_inapp_ios" : "inst_inapp_android") : esIOS ? "inst_ios" : /Android/i.test(ua) ? "inst_android" : null;
+  return enApp ? (esIOS ? "inst_inapp_ios" : "inst_inapp_android") : esIOS ? "inst_ios" : /Android/i.test(ua) ? "inst_android" : null;
+}
+function mostrarTarjetaApp(){
+  if (yaInstalada || appDescartada()) return;
+  if (!avisoInstalar && !claveGuia()) return;
+  appCard.hidden = false;
+}
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); avisoInstalar = e;
+  mostrarTarjetaApp();
+});
+window.addEventListener("appinstalled", () => { appCard.hidden = true; });
+document.getElementById("btn-instalar").addEventListener("click", async () => {
+  if (avisoInstalar){
+    avisoInstalar.prompt();
+    const r = await avisoInstalar.userChoice.catch(() => null);
+    avisoInstalar = null;
+    if (r && r.outcome === "accepted") appCard.hidden = true;
+    return;
+  }
+  const clave = claveGuia();
+  const guia = document.getElementById("guia-instalar");
   if (!clave) return;
   document.getElementById("guia-texto").textContent = t(clave);
-  document.getElementById("guia-instalar").dataset.clave = clave;
-  document.getElementById("guia-instalar").hidden = false;
+  guia.dataset.clave = clave;
+  guia.hidden = !guia.hidden;
+});
+document.getElementById("app-cerrar").addEventListener("click", () => {
+  appCard.hidden = true;
+  try { localStorage.setItem("ishere_app_no", "1"); } catch (e) {}
+});
+// Se muestra a los pocos segundos, cuando el turista ya vio de qué va la app.
+setTimeout(mostrarTarjetaApp, 2500);
+
+// Invitación en el mejor momento: cuando el turista vuelve de la ruta (ya vio que funciona).
+const appSheet = document.getElementById("app-sheet");
+function puedeInvitar(){
+  if (yaInstalada || (!avisoInstalar && !claveGuia())) return false;
+  try { return Date.now() - Number(localStorage.getItem("ishere_app_sheet") || 0) > 3 * 864e5; } catch (e) { return true; }
 }
-// Android da unos segundos para ofrecer el botón; si no llega, se muestra la guía.
-setTimeout(mostrarGuiaInstalar, 2500);
+function abrirAppSheet(){
+  if (!puedeInvitar()) return;
+  document.getElementById("app-sheet-guia").hidden = true;
+  appSheet.hidden = false;
+}
+function cerrarAppSheet(){
+  appSheet.hidden = true;
+  try { localStorage.setItem("ishere_app_sheet", String(Date.now())); } catch (e) {}
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && volvioDeRuta){ volvioDeRuta = false; setTimeout(abrirAppSheet, 700); }
+});
+document.getElementById("app-sheet-si").addEventListener("click", async () => {
+  if (avisoInstalar){
+    avisoInstalar.prompt();
+    const r = await avisoInstalar.userChoice.catch(() => null);
+    avisoInstalar = null;
+    if (r && r.outcome === "accepted"){ appSheet.hidden = true; appCard.hidden = true; }
+    return;
+  }
+  const clave = claveGuia(); if (!clave) return;
+  const g = document.getElementById("app-sheet-guia");
+  g.textContent = t(clave); g.hidden = false;
+});
+document.getElementById("app-sheet-no").addEventListener("click", cerrarAppSheet);
+appSheet.addEventListener("click", e => { if (e.target === appSheet) cerrarAppSheet(); });
+window.addEventListener("appinstalled", () => { appSheet.hidden = true; });
+
+// Botón flotante «¡Descárgame!»: visible siempre desde que se entra (salvo si ya está instalada).
+const btnDescarga = document.getElementById("btn-descarga");
+const dlSheet = document.getElementById("dl-sheet");
+if (!yaInstalada){ btnDescarga.hidden = false; document.body.classList.add("con-descarga"); }
+btnDescarga.addEventListener("click", async () => {
+  if (avisoInstalar){
+    avisoInstalar.prompt();
+    const r = await avisoInstalar.userChoice.catch(() => null);
+    avisoInstalar = null;
+    if (r && r.outcome === "accepted"){ btnDescarga.hidden = true; appCard.hidden = true; }
+    return;
+  }
+  document.getElementById("dl-sheet-guia").textContent = t(claveGuia() || "inst_desktop");
+  dlSheet.hidden = false;
+});
+document.getElementById("dl-sheet-ok").addEventListener("click", () => { dlSheet.hidden = true; });
+dlSheet.addEventListener("click", e => { if (e.target === dlSheet) dlSheet.hidden = true; });
+window.addEventListener("appinstalled", () => { btnDescarga.hidden = true; document.body.classList.remove("con-descarga"); });
 
 aplicarIdioma();
 cargarCatalogo();
