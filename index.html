@@ -493,6 +493,7 @@
      pero se mantiene porque controla la aparición del aviso de ruta y de «Otras opciones». */
   #voice-guide-btn.show{ display: none; }
 
+  .btn-vamos[hidden]{ display: none !important; }
   .btn-vamos{
     flex-shrink: 0; width: 76px; height: 76px; border-radius: 50%;
     border: none; cursor: pointer; font-family: inherit;
@@ -1069,6 +1070,7 @@ const I18N = {
     l_nif: "NIF / NIE / CIF",
     accept_html: "He leído y acepto las <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condiciones Generales</a> y la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacidad</a>. Actúo en nombre del comercio indicado y en el ámbito de su actividad empresarial.",
     err_nif: "El NIF, NIE o CIF no es válido. Revísalo: lo necesitamos para tu factura.",
+    err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23).",
     err_accept: "Para continuar, marca la casilla de aceptación de las Condiciones Generales.",
     lk_aviso: "Aviso legal",
     lk_priv: "Privacidad",
@@ -1249,6 +1251,7 @@ const I18N = {
     l_nif: "NIF / NIE / CIF",
     accept_html: "He llegit i accepto les <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condicions Generals</a> i la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacitat</a>. Actuo en nom del comerç indicat i en l'àmbit de la seva activitat empresarial.",
     err_nif: "El NIF, NIE o CIF no és vàlid. Revisa'l: el necessitem per a la teva factura.",
+    err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23).",
     err_accept: "Per continuar, marca la casella d'acceptació de les Condicions Generals.",
     lk_aviso: "Avís legal",
     lk_priv: "Privacitat",
@@ -1429,6 +1432,7 @@ const I18N = {
     l_nif: "Spanish tax ID (NIF / NIE / CIF)",
     accept_html: "I have read and accept the <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">General Terms</a> and the <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a>. I act on behalf of the business indicated and within its business activity.",
     err_nif: "That NIF, NIE or CIF isn't valid. Please check it: we need it for your invoice.",
+    err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23).",
     err_accept: "To continue, tick the box accepting the General Terms.",
     lk_aviso: "Legal notice",
     lk_priv: "Privacy",
@@ -2070,8 +2074,10 @@ function enlaceRed(v, base, dominio){
 }
 function pintarFicha(match, res){
   const foto = document.getElementById("ft-foto");
-  foto.hidden = !match.logo_url;
-  if (match.logo_url){ foto.src = match.logo_url; foto.alt = match.name; }
+  const fotoOk = match.logo_url && /^https?:\/\//i.test(match.logo_url);
+  foto.hidden = !fotoOk;
+  foto.onerror = () => { foto.hidden = true; };
+  if (fotoOk){ foto.src = match.logo_url; foto.alt = match.name; }
 
   const desc = document.getElementById("ft-desc");
   desc.hidden = !match.descripcion;
@@ -2281,6 +2287,8 @@ function mostrarResultado(res, zone, conVoz){
     // A pie hasta 2,5 km; más lejos, transporte público (metro y bus con líneas y paradas).
     aPie = res.km != null && res.km <= 2.5;
     destinoActual = destino;
+    // Sin coordenadas no se puede guiar con seguridad: se oculta «¡Vamos!» (la dirección sigue visible en la ficha).
+    document.getElementById("btn-vamos").hidden = !c;
     rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=${aPie ? "walking" : "transit"}`;
     document.getElementById("result-maps-link").href = rutaActual;
 
@@ -2624,13 +2632,17 @@ async function enviarAlta(){
       mostrarErrorForm(t("err_ref", { ref: datos.ref }));
       return;
     }
+    const coords = await geocodificar(datos.address);
+    if (!coords){
+      mostrarErrorForm(t("err_address"));
+      return;
+    }
 
     const id = crypto.randomUUID();
     btnPay.textContent = fotoComprimida ? t("uploading_photo") : t("preparing_pay");
     const logoUrl = await subirFoto(id);
     btnPay.textContent = t("preparing_pay");
     const tags = datos.tagsRaw.split(",").map(t => t.trim()).filter(Boolean);
-    const coords = await geocodificar(datos.address);
 
     const { error } = await supabaseClient.from("pymes").insert([{
       id,
