@@ -1606,6 +1606,18 @@ async function registrarSinResultado(texto, zona){
   try { await supabaseClient.from("busquedas_sin_resultado").insert({ texto: limpio, zona, idioma: lang }); } catch (e) {}
 }
 
+// Registro anónimo de búsquedas y clics (sin datos del turista). Nunca bloquea la app si falla.
+let pymeActualId = null;
+function registrarEvento(tipo, pymeId, texto, zona, conResultado){
+  if (!supabaseClient) return;
+  try {
+    supabaseClient.rpc("registrar_evento", {
+      p_tipo: tipo, p_pyme: pymeId || null, p_texto: texto ? String(texto).slice(0, 120) : null,
+      p_zona: zona || null, p_idioma: lang, p_resultado: conResultado == null ? null : !!conResultado
+    }).then(() => {}, () => {});
+  } catch (e) {}
+}
+
 /* ---------- portada: frases que rotan y productos estrella ---------- */
 // q: búsqueda de respaldo si el catálogo aún no cargó.
 const ROT = [
@@ -2074,6 +2086,8 @@ async function handleSpeechResult(speech){
     return;
   }
 
+  registrarEvento("busqueda", res.match ? res.match.id : null, speech, zone, !!res.match);
+
   if (res.match){
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
@@ -2089,6 +2103,7 @@ async function handleSpeechResult(speech){
 // Muestra un resultado (el mejor o el que el turista elige entre las otras opciones).
 function mostrarResultado(res, zone, conVoz){
   const match = res.match;
+  pymeActualId = match.id;
   {
     const thumb = document.getElementById("result-thumb");
     if (match.logo_url && /^https?:\/\//i.test(match.logo_url)){
@@ -2171,9 +2186,13 @@ function pintarOtras(candidatos, actual, zone){
 
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
+  registrarEvento("ruta", pymeActualId);
   hablar(L => t(aPie ? "open_walk" : "open_transit", {}, L));
   window.open(rutaActual, "_blank", "noopener");
 });
+
+document.getElementById("result-maps-link").addEventListener("click", () => registrarEvento("ruta", pymeActualId));
+document.getElementById("ft-wa").addEventListener("click", () => registrarEvento("whatsapp", pymeActualId));
 
 function stopListeningUI(){
   micWrap.classList.remove("listening");
