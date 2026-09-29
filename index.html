@@ -527,6 +527,18 @@
   .ruta-op.recomendada{ border-color: var(--confianza); box-shadow: 0 0 0 1px var(--confianza); }
   .ruta-cancel{ width: 100%; background: none; border: none; color: var(--cream-dim); font-family: inherit;
                 font-size: 0.9rem; padding: 10px; cursor: pointer; }
+  .ft-seguro{ font-size: 0.78rem; line-height: 1.45; color: var(--cream-dim); background: rgba(31,139,255,0.10);
+    border: 1px solid rgba(31,139,255,0.3); border-radius: 10px; padding: 9px 12px; margin-top: -2px; }
+  .ft-seguro b{ color: var(--cream); }
+  .den-op{ display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; margin-bottom: 6px;
+    background: var(--bg-deep); border: 1px solid rgba(242,233,216,0.1); font-size: 0.92rem; cursor: pointer; }
+  .den-op input{ accent-color: var(--confianza); width: 18px; height: 18px; }
+  .den-txt{ width: 100%; min-height: 70px; background: var(--bg-deep); color: var(--cream); border: 1px solid rgba(242,233,216,0.15);
+    border-radius: 10px; padding: 10px; font: inherit; font-size: 0.9rem; margin: 6px 0 10px; resize: vertical; }
+  .den-enviar{ width: 100%; background: var(--confianza); color: #fff; border: none; border-radius: 12px; padding: 13px;
+    font-family: inherit; font-weight: 700; font-size: 1rem; cursor: pointer; }
+  .den-enviar:disabled{ opacity: 0.6; }
+  .den-msg{ font-size: 0.85rem; text-align: center; margin-top: 10px; color: var(--cream-dim); }
   .ruta-panel .ruta-nota{ font-size: 0.72rem; color: var(--cream-dim); text-align: center; margin-top: 4px; }
 
   footer.hint{
@@ -782,6 +794,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
             <span data-i18n="ft_wa">Escribir por WhatsApp</span>
           </a>
+          <p class="ft-seguro" id="ft-seguro" hidden>🛡️ <b data-i18n="seguro_t">isHere nunca pide pagos.</b> <span data-i18n="seguro_p">Paga siempre en la tienda. Si alguien te pide pagar por adelantado, denuncia esta ficha.</span></p>
           <div class="ft-links">
             <a id="ft-google" target="_blank" rel="noopener" hidden>⭐ <span data-i18n="ft_reviews">Reseñas en Google</span></a>
             <a id="ft-web" target="_blank" rel="noopener" hidden>🌐 <span data-i18n="ft_web">Web</span></a>
@@ -790,7 +803,7 @@
             <a id="ft-fb" target="_blank" rel="noopener" hidden>👍 Facebook</a>
           </div>
           <p class="ft-nota"><span data-i18n="ft_nota">Información facilitada por el comercio. isHere actúa como intermediario de información y no vende ni garantiza sus productos.</span> <a href="legal.html#aviso" data-i18n="ft_nota_link">Más info</a></p>
-          <a class="ft-denunciar" id="ft-denunciar" data-i18n="report">Denunciar esta ficha</a>
+          <a class="ft-denunciar" id="ft-denunciar" href="#" role="button" data-i18n="report">Denunciar esta ficha</a>
         </div>
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
@@ -979,6 +992,16 @@
 
     </section>
 
+    <div class="ruta-sheet" id="den-sheet" hidden>
+      <div class="ruta-panel" role="dialog" aria-modal="true" aria-labelledby="den-t">
+        <h3 id="den-t" data-i18n="den_t">¿Qué pasa con esta ficha?</h3>
+        <div id="den-ops"></div>
+        <textarea class="den-txt" id="den-detalle" maxlength="300" data-i18n-ph="den_ph" placeholder="Cuéntanos más (opcional)"></textarea>
+        <button type="button" class="den-enviar" id="den-enviar" data-i18n="den_enviar">Enviar denuncia</button>
+        <p class="den-msg" id="den-msg" hidden></p>
+        <button type="button" class="ruta-cancel" id="den-cancel" data-i18n="go_cancel">Cancelar</button>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -1028,6 +1051,11 @@ const I18N = {
     inst_inapp_android: "Abriste el enlace dentro de otra app. Toca ⋮ y elige «Abrir en Chrome»; después, ⋮ → «Instalar aplicación».",
     recruit_link: "Trabaja con nosotros · Hazte reclutador/a",
     report: "Denunciar esta ficha",
+    seguro_t: "isHere nunca pide pagos.", seguro_p: "Paga siempre en la tienda. Si alguien te pide pagar por adelantado, denuncia esta ficha.",
+    den_t: "¿Qué pasa con esta ficha?", den_ph: "Cuéntanos más (opcional)", den_enviar: "Enviar denuncia",
+    den_ok: "Gracias. Revisaremos esta ficha lo antes posible.", den_err: "No se pudo enviar. Inténtalo de nuevo.", den_elige: "Elige un motivo.",
+    den_pago_adelantado: "Me piden pagar por adelantado", den_ficha_falsa: "El comercio no existe o es falso", den_precio_falso: "El precio no es real",
+    den_contenido_inadecuado: "Contenido inadecuado u ofensivo", den_enlace_sospechoso: "Enlace sospechoso", den_otro: "Otro motivo",
     report_subject: "Denuncia de ficha: {n} ({id})",
     report_body: "Explica qué información es falsa, ilegal o inadecuada y por qué:\n\n",
     install: "📲 Instalar isHere en tu móvil",
@@ -1203,6 +1231,11 @@ const I18N = {
     inst_inapp_android: "Has obert l'enllaç dins d'una altra app. Toca ⋮ i tria «Obrir a Chrome»; després, ⋮ → «Instal·lar l'aplicació».",
     recruit_link: "Treballa amb nosaltres · Fes-te reclutador/a",
     report: "Denunciar aquesta fitxa",
+    seguro_t: "isHere mai demana pagaments.", seguro_p: "Paga sempre a la botiga. Si algú et demana pagar per avançat, denuncia aquesta fitxa.",
+    den_t: "Què passa amb aquesta fitxa?", den_ph: "Explica'ns més (opcional)", den_enviar: "Enviar denúncia",
+    den_ok: "Gràcies. Revisarem aquesta fitxa al més aviat possible.", den_err: "No s'ha pogut enviar. Torna-ho a provar.", den_elige: "Tria un motiu.",
+    den_pago_adelantado: "Em demanen pagar per avançat", den_ficha_falsa: "El comerç no existeix o és fals", den_precio_falso: "El preu no és real",
+    den_contenido_inadecuado: "Contingut inadequat o ofensiu", den_enlace_sospechoso: "Enllaç sospitós", den_otro: "Un altre motiu",
     report_subject: "Denúncia de fitxa: {n} ({id})",
     report_body: "Explica quina informació és falsa, il·legal o inadequada i per què:\n\n",
     install: "📲 Instal·la isHere al mòbil",
@@ -1378,6 +1411,11 @@ const I18N = {
     inst_inapp_android: "You opened this link inside another app. Tap ⋮ and choose “Open in Chrome”; then ⋮ → “Install app”.",
     recruit_link: "Work with us · Become a recruiter",
     report: "Report this listing",
+    seguro_t: "isHere never asks for payments.", seguro_p: "Always pay at the shop. If anyone asks you to pay in advance, report this listing.",
+    den_t: "What's wrong with this listing?", den_ph: "Tell us more (optional)", den_enviar: "Send report",
+    den_ok: "Thank you. We'll review this listing as soon as possible.", den_err: "Couldn't send. Please try again.", den_elige: "Choose a reason.",
+    den_pago_adelantado: "They ask me to pay in advance", den_ficha_falsa: "The shop doesn't exist or is fake", den_precio_falso: "The price isn't real",
+    den_contenido_inadecuado: "Inappropriate or offensive content", den_enlace_sospechoso: "Suspicious link", den_otro: "Other reason",
     report_subject: "Listing report: {n} ({id})",
     report_body: "Please explain what information is false, illegal or inappropriate, and why:\n\n",
     install: "📲 Install isHere on your phone",
@@ -2090,8 +2128,7 @@ function pintarFicha(match, res){
   if (waNum.length >= 8) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
 
   // Denuncia de contenido (Reglamento de Servicios Digitales): va al correo oficial de isHere.
-  document.getElementById("ft-denunciar").href = "mailto:isherebarcelona@gmail.com?subject=" +
-    encodeURIComponent(t("report_subject", { n: match.name, id: match.id })) + "&body=" + encodeURIComponent(t("report_body"));
+  document.getElementById("ft-seguro").hidden = waEl.hidden;
 
   const poner = (id, url) => { const a = document.getElementById(id); a.hidden = !url; if (url) a.href = url; };
   const redes = match.redes || {};
@@ -2325,6 +2362,42 @@ document.getElementById("ruta-cancel").addEventListener("click", cerrarRuta);
 rutaSheet.addEventListener("click", e => { if (e.target === rutaSheet) cerrarRuta(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !rutaSheet.hidden) cerrarRuta(); });
 document.getElementById("ft-wa").addEventListener("click", () => registrarEvento("whatsapp", pymeActualId));
+
+// Denuncia de fichas: formulario dentro de la app (usa la función segura «denunciar»).
+const DEN_MOTIVOS = ["pago_adelantado", "ficha_falsa", "precio_falso", "contenido_inadecuado", "enlace_sospechoso", "otro"];
+const denSheet = document.getElementById("den-sheet");
+document.getElementById("ft-denunciar").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (!pymeActualId) return;
+  document.getElementById("den-ops").innerHTML = DEN_MOTIVOS.map(m =>
+    `<label class="den-op"><input type="radio" name="den-motivo" value="${m}"> ${esc(t("den_" + m))}</label>`).join("");
+  document.getElementById("den-detalle").value = "";
+  document.getElementById("den-detalle").placeholder = t("den_ph");
+  document.getElementById("den-msg").hidden = true;
+  document.getElementById("den-enviar").disabled = false;
+  document.getElementById("den-enviar").hidden = false;
+  denSheet.hidden = false;
+});
+document.getElementById("den-cancel").addEventListener("click", () => { denSheet.hidden = true; });
+denSheet.addEventListener("click", (e) => { if (e.target === denSheet) denSheet.hidden = true; });
+document.getElementById("den-enviar").addEventListener("click", async () => {
+  const msgEl = document.getElementById("den-msg");
+  const sel = document.querySelector('input[name="den-motivo"]:checked');
+  if (!sel){ msgEl.textContent = t("den_elige"); msgEl.hidden = false; return; }
+  const btn = document.getElementById("den-enviar");
+  btn.disabled = true;
+  let ok = false;
+  try {
+    const { error } = await supabaseClient.rpc("denunciar", {
+      p_pyme: pymeActualId, p_motivo: sel.value,
+      p_detalle: document.getElementById("den-detalle").value.trim().slice(0, 300) || null
+    });
+    ok = !error;
+  } catch (e) {}
+  msgEl.textContent = t(ok ? "den_ok" : "den_err");
+  msgEl.hidden = false;
+  if (ok){ btn.hidden = true; setTimeout(() => { denSheet.hidden = true; }, 2200); } else btn.disabled = false;
+});
 
 function stopListeningUI(){
   micWrap.classList.remove("listening");
