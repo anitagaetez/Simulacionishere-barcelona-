@@ -642,25 +642,6 @@
   .app-guia{ flex-basis: 100%; font-size: 0.8rem; color: var(--cream-dim); line-height: 1.5;
              border-top: 1px solid rgba(242,233,216,0.1); padding-top: 10px; }
   .app-guia[hidden]{ display: none; }
-  /* Botón flotante «¡Descárgame!»: siempre visible desde que se entra */
-  .btn-descarga{ position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 50;
-    width: 74px; height: 74px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.9); cursor: pointer;
-    background: var(--turquesa); color: #fff; font-family: inherit;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,181,166,0.6);
-    animation: descarga-pulso 2s ease-out 1s infinite; }
-  .btn-descarga[hidden]{ display: none; }
-  .btn-descarga svg{ width: 24px; height: 24px; }
-  .btn-descarga span{ font-size: 0.66rem; font-weight: 700; line-height: 1.05; text-align: center; }
-  .btn-descarga:active{ transform: scale(0.95); }
-  @keyframes descarga-pulso{
-    0%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,181,166,0.6); }
-    70%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 16px rgba(31,181,166,0); }
-    100%{ box-shadow: 0 6px 18px rgba(0,0,0,0.35), 0 0 0 0 rgba(31,181,166,0); }
-  }
-  @media (prefers-reduced-motion: reduce){ .btn-descarga{ animation: none; } }
-  body.con-descarga footer.hint{ padding-bottom: 96px; }
-  body.en-comercio .btn-descarga{ display: none; }
   /* Invitación tras volver de la ruta */
   .app-panel{ text-align: center; }
   .app-panel img{ display: block; margin: 0 auto 12px; border-radius: 16px; }
@@ -998,18 +979,6 @@
 
     </section>
 
-    <button type="button" class="btn-descarga" id="btn-descarga" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-      <span data-i18n="dl_btn">¡Descárgame!</span>
-    </button>
-    <div class="ruta-sheet" id="dl-sheet" hidden>
-      <div class="ruta-panel app-panel" role="dialog" aria-modal="true" aria-labelledby="dl-sheet-t">
-        <img src="icon-192.png" alt="" width="64" height="64">
-        <h3 id="dl-sheet-t" data-i18n="app_t">Te llevo en un toque</h3>
-        <p id="dl-sheet-guia"></p>
-        <button type="button" class="ruta-cancel" id="dl-sheet-ok" data-i18n="dl_ok">Entendido</button>
-      </div>
-    </div>
   </main>
 </div>
 
@@ -2791,24 +2760,6 @@ document.getElementById("app-sheet-no").addEventListener("click", cerrarAppSheet
 appSheet.addEventListener("click", e => { if (e.target === appSheet) cerrarAppSheet(); });
 window.addEventListener("appinstalled", () => { appSheet.hidden = true; });
 
-// Botón flotante «¡Descárgame!»: visible siempre desde que se entra (salvo si ya está instalada).
-const btnDescarga = document.getElementById("btn-descarga");
-const dlSheet = document.getElementById("dl-sheet");
-if (!yaInstalada){ btnDescarga.hidden = false; document.body.classList.add("con-descarga"); }
-btnDescarga.addEventListener("click", async () => {
-  if (avisoInstalar){
-    avisoInstalar.prompt();
-    const r = await avisoInstalar.userChoice.catch(() => null);
-    avisoInstalar = null;
-    if (r && r.outcome === "accepted"){ btnDescarga.hidden = true; appCard.hidden = true; }
-    return;
-  }
-  document.getElementById("dl-sheet-guia").textContent = t(claveGuia() || "inst_desktop");
-  dlSheet.hidden = false;
-});
-document.getElementById("dl-sheet-ok").addEventListener("click", () => { dlSheet.hidden = true; });
-dlSheet.addEventListener("click", e => { if (e.target === dlSheet) dlSheet.hidden = true; });
-window.addEventListener("appinstalled", () => { btnDescarga.hidden = true; document.body.classList.remove("con-descarga"); });
 
 aplicarIdioma();
 cargarCatalogo();
