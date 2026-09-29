@@ -34,6 +34,7 @@
     --cream: #F2E9D8;
     --cream-dim: #B9C7CE;
     --success: #4CAF7D;
+    --confianza: #1F8BFF;
     --danger: #E0685E;
     --radius-lg: 22px;
     --radius-sm: 10px;
@@ -487,6 +488,45 @@
     display: none;
   }
   .voice-guide-btn.show{ display: block; }
+  /* Un solo botón de ruta: el círculo «¡Vamos!» de la tarjeta. El botón largo queda oculto
+     pero se mantiene porque controla la aparición del aviso de ruta y de «Otras opciones». */
+  #voice-guide-btn.show{ display: none; }
+
+  .btn-vamos{
+    flex-shrink: 0; width: 76px; height: 76px; border-radius: 50%;
+    border: none; cursor: pointer; font-family: inherit;
+    background: var(--confianza); color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    box-shadow: 0 0 0 0 rgba(31,139,255,0.6);
+    animation: vamos-pulso 1.8s ease-out 0.6s 3;
+  }
+  .btn-vamos svg{ width: 24px; height: 24px; }
+  .btn-vamos span{ font-size: 0.8rem; font-weight: 700; line-height: 1.1; }
+  .btn-vamos:active{ transform: scale(0.95); }
+  @keyframes vamos-pulso{
+    0%{ box-shadow: 0 0 0 0 rgba(31,139,255,0.6); }
+    100%{ box-shadow: 0 0 0 16px rgba(31,139,255,0); }
+  }
+  @media (prefers-reduced-motion: reduce){ .btn-vamos{ animation: none; } }
+
+  .ruta-sheet{ position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center;
+               background: rgba(5,20,30,0.6); }
+  .ruta-sheet[hidden]{ display: none; }
+  .ruta-panel{ width: 100%; max-width: 520px; background: var(--bg-panel-raise); color: var(--cream);
+               border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px 18px 26px;
+               animation: rise 0.25s ease; }
+  .ruta-panel h3{ font-size: 1.1rem; font-weight: 600; text-align: center; margin-bottom: 14px; }
+  .ruta-op{ width: 100%; display: flex; align-items: center; gap: 14px; text-align: left;
+            background: var(--bg-panel); color: var(--cream); border: 1px solid rgba(31,139,255,0.3);
+            border-radius: var(--radius-sm); padding: 15px 16px; margin-bottom: 10px;
+            font-family: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; }
+  .ruta-op .ico{ font-size: 1.6rem; }
+  .ruta-op .reco{ margin-left: auto; font-size: 0.72rem; font-weight: 600; color: #fff;
+                  background: var(--confianza); border-radius: 999px; padding: 3px 9px; }
+  .ruta-op.recomendada{ border-color: var(--confianza); box-shadow: 0 0 0 1px var(--confianza); }
+  .ruta-cancel{ width: 100%; background: none; border: none; color: var(--cream-dim); font-family: inherit;
+                font-size: 0.9rem; padding: 10px; cursor: pointer; }
+  .ruta-panel .ruta-nota{ font-size: 0.72rem; color: var(--cream-dim); text-align: center; margin-top: 4px; }
 
   footer.hint{
     text-align: center;
@@ -695,10 +735,11 @@
           <p class="horario-estado" id="result-horario"></p>
           <span class="badge" data-i18n="badge">producto estrella</span>
         </div>
-        <a class="direction-indicator" id="result-maps-link" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          <span data-i18n="map">MAPA</span>
-        </a>
+        <button class="btn-vamos" id="btn-vamos" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <span data-i18n="go">¡Vamos!</span>
+        </button>
+        <a id="result-maps-link" href="#" hidden></a>
       </div>
       <div class="ficha-turista" id="ficha-turista">
         <img class="ft-foto" id="ft-foto" alt="" hidden>
@@ -730,6 +771,15 @@
       </div>
       <button class="voice-guide-btn" id="voice-guide-btn">Guiarme caminando</button>
       <p class="ruta-aviso" id="ruta-aviso" data-i18n="route_note">Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.</p>
+      <div class="ruta-sheet" id="ruta-sheet" hidden>
+        <div class="ruta-panel" role="dialog" aria-modal="true" aria-labelledby="ruta-titulo">
+          <h3 id="ruta-titulo" data-i18n="go_title">¿Cómo quieres ir?</h3>
+          <button class="ruta-op" id="ruta-pie" type="button"><span class="ico" aria-hidden="true">🚶</span><span data-i18n="go_walk">Caminando</span><span class="reco" data-i18n="go_reco" hidden>Recomendado</span></button>
+          <button class="ruta-op" id="ruta-tp" type="button"><span class="ico" aria-hidden="true">🚇</span><span data-i18n="go_transit">Metro o bus</span><span class="reco" data-i18n="go_reco" hidden>Recomendado</span></button>
+          <button class="ruta-cancel" id="ruta-cancel" type="button" data-i18n="go_cancel">Cancelar</button>
+          <p class="ruta-nota" data-i18n="route_note">Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.</p>
+        </div>
+      </div>
       <div class="otras" id="otras">
         <h4 data-i18n="otras_title">Otras opciones cerca</h4>
         <div id="otras-lista"></div>
@@ -1010,6 +1060,8 @@ const I18N = {
     found_other: "En {zone} no hay, pero lo más cerca está en {other}: ",
     btn_walk: "Guiarme caminando",
     btn_transit: "Llévame en metro o bus",
+    go: "¡Vamos!", go_title: "¿Cómo quieres ir?", go_walk: "Caminando", go_transit: "Metro o bus",
+    go_reco: "Recomendado", go_cancel: "Cancelar",
     tap_hint: 'Toca "{btn}" y Google Maps te lleva con voz.',
     speak_found: "{aviso}{name}. Toca {btn} y te llevo.",
     noresult_1: 'No encontré nada para "<b>{s}</b>" en Barcelona todavía. Prueba con otra palabra.',
@@ -1181,6 +1233,8 @@ const I18N = {
     found_other: "A {zone} no n'hi ha, però el més a prop és a {other}: ",
     btn_walk: "Guia'm a peu",
     btn_transit: "Porta-m'hi en metro o bus",
+    go: "Som-hi!", go_title: "Com vols anar-hi?", go_walk: "A peu", go_transit: "Metro o bus",
+    go_reco: "Recomanat", go_cancel: "Cancel·la",
     tap_hint: 'Toca "{btn}" i Google Maps t\'hi porta amb veu.',
     speak_found: "{aviso}{name}. Toca {btn} i t'hi porto.",
     noresult_1: 'Encara no he trobat res per a "<b>{s}</b>" a Barcelona. Prova amb una altra paraula.',
@@ -1352,6 +1406,8 @@ const I18N = {
     found_other: "Nothing in {zone}, but the closest is in {other}: ",
     btn_walk: "Walk me there",
     btn_transit: "Take me by metro or bus",
+    go: "Let's go!", go_title: "How do you want to go?", go_walk: "Walking", go_transit: "Metro or bus",
+    go_reco: "Recommended", go_cancel: "Cancel",
     tap_hint: 'Tap "{btn}" and Google Maps will guide you by voice.',
     speak_found: "{aviso}{name}. Tap {btn} and I'll take you there.",
     noresult_1: 'Nothing for "<b>{s}</b>" in Barcelona yet. Try another word.',
@@ -1498,6 +1554,8 @@ function cambiarIdioma(nuevo){
   const status = document.getElementById("listen-status");
   if (card) card.classList.remove("show");
   if (guia) guia.classList.remove("show");
+  const hoja = document.getElementById("ruta-sheet");
+  if (hoja) hoja.hidden = true;
   if (status){ status.classList.remove("pocket-mode"); status.innerHTML = t("listen_idle"); }
   const tr = document.getElementById("transcript");
   if (tr) tr.textContent = "";
@@ -2007,6 +2065,7 @@ const zoneSelect = document.getElementById("zone-select");
 const btnLocate = document.getElementById("btn-locate");
 const locateStatus = document.getElementById("locate-status");
 let rutaActual = "";
+let destinoActual = "";
 let aPie = true;
 
 
@@ -2138,10 +2197,11 @@ function mostrarResultado(res, zone, conVoz){
     const destino = c || (match.address ? `${match.address}, Barcelona, España` : `${match.zone}, Barcelona, España`);
     // A pie hasta 2,5 km; más lejos, transporte público (metro y bus con líneas y paradas).
     aPie = res.km != null && res.km <= 2.5;
+    destinoActual = destino;
     rutaActual = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=${aPie ? "walking" : "transit"}`;
     document.getElementById("result-maps-link").href = rutaActual;
 
-    const claveBoton = aPie ? "btn_walk" : "btn_transit";
+    const claveBoton = "go";
     const textoBoton = t(claveBoton);
     voiceGuideBtn.textContent = textoBoton;
 
@@ -2191,7 +2251,31 @@ voiceGuideBtn.addEventListener("click", () => {
   window.open(rutaActual, "_blank", "noopener");
 });
 
-document.getElementById("result-maps-link").addEventListener("click", () => registrarEvento("ruta", pymeActualId));
+// Botón «¡Vamos!»: abre la elección caminando / metro o bus (recomienda según la distancia).
+const rutaSheet = document.getElementById("ruta-sheet");
+function abrirRuta(){
+  if (!destinoActual) return;
+  document.getElementById("ruta-pie").classList.toggle("recomendada", aPie);
+  document.getElementById("ruta-tp").classList.toggle("recomendada", !aPie);
+  document.querySelector("#ruta-pie .reco").hidden = !aPie;
+  document.querySelector("#ruta-tp .reco").hidden = aPie;
+  rutaSheet.hidden = false;
+  document.getElementById(aPie ? "ruta-pie" : "ruta-tp").focus();
+}
+function cerrarRuta(){ rutaSheet.hidden = true; }
+function irRuta(modo){
+  cerrarRuta();
+  registrarEvento("ruta", pymeActualId);
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoActual)}&travelmode=${modo}`;
+  hablar(L => t(modo === "walking" ? "open_walk" : "open_transit", {}, L));
+  window.open(url, "_blank", "noopener");
+}
+document.getElementById("btn-vamos").addEventListener("click", abrirRuta);
+document.getElementById("ruta-pie").addEventListener("click", () => irRuta("walking"));
+document.getElementById("ruta-tp").addEventListener("click", () => irRuta("transit"));
+document.getElementById("ruta-cancel").addEventListener("click", cerrarRuta);
+rutaSheet.addEventListener("click", e => { if (e.target === rutaSheet) cerrarRuta(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !rutaSheet.hidden) cerrarRuta(); });
 document.getElementById("ft-wa").addEventListener("click", () => registrarEvento("whatsapp", pymeActualId));
 
 function stopListeningUI(){
