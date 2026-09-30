@@ -218,6 +218,31 @@
       <div id="l-bajas"></div>
     </section>
 
+    <section class="card" id="sec-pendientes">
+      <h2>Altas sin terminar <span class="pill gold" id="pend-total">0</span></h2>
+      <p class="muted">Empezaron el alta pero no pagaron. Mándales un recordatorio: su ficha está casi lista.</p>
+      <div id="l-pendientes"><p class="muted">Cargando…</p></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Emails de pymes</summary>
+        <p class="muted" style="margin-top:8px">Para avisar de novedades o cambios en las condiciones. Para promociones, solo a quien haya aceptado recibirlas.</p>
+        <div class="actions"><button class="btn-sec" id="btn-copiar-emails">Copiar todos los emails</button></div>
+        <div id="l-emails" style="margin-top:8px"></div>
+      </details>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Fotos sin uso</summary>
+        <p class="muted" style="margin-top:8px">Fotos subidas que no pertenecen a ninguna ficha (más de 2 días). Borrarlas ahorra espacio; no afecta a ninguna pyme.</p>
+        <div id="l-fotos" style="margin-top:8px"></div>
+        <div class="actions"><button class="btn-no hidden" id="btn-borrar-fotos">Borrar todas</button></div>
+        <div class="msg" id="m-fotos"></div>
+      </details>
+    </section>
+
     <section class="card">
       <details>
         <summary>Últimas pymes</summary>
@@ -317,6 +342,9 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 async function cargarPanel(){
   cargarRevision();
   cargarBusquedas();
+  cargarPendientes();
+  cargarEmails();
+  cargarFotos();
   const { data, error } = await sb.rpc("admin_panel");
   if (error){
     if (/autorizado/i.test(error.message)){ await sb.auth.signOut(); ver("v-login"); msg("m-login", "Esta cuenta no es administradora."); }
@@ -437,6 +465,64 @@ async function cargarBusquedas(){
     <span class="veces">${b.veces} · <span class="${Number(b.pct_encontrado) < 50 ? "pill off" : "pill on"}">${b.pct_encontrado}% encontrado</span></span></div>`).join("")
     : '<p class="muted">Aún no hay búsquedas registradas.</p>';
 }
+
+/* ---------- altas sin terminar (clientes casi ganados) ---------- */
+async function cargarPendientes(){
+  const { data, error } = await sb.rpc("admin_altas_pendientes");
+  if (error){ $("l-pendientes").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  $("pend-total").textContent = lista.length;
+  $("l-pendientes").innerHTML = lista.length ? lista.map(p => {
+    const nombre = p.contacto || "";
+    const texto = `Hola${nombre ? " " + nombre : ""}, soy Anita de isHere 👋 Vimos que empezaste el alta de "${p.name}" pero no se completó el pago. Tu ficha está casi lista para que los turistas te encuentren. Puedes terminarla aquí: ${APP}?comercio. Si tienes cualquier duda, te ayudo. ¡Un saludo!`;
+    const tel = String(p.telefono || "").replace(/\D/g, "");
+    return `
+    <div class="item">
+      <b>${esc(p.name)}</b> <span class="muted">· ${esc(p.zone || "")} · hace ${p.dias} día${p.dias === 1 ? "" : "s"}</span>
+      <div class="muted">${esc(nombre)}${p.email ? " · " + esc(p.email) : ""}${p.telefono ? " · " + esc(p.telefono) : ""}</div>
+      <div class="actions">
+        ${tel ? `<a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+        ${p.email ? `<a class="btn-sec" href="mailto:${esc(p.email)}?subject=${encodeURIComponent("Tu ficha en isHere está casi lista")}&body=${encodeURIComponent(texto)}">Email</a>` : ""}
+        ${tel ? `<a class="btn-sec" href="tel:${esc(p.telefono)}">Llamar</a>` : ""}
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">Ninguna alta a medias. 🎉</p>';
+}
+
+/* ---------- emails de pymes ---------- */
+let emailsPymes = [];
+async function cargarEmails(){
+  const { data, error } = await sb.rpc("admin_emails");
+  if (error){ $("l-emails").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  emailsPymes = [...new Set(lista.map(p => String(p.email).trim().toLowerCase()).filter(Boolean))];
+  const estado = { beta_active: ["activa", "on"], pending_payment: ["sin pagar", "gold"] };
+  $("l-emails").innerHTML = lista.length ? lista.map(p => {
+    const [txt, cls] = estado[p.status] || [p.status || "—", "off"];
+    return `<div class="busq"><span>${esc(p.name)} <span class="muted">· ${esc(p.email)}</span></span><span class="pill ${cls}">${esc(txt)}</span></div>`;
+  }).join("") : '<p class="muted">Aún no hay emails.</p>';
+  $("btn-copiar-emails").textContent = `Copiar todos los emails (${emailsPymes.length})`;
+}
+$("btn-copiar-emails").addEventListener("click", (e) => copiar(emailsPymes.join(", "), e.target));
+
+/* ---------- fotos sin uso ---------- */
+let fotosSinUso = [];
+async function cargarFotos(){
+  const { data, error } = await sb.rpc("admin_fotos_sin_uso");
+  if (error){ $("l-fotos").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  fotosSinUso = (data || []).map(f => f.ruta);
+  $("l-fotos").innerHTML = fotosSinUso.length ? `<p class="muted">${fotosSinUso.length} foto${fotosSinUso.length === 1 ? "" : "s"} sin uso.</p>` : '<p class="muted">No hay fotos sin uso. 🎉</p>';
+  $("btn-borrar-fotos").classList.toggle("hidden", !fotosSinUso.length);
+}
+$("btn-borrar-fotos").addEventListener("click", async (e) => {
+  if (!fotosSinUso.length || !confirm(`¿Borrar ${fotosSinUso.length} foto(s) sin uso? No afecta a ninguna ficha.`)) return;
+  e.target.disabled = true;
+  const { error } = await sb.storage.from("fotos-pymes").remove(fotosSinUso);
+  e.target.disabled = false;
+  if (error){ msg("m-fotos", "No se pudieron borrar: " + error.message); return; }
+  msg("m-fotos", "Fotos borradas.", "ok");
+  cargarFotos();
+});
 
 /* ---------- crear reclutador ---------- */
 $("btn-reclutador").addEventListener("click", async (e) => {
