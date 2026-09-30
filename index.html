@@ -1018,7 +1018,7 @@ const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
 // Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
-const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp, horario";
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp, horario, traducciones";
 
 let supabaseClient = null;
 try {
@@ -2328,6 +2328,21 @@ function refrescarDinamicos(){
   renderSugerenciasCat();
 }
 
+// Traducciones automáticas de Isa: devuelve el texto en el idioma del turista (o el original).
+function tr(p){ return (p && p.traducciones && p.traducciones[lang]) || {}; }
+function trStar(p){ return tr(p).star || p.star_product_name; }
+function trCarta(p, i, original){ const c = tr(p).carta; return (Array.isArray(c) && c[i] && c[i].nombre) || original; }
+function textosTraducidos(p){
+  const t0 = p.traducciones || {};
+  const partes = [t0.claves || ""];
+  ["es", "ca", "en", "it", "fr"].forEach(L => {
+    const x = t0[L] || {};
+    partes.push(x.star || "");
+    if (Array.isArray(x.carta)) partes.push(x.carta.map(c => (c && c.nombre) || "").join(","));
+  });
+  return partes.join(",");
+}
+
 async function searchNearestProduct(userSpeech, userZone){
   const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
@@ -2350,7 +2365,7 @@ async function searchNearestProduct(userSpeech, userZone){
     .map(p => {
       // Busca en etiquetas, nombre del negocio y producto estrella.
       const carta = Array.isArray(p.carta) ? p.carta : [];
-      const tags = [p.tags, p.name, p.star_product_name, carta.map(x => x.nombre).join(",")].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
+      const tags = [p.tags, p.name, p.star_product_name, carta.map(x => x.nombre).join(","), textosTraducidos(p)].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
       // Producto de la carta propia que coincide con la búsqueda (para mostrarlo con su precio).
       const cartaHit = carta.find(x => tokensDe(x.nombre || "").some(nt => words.some(w => coincide(w, nt)))) || null;
       // Coincide si una palabra contiene a la otra o comparten raíz (empanadas / empanades).
@@ -2461,8 +2476,9 @@ function pintarFicha(match, res){
   if (fotoOk){ foto.src = match.logo_url; foto.alt = match.name; }
 
   const desc = document.getElementById("ft-desc");
-  desc.hidden = !match.descripcion;
-  desc.textContent = match.descripcion || "";
+  const descTxt = tr(match).desc || match.descripcion || "";
+  desc.hidden = !descTxt;
+  desc.textContent = descTxt;
 
   document.getElementById("ft-dir").textContent = "📍 " + [match.address, match.zone].filter(Boolean).join(" · ");
   const hBox = document.getElementById("ft-horario");
@@ -2487,8 +2503,8 @@ function pintarFicha(match, res){
     vistos.add(k); items.push({ nombre, precio, destacado });
   };
   if (res.cartaHit) add(res.cartaHit.nombre, res.cartaHit.precio, true);
-  add(match.star_product_name, match.star_product_price, !res.cartaHit);
-  (Array.isArray(match.carta) ? match.carta : []).forEach(x => add(x.nombre, x.precio, false));
+  add(trStar(match), match.star_product_price, !res.cartaHit);
+  (Array.isArray(match.carta) ? match.carta : []).forEach((x, i) => add(trCarta(match, i, x.nombre), x.precio, false));
   (res.productos || []).forEach(r => {
     const p = catalogo.find(c => c.id === r.producto_id);
     if (p) add(nombreProducto(p), r.precio, false);
@@ -2657,7 +2673,7 @@ function mostrarResultado(res, zone, conVoz){
       badge.textContent = t("badge_sells");
     } else {
       document.getElementById("result-product").textContent =
-        match.star_product_price ? `${match.star_product_name} · ${match.star_product_price}` : match.star_product_name;
+        match.star_product_price ? `${trStar(match)} · ${match.star_product_price}` : trStar(match);
       badge.textContent = t("badge");
     }
     document.getElementById("result-distance").textContent = textoDistancia(match, res.km);
