@@ -11,7 +11,7 @@
 <meta property="og:description" content="5 € + IVA por cada comercio que se da de alta. Sin horarios ni mínimos.">
 <meta property="og:image" content="https://anitagaetez.github.io/Simulacionishere-barcelona-/og.png">
 <style>
-  :root{ --bg:#0D2B3E; --panel:#123449; --gold:#D9A441; --cream:#F2E9D8; --dim:#B9C7CE; }
+  :root{ --bg:#0D2B3E; --panel:#123449; --gold:#D9A441; --cream:#F2E9D8; --dim:#B9C7CE; --success:#4CAF7D; --danger:#E0685E; }
   *{ box-sizing:border-box; margin:0; padding:0; }
   body{ background:var(--bg); color:var(--cream); font-family:-apple-system,'Segoe UI',sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased; }
   .wrap{ max-width:760px; margin:0 auto; padding:18px 18px 70px; }
@@ -22,26 +22,15 @@
   .flag-btn{ width:32px; height:22px; padding:0; border-radius:5px; overflow:hidden; border:2px solid transparent; background:none; cursor:pointer; opacity:.55; }
   .flag-btn svg{ display:block; width:100%; height:100%; }
   .flag-btn[aria-pressed="true"]{ opacity:1; border-color:var(--gold); }
-  nav{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
-  nav a{ color:var(--cream); text-decoration:none; border:1px solid rgba(242,233,216,.2); border-radius:999px; padding:7px 13px; font-size:.85rem; }
   section{ background:var(--panel); border-radius:14px; padding:20px 18px; margin-bottom:18px; scroll-margin-top:12px; }
   h1{ font-family:Georgia,serif; font-weight:500; font-size:1.6rem; margin-bottom:6px; }
   h2{ font-family:Georgia,serif; font-weight:500; font-size:1.3rem; margin-bottom:12px; color:var(--gold); }
-  h3{ font-size:.95rem; margin:18px 0 8px; }
   p{ font-size:.9rem; color:var(--dim); margin-bottom:10px; text-align:justify; }
   p b{ color:var(--cream); }
-  .ap{ padding-left:18px; }
-  .cita{ font-style:italic; border-left:3px solid var(--gold); padding-left:12px; }
-  table{ width:100%; border-collapse:collapse; font-size:.85rem; margin:8px 0 12px; }
-  td, th{ border-bottom:1px solid rgba(242,233,216,.12); padding:8px 6px; text-align:left; color:var(--dim); vertical-align:top; }
-  th{ color:var(--cream); font-weight:600; }
-  .nota{ background:rgba(217,164,65,.12); border:1px solid rgba(217,164,65,.35); color:var(--cream); border-radius:10px; padding:10px 12px; font-size:.85rem; margin-bottom:12px; }
   a{ color:var(--gold); }
   [data-l]{ display:none; }
   html[lang="es"] [data-l="es"], html[lang="ca"] [data-l="ca"], html[lang="en"] [data-l="en"]{ display:block; }
   html[lang="es"] span[data-l="es"], html[lang="ca"] span[data-l="ca"], html[lang="en"] span[data-l="en"]{ display:inline; }
-  .upd{ font-size:.8rem; color:var(--dim); margin-bottom:18px; }
-
   .hero{ text-align:center; margin:8px 0 22px; }
   .hero h1{ font-size:1.75rem; }
   .hero p{ text-align:center; }
@@ -49,14 +38,25 @@
   li{ font-size:.92rem; color:var(--dim); padding:5px 0 5px 26px; position:relative; }
   li::before{ content:"✓"; position:absolute; left:4px; color:var(--gold); font-weight:700; }
   .cta{ display:block; text-align:center; background:var(--gold); color:#1b1b1b; font-weight:700; text-decoration:none;
-        padding:14px; border-radius:12px; margin:18px 0 8px; font-size:1rem; }
+        padding:14px; border-radius:12px; margin:18px 0 8px; font-size:1rem; border:none; width:100%; font-family:inherit; cursor:pointer; }
+  .cta:disabled{ opacity:.6; }
   .ej{ font-size:.82rem; font-style:italic; }
+  label{ display:block; font-size:.8rem; color:var(--dim); margin:12px 0 5px; }
+  input, textarea{ width:100%; background:var(--bg); border:1px solid rgba(242,233,216,.15); color:var(--cream);
+                   padding:12px; border-radius:10px; font:inherit; font-size:.95rem; }
+  textarea{ min-height:80px; resize:vertical; }
+  .check{ display:flex; gap:10px; align-items:flex-start; margin-top:14px; font-size:.85rem; color:var(--dim); }
+  .check input{ width:20px; height:20px; flex-shrink:0; margin-top:2px; accent-color:var(--gold); }
+  .msg{ margin-top:12px; font-size:.9rem; padding:12px; border-radius:10px; display:none; line-height:1.45; }
+  .msg.show{ display:block; }
+  .msg.err{ background:rgba(224,104,94,.12); color:var(--danger); border:1px solid rgba(224,104,94,.35); }
+  .msg.ok{ background:rgba(76,175,125,.12); color:var(--success); border:1px solid rgba(76,175,125,.35); }
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><a class="wordmark" href="./" style="display:flex;align-items:center;gap:8px"><img src="logo-mark.png" alt="" width="26" height="26" style="border-radius:50%">is<b>Here</b></a>
-<div class="flags" role="group" aria-label="Idioma / Language">
+  <header><a class="wordmark" href="./" style="display:flex;align-items:center;gap:8px"><img src="logo-mark.png" alt="" width="26" height="26" style="border-radius:50%">is<b>Here</b></a>
+    <div class="flags" role="group" aria-label="Idioma / Language">
       <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català">
         <svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg>
       </button>
@@ -67,90 +67,121 @@
         <svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>
       </button>
     </div>
-</header>
+  </header>
 
-<div class="hero">
-  <h1><span data-l="es">Hazte reclutador/a de isHere</span><span data-l="ca">Fes-te reclutador/a d'isHere</span><span data-l="en">Become an isHere recruiter</span></h1>
-  <p><span data-l="es">En tu tiempo libre, sin horarios ni mínimos.</span><span data-l="ca">En el teu temps lliure, sense horaris ni mínims.</span><span data-l="en">In your free time, with no schedule and no minimums.</span></p>
+  <div class="hero">
+    <h1><span data-l="es">Hazte reclutador/a de isHere</span><span data-l="ca">Fes-te reclutador/a d'isHere</span><span data-l="en">Become an isHere recruiter</span></h1>
+    <p><span data-l="es">En tu tiempo libre, sin horarios ni mínimos.</span><span data-l="ca">En el teu temps lliure, sense horaris ni mínims.</span><span data-l="en">In your free time, with no schedule and no minimums.</span></p>
+  </div>
+
+  <section>
+    <div data-l="es">
+      <h2>¿Qué es isHere?</h2>
+      <p>Una app que ayuda a los turistas a encontrar lo que necesitan, cerca y ahora: protector solar, un cargador, un paraguas, comida casera… Dicen qué buscan y la app los lleva hasta la tienda de barrio que lo tiene.</p>
+      <h2>¿En qué consiste?</h2>
+      <ul>
+        <li>Visitas comercios de Barcelona y les presentas isHere.</li>
+        <li>El comercio se da de alta con tu código personal.</li>
+        <li>Por cada alta cobras <b>5 € + IVA</b>, automáticamente, al activarse el comercio.</li>
+        <li>Sin horarios, sin mínimos y sin exclusividad.</li>
+        <li>Te damos el material, tu enlace personal y apoyo.</li>
+      </ul>
+      <p class="ej">Ejemplo orientativo: si un mes se dan de alta 20 comercios con tu código, cobras 100 € + IVA. El resultado depende de tu dedicación.</p>
+      <h2>Buscamos personas que</h2>
+      <ul>
+        <li>Disfruten hablando con la gente.</li>
+        <li>Sean constantes: un «no» no les desanima.</li>
+        <li>Conozcan los barrios de Barcelona.</li>
+        <li>Hablen castellano o catalán con fluidez (el inglés es un plus).</li>
+        <li>Sean mayores de edad y estén dadas de alta como autónomas (o dispuestas a hacerlo).</li>
+      </ul>
+      <p class="ej">Colaboración mercantil independiente, no es un contrato laboral.</p>
+    </div>
+    <div data-l="ca">
+      <h2>Què és isHere?</h2>
+      <p>Una app que ajuda els turistes a trobar el que necessiten, a prop i ara: protector solar, un carregador, un paraigua, menjar casolà… Diuen què busquen i l'app els porta fins a la botiga de barri que ho té.</p>
+      <h2>En què consisteix?</h2>
+      <ul>
+        <li>Visites comerços de Barcelona i els presentes isHere.</li>
+        <li>El comerç es dona d'alta amb el teu codi personal.</li>
+        <li>Per cada alta cobres <b>5 € + IVA</b>, automàticament, quan s'activa el comerç.</li>
+        <li>Sense horaris, sense mínims i sense exclusivitat.</li>
+        <li>Et donem el material, el teu enllaç personal i suport.</li>
+      </ul>
+      <p class="ej">Exemple orientatiu: si un mes es donen d'alta 20 comerços amb el teu codi, cobres 100 € + IVA. El resultat depèn de la teva dedicació.</p>
+      <h2>Busquem persones que</h2>
+      <ul>
+        <li>Gaudeixin parlant amb la gent.</li>
+        <li>Siguin constants: un «no» no les desanima.</li>
+        <li>Coneguin els barris de Barcelona.</li>
+        <li>Parlin català o castellà amb fluïdesa (l'anglès és un plus).</li>
+        <li>Siguin majors d'edat i estiguin donades d'alta com a autònomes (o disposades a fer-ho).</li>
+      </ul>
+      <p class="ej">Col·laboració mercantil independent, no és un contracte laboral.</p>
+    </div>
+    <div data-l="en">
+      <h2>What is isHere?</h2>
+      <p>An app that helps tourists find what they need, nearby and right now: sunscreen, a charger, an umbrella, home cooking… They say what they're looking for and the app takes them to the local shop that has it.</p>
+      <h2>What does the role involve?</h2>
+      <ul>
+        <li>You visit shops in Barcelona and introduce isHere.</li>
+        <li>The shop signs up with your personal code.</li>
+        <li>For each sign-up you earn <b>€5 + VAT</b>, paid automatically when the business is activated.</li>
+        <li>No schedule, no minimums, no exclusivity.</li>
+        <li>We give you materials, your personal link and support.</li>
+      </ul>
+      <p class="ej">Illustrative example: if 20 shops sign up with your code in a month, you earn €100 + VAT. Results depend on your effort.</p>
+      <h2>We're looking for people who</h2>
+      <ul>
+        <li>Enjoy talking to people.</li>
+        <li>Are persistent: a "no" doesn't put them off.</li>
+        <li>Know Barcelona's neighbourhoods.</li>
+        <li>Speak Spanish or Catalan fluently (English is a plus).</li>
+        <li>Are over 18 and registered as self-employed in Spain (or willing to register).</li>
+      </ul>
+      <p class="ej">Independent commercial collaboration, not an employment contract.</p>
+    </div>
+  </section>
+
+  <section id="solicitud">
+    <h2><span data-l="es">Quiero ser reclutador/a</span><span data-l="ca">Vull ser reclutador/a</span><span data-l="en">I want to be a recruiter</span></h2>
+    <p><span data-l="es">Déjanos tus datos y te contactamos en pocos días.</span><span data-l="ca">Deixa'ns les teves dades i et contactarem en pocs dies.</span><span data-l="en">Leave your details and we'll contact you within a few days.</span></p>
+    <label for="s-nombre"><span data-l="es">Nombre y apellidos *</span><span data-l="ca">Nom i cognoms *</span><span data-l="en">Full name *</span></label>
+    <input id="s-nombre" autocomplete="name" maxlength="120">
+    <label for="s-tel"><span data-l="es">Teléfono (WhatsApp) *</span><span data-l="ca">Telèfon (WhatsApp) *</span><span data-l="en">Phone (WhatsApp) *</span></label>
+    <input id="s-tel" type="tel" autocomplete="tel" placeholder="+34 612 345 678" maxlength="30">
+    <label for="s-email">Email</label>
+    <input id="s-email" type="email" autocomplete="email" maxlength="120">
+    <label for="s-barrios"><span data-l="es">Barrios que conoces</span><span data-l="ca">Barris que coneixes</span><span data-l="en">Neighbourhoods you know</span></label>
+    <input id="s-barrios" maxlength="200" placeholder="Gràcia, Eixample…">
+    <label for="s-msg"><span data-l="es">Cuéntanos algo de ti (opcional)</span><span data-l="ca">Explica'ns alguna cosa de tu (opcional)</span><span data-l="en">Tell us a bit about yourself (optional)</span></label>
+    <textarea id="s-msg" maxlength="500"></textarea>
+    <label class="check"><input type="checkbox" id="s-acepto">
+      <span><span data-l="es">He leído la <a href="legal.html#privacidad" target="_blank" rel="noopener">Política de privacidad</a> y acepto que isHere use estos datos solo para contactarme sobre esta colaboración.</span><span data-l="ca">He llegit la <a href="legal.html#privacidad" target="_blank" rel="noopener">Política de privacitat</a> i accepto que isHere faci servir aquestes dades només per contactar-me sobre aquesta col·laboració.</span><span data-l="en">I have read the <a href="legal.html#privacidad" target="_blank" rel="noopener">Privacy policy</a> and agree that isHere may use this data only to contact me about this collaboration.</span></span>
+    </label>
+    <button class="cta" id="s-enviar"><span data-l="es">Enviar solicitud</span><span data-l="ca">Enviar sol·licitud</span><span data-l="en">Send application</span></button>
+    <div class="msg" id="s-msg-out"></div>
+  </section>
+
+  <p style="text-align:center;font-size:.8rem"><a href="./">← isHere</a> · <a href="legal.html#privacidad"><span data-l="es">Privacidad</span><span data-l="ca">Privacitat</span><span data-l="en">Privacy</span></a></p>
 </div>
 
-<section>
- <div data-l="es">
-  <h2>¿Qué es isHere?</h2>
-  <p>Una app que ayuda a los turistas a encontrar lo que necesitan, cerca y ahora: protector solar, un cargador, un paraguas, comida casera… Dicen qué buscan y la app los lleva hasta la tienda de barrio que lo tiene.</p>
-  <h2>¿En qué consiste?</h2>
-  <ul>
-   <li>Visitas comercios de Barcelona y les presentas isHere.</li>
-   <li>El comercio se da de alta con tu código personal.</li>
-   <li>Por cada alta cobras <b>5 € + IVA</b>, automáticamente, al activarse el comercio.</li>
-   <li>Sin horarios, sin mínimos y sin exclusividad.</li>
-   <li>Te damos el material, tu enlace personal y apoyo.</li>
-  </ul>
-  <p class="ej">Ejemplo orientativo: si un mes se dan de alta 20 comercios con tu código, cobras 100 € + IVA. El resultado depende de tu dedicación.</p>
-  <h2>Buscamos personas que</h2>
-  <ul>
-   <li>Disfruten hablando con la gente.</li>
-   <li>Sean constantes: un «no» no les desanima.</li>
-   <li>Conozcan los barrios de Barcelona.</li>
-   <li>Hablen castellano o catalán con fluidez (el inglés es un plus).</li>
-   <li>Sean mayores de edad y estén dadas de alta como autónomas (o dispuestas a hacerlo).</li>
-  </ul>
-  <p class="ej">Colaboración mercantil independiente, no es un contrato laboral.</p>
-  <a class="cta" data-mail="Quiero ser reclutador/a de isHere" data-body="Hola, me interesa ser reclutador/a de isHere.%0A%0ANombre:%0ATeléfono:%0ABarrios que conozco:%0A">Quiero ser reclutador/a</a>
- </div>
- <div data-l="ca">
-  <h2>Què és isHere?</h2>
-  <p>Una app que ajuda els turistes a trobar el que necessiten, a prop i ara: protector solar, un carregador, un paraigua, menjar casolà… Diuen què busquen i l'app els porta fins a la botiga de barri que ho té.</p>
-  <h2>En què consisteix?</h2>
-  <ul>
-   <li>Visites comerços de Barcelona i els presentes isHere.</li>
-   <li>El comerç es dona d'alta amb el teu codi personal.</li>
-   <li>Per cada alta cobres <b>5 € + IVA</b>, automàticament, quan s'activa el comerç.</li>
-   <li>Sense horaris, sense mínims i sense exclusivitat.</li>
-   <li>Et donem el material, el teu enllaç personal i suport.</li>
-  </ul>
-  <p class="ej">Exemple orientatiu: si un mes es donen d'alta 20 comerços amb el teu codi, cobres 100 € + IVA. El resultat depèn de la teva dedicació.</p>
-  <h2>Busquem persones que</h2>
-  <ul>
-   <li>Gaudeixin parlant amb la gent.</li>
-   <li>Siguin constants: un «no» no les desanima.</li>
-   <li>Coneguin els barris de Barcelona.</li>
-   <li>Parlin català o castellà amb fluïdesa (l'anglès és un plus).</li>
-   <li>Siguin majors d'edat i estiguin donades d'alta com a autònomes (o disposades a fer-ho).</li>
-  </ul>
-  <p class="ej">Col·laboració mercantil independent, no és un contracte laboral.</p>
-  <a class="cta" data-mail="Vull ser reclutador/a d'isHere" data-body="Hola, m'interessa ser reclutador/a d'isHere.%0A%0ANom:%0ATelèfon:%0ABarris que conec:%0A">Vull ser reclutador/a</a>
- </div>
- <div data-l="en">
-  <h2>What is isHere?</h2>
-  <p>An app that helps tourists find what they need, nearby and right now: sunscreen, a charger, an umbrella, home cooking… They say what they're looking for and the app takes them to the local shop that has it.</p>
-  <h2>What does the role involve?</h2>
-  <ul>
-   <li>You visit shops in Barcelona and introduce isHere.</li>
-   <li>The shop signs up with your personal code.</li>
-   <li>For each sign-up you earn <b>€5 + VAT</b>, paid automatically when the business is activated.</li>
-   <li>No schedule, no minimums, no exclusivity.</li>
-   <li>We give you materials, your personal link and support.</li>
-  </ul>
-  <p class="ej">Illustrative example: if 20 shops sign up with your code in a month, you earn €100 + VAT. Results depend on your effort.</p>
-  <h2>We're looking for people who</h2>
-  <ul>
-   <li>Enjoy talking to people.</li>
-   <li>Are persistent: a "no" doesn't put them off.</li>
-   <li>Know Barcelona's neighbourhoods.</li>
-   <li>Speak Spanish or Catalan fluently (English is a plus).</li>
-   <li>Are over 18 and registered as self-employed in Spain (or willing to register).</li>
-  </ul>
-  <p class="ej">Independent commercial collaboration, not an employment contract.</p>
-  <a class="cta" data-mail="I want to be an isHere recruiter" data-body="Hi, I'm interested in becoming an isHere recruiter.%0A%0AName:%0APhone:%0ANeighbourhoods I know:%0A">I want to be a recruiter</a>
- </div>
-</section>
-
-<p style="text-align:center;font-size:.8rem"><a href="./">← isHere</a> · <a href="legal.html#privacidad"><span data-l="es">Privacidad</span><span data-l="ca">Privacitat</span><span data-l="en">Privacy</span></a></p>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const EMAIL = "isherebarcelona@gmail.com";
-document.querySelectorAll("[data-mail]").forEach(a => a.href = `mailto:${EMAIL}?subject=${encodeURIComponent(a.dataset.mail)}&body=${a.dataset.body}`);
+const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+
+const TXT = {
+  es: { req: "Escribe tu nombre y un teléfono válido.", acepta: "Marca la casilla de privacidad para continuar.",
+        ok: "¡Gracias! Recibimos tu solicitud. Te escribiremos por WhatsApp en pocos días.", err: "No se pudo enviar. Revisa tus datos o inténtalo de nuevo en un rato." },
+  ca: { req: "Escriu el teu nom i un telèfon vàlid.", acepta: "Marca la casella de privacitat per continuar.",
+        ok: "Gràcies! Hem rebut la teva sol·licitud. T'escriurem per WhatsApp en pocs dies.", err: "No s'ha pogut enviar. Revisa les dades o torna-ho a provar d'aquí a una estona." },
+  en: { req: "Enter your name and a valid phone number.", acepta: "Tick the privacy box to continue.",
+        ok: "Thank you! We've received your application. We'll message you on WhatsApp within a few days.", err: "Couldn't send. Check your details or try again later." }
+};
+
 let lang = (() => {
   try { const g = localStorage.getItem("ishere_lang"); if (["es", "ca", "en"].includes(g)) return g; } catch (e) {}
   const n = (navigator.language || "es").toLowerCase();
@@ -164,6 +195,24 @@ document.querySelectorAll(".flag-btn").forEach(b => b.addEventListener("click", 
   lang = b.dataset.lang; try { localStorage.setItem("ishere_lang", lang); } catch (e) {} aplicar();
 }));
 aplicar();
+
+function mensaje(texto, tipo){ const m = $("s-msg-out"); m.textContent = texto; m.className = "msg show " + tipo; }
+
+$("s-enviar").addEventListener("click", async (e) => {
+  const T = TXT[lang] || TXT.es;
+  const nombre = $("s-nombre").value.trim(), tel = $("s-tel").value.trim();
+  if (nombre.length < 2 || tel.replace(/\D/g, "").length < 8){ mensaje(T.req, "err"); return; }
+  if (!$("s-acepto").checked){ mensaje(T.acepta, "err"); return; }
+  e.currentTarget.disabled = true;
+  const { data, error } = await sb.rpc("enviar_solicitud_reclutador", {
+    p_nombre: nombre, p_telefono: tel, p_email: $("s-email").value.trim() || null,
+    p_barrios: $("s-barrios").value.trim() || null, p_mensaje: $("s-msg").value.trim() || null, p_idioma: lang
+  });
+  if (error || data !== true){ $("s-enviar").disabled = false; mensaje(T.err, "err"); return; }
+  mensaje(T.ok, "ok");
+  ["s-nombre", "s-tel", "s-email", "s-barrios", "s-msg"].forEach(id => $(id).value = "");
+  $("s-acepto").checked = false;
+});
 </script>
 </body>
 </html>

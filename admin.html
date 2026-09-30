@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>isHere · Administración</title>
+<link rel="manifest" href="manifest-admin.json">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0D2B3E">
 <style>
   :root{
     --bg-deep:#0D2B3E; --bg-panel:#123449; --bg-raise:#17415A;
@@ -144,6 +148,12 @@
       <div class="semana" id="rev-semana"></div>
       <div id="l-revision"><p class="muted">Cargando…</p></div>
       <div class="msg" id="m-revision"></div>
+    </section>
+
+    <section class="card" id="sec-solicitudes">
+      <h2>Solicitudes de reclutadores <span class="pill gold" id="sol-total">0</span></h2>
+      <div id="l-solicitudes"><p class="muted">Cargando…</p></div>
+      <div class="msg" id="m-solicitudes"></div>
     </section>
 
     <section class="card" id="sec-busquedas">
@@ -341,6 +351,7 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 /* ---------- panel ---------- */
 async function cargarPanel(){
   cargarRevision();
+  cargarSolicitudes();
   cargarBusquedas();
   cargarPendientes();
   cargarEmails();
@@ -449,6 +460,53 @@ async function decidirFicha(id, estado, motivo, boton){
   if (error || !data){ msg("m-revision", "No se pudo guardar: " + (error ? error.message : "ficha no encontrada")); return; }
   msg("m-revision", estado === "aprobada" ? "Ficha aprobada: ya aparece en el buscador." : "Ficha rechazada.", "ok");
   cargarRevision();
+}
+
+/* ---------- solicitudes de reclutadores ---------- */
+let solicitudAceptando = null;
+function codigoSugerido(nombre){
+  const base = String(nombre || "REC").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 4) || "REC";
+  return base + String(Math.floor(Math.random() * 90) + 10);
+}
+async function cargarSolicitudes(){
+  const { data, error } = await sb.rpc("admin_solicitudes");
+  if (error){ $("l-solicitudes").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  $("sol-total").textContent = lista.length;
+  $("l-solicitudes").innerHTML = lista.length ? lista.map(s => {
+    const tel = String(s.telefono || "").replace(/\D/g, "");
+    return `
+    <div class="item">
+      <b>${esc(s.nombre)}</b> <span class="muted">· ${fecha(s.fecha)}</span>
+      <div class="muted">${esc(s.telefono)}${s.email ? " · " + esc(s.email) : ""}${s.barrios ? " · " + esc(s.barrios) : ""}</div>
+      ${s.mensaje ? `<div class="rev-desc">«${esc(s.mensaje)}»</div>` : ""}
+      <div class="actions">
+        <button class="btn-ok" data-sol-ok="${s.id}">Aceptar</button>
+        <button class="btn-no" data-sol-no="${s.id}">Rechazar</button>
+        ${tel ? `<a class="btn-sec" href="https://wa.me/${tel}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">No hay solicitudes nuevas.</p>';
+  document.querySelectorAll("[data-sol-ok]").forEach(b => b.addEventListener("click", () => {
+    const s = lista.find(x => String(x.id) === b.dataset.solOk);
+    if (!s) return;
+    // Rellena «Crear reclutador» con sus datos; al crearlo, la solicitud queda aceptada.
+    solicitudAceptando = s.id;
+    $("r-codigo").value = codigoSugerido(s.nombre);
+    $("r-nombre").value = s.nombre || "";
+    $("r-email").value = s.email || "";
+    $("r-tel").value = s.telefono || "";
+    const det = $("r-codigo").closest("details");
+    if (det) det.open = true;
+    $("r-codigo").scrollIntoView({ behavior: "smooth", block: "center" });
+    msg("m-reclutador", "Revisa el código y toca «Crear reclutador». Después envíale la invitación por WhatsApp.", "ok");
+  }));
+  document.querySelectorAll("[data-sol-no]").forEach(b => b.addEventListener("click", async () => {
+    if (!confirm("¿Rechazar esta solicitud?")) return;
+    const { error: e2 } = await sb.rpc("admin_resolver_solicitud", { p_id: Number(b.dataset.solNo), p_estado: "rechazada" });
+    if (e2){ msg("m-solicitudes", "No se pudo guardar: " + e2.message); return; }
+    cargarSolicitudes();
+  }));
 }
 
 /* ---------- lo que buscan y no hay ---------- */
@@ -561,6 +619,10 @@ $("btn-reclutador").addEventListener("click", async (e) => {
   msg("m-reclutador", enlace ? "Reclutador creado. Enlace copiado para mandárselo: " + enlace : "Reclutador creado: " + JSON.stringify(data), "ok");
   if (enlace){ try { await navigator.clipboard.writeText(enlace); } catch (err) {} }
   ["r-codigo", "r-nombre", "r-email", "r-tel"].forEach(id => $(id).value = "");
+  if (solicitudAceptando){
+    await sb.rpc("admin_resolver_solicitud", { p_id: Number(solicitudAceptando), p_estado: "aceptada" });
+    solicitudAceptando = null;
+  }
   cargarPanel();
 });
 
@@ -580,6 +642,9 @@ $("btn-cortesia").addEventListener("click", async (e) => {
   ["c-name", "c-product", "c-tags", "c-address"].forEach(id => $(id).value = "");
   cargarPanel();
 });
+
+// Permite instalar el panel como app («isHere Admin»).
+if ("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(() => {}); }
 
 decidir();
 </script>
