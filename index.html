@@ -856,7 +856,7 @@
           <div class="app-guia" id="guia-instalar" hidden><p id="guia-texto"></p></div>
           <button type="button" class="app-cerrar" id="app-cerrar" data-i18n-aria="app_close" aria-label="Ahora no">×</button>
         </div>
-        <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones</a></div>
+        <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#uso" data-i18n="lk_uso">Condiciones de uso</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones para comercios</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
         <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">💼 ¿Quieres ganar dinero extra? Hazte reclutador/a</a></div>
@@ -1074,10 +1074,10 @@ const I18N = {
     err_web: "El enlace no es válido. Escribe tu web completa (https://…) o tu usuario de Instagram (@tunegocio).",
     err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23).",
     err_accept: "Para continuar, marca la casilla de aceptación de las Condiciones Generales.",
-    lk_aviso: "Aviso legal",
+    lk_aviso: "Aviso legal", lk_uso: "Condiciones de uso",
     lk_priv: "Privacidad",
     lk_cookies: "Cookies",
-    lk_cond: "Condiciones",
+    lk_cond: "Condiciones para comercios",
     h_ver: "Ver horario",
     otras_title: "Otras opciones cerca",
     h_open: "Abierto · cierra a las {h}",
@@ -1257,10 +1257,10 @@ const I18N = {
     err_web: "L'enllaç no és vàlid. Escriu la teva web completa (https://…) o el teu usuari d'Instagram (@elteunegoci).",
     err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23).",
     err_accept: "Per continuar, marca la casella d'acceptació de les Condicions Generals.",
-    lk_aviso: "Avís legal",
+    lk_aviso: "Avís legal", lk_uso: "Condicions d'ús",
     lk_priv: "Privacitat",
     lk_cookies: "Galetes",
-    lk_cond: "Condicions",
+    lk_cond: "Condicions per a comerços",
     h_ver: "Veure l'horari",
     otras_title: "Altres opcions a prop",
     h_open: "Obert · tanca a les {h}",
@@ -1440,10 +1440,10 @@ const I18N = {
     err_web: "That link isn't valid. Write your full website (https://…) or your Instagram username (@yourshop).",
     err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23).",
     err_accept: "To continue, tick the box accepting the General Terms.",
-    lk_aviso: "Legal notice",
+    lk_aviso: "Legal notice", lk_uso: "Terms of use",
     lk_priv: "Privacy",
     lk_cookies: "Cookies",
-    lk_cond: "Terms",
+    lk_cond: "Terms for businesses",
     h_ver: "See opening hours",
     otras_title: "Other options nearby",
     h_open: "Open · closes at {h}",
@@ -2570,7 +2570,7 @@ async function geocodificar(direccion){
   } catch (e) { return null; }
 }
 
-const CONDICIONES_VERSION = "1.0";
+const CONDICIONES_VERSION = "1.1";
 // Valida DNI, NIE (con su letra de control) y el formato de CIF.
 function nifValido(v){
   const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
