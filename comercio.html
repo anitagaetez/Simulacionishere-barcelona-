@@ -63,6 +63,12 @@
   .pill.on{ background:rgba(76,175,125,.18); color:var(--success); }
   .pill.off{ background:rgba(224,104,94,.15); color:var(--danger); }
   .pill.gold{ background:rgba(217,164,65,.15); color:var(--gold); }
+  .mod-aviso{ margin-top:12px; padding:12px 14px; border-radius:12px; font-size:.9rem; line-height:1.45; }
+  .mod-aviso.pend{ background:rgba(46,168,156,.12); border:1px solid rgba(46,168,156,.4); }
+  .mod-aviso.rev{ background:rgba(217,164,65,.12); border:1px solid rgba(217,164,65,.45); }
+  .mod-aviso.blo{ background:rgba(224,104,94,.12); border:1px solid rgba(224,104,94,.45); }
+  .mod-aviso b{ display:block; margin-bottom:4px; }
+  .mod-aviso a{ color:var(--teal-light); }
   .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .stat{ background:var(--bg-panel); border-radius:var(--r); padding:14px; border:1px solid rgba(242,233,216,.08); }
   .stat .n{ font-family:'Fraunces',Georgia,serif; font-size:1.8rem; color:var(--gold); line-height:1.1; }
@@ -162,6 +168,7 @@
         </div>
       </div>
       <p class="muted" style="margin-top:12px" id="p-plan"></p>
+      <div class="mod-aviso" id="p-mod" hidden></div>
     </div>
 
     <div class="stats">
@@ -276,7 +283,12 @@ const I18N = {
     photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
     l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
     cat_add: "Añadir", ph_price: "Precio", cat_remove: "Quitar", b_save: "Guardar cambios",
-    saving: "Guardando…", saved: "¡Guardado! Tu ficha ya se ve así en el buscador.", err_required: "El producto estrella y la dirección son obligatorios.",
+    saving: "Guardando…", saved: "¡Guardado! Revisamos tu ficha en unos segundos y aparecerá en el buscador.",
+    err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23). No se guardó ningún cambio.",
+    mod_motivo: "Motivo:", mod_pend_t: "⏳ Revisando tu ficha…", mod_pend_p: "En unos segundos aparecerá en el buscador.",
+    mod_rev_t: "🟡 Tu ficha está en revisión", mod_rev_p: "Todavía no aparece en el buscador. Corrige lo indicado y guarda, o espera nuestra revisión (máximo 24 horas).",
+    mod_blo_t: "🔴 Tu ficha no se publica", mod_blo_p: "Corrige lo indicado y guarda: se volverá a revisar automáticamente.",
+    mod_reclamo: "¿Crees que es un error? Escríbenos", mod_reclamo_subject: "Revisión de mi ficha: {c}", err_required: "El producto estrella y la dirección son obligatorios.",
     err_save: "No se pudo guardar: {e}", t_help: "¿Necesitas ayuda?",
     asesor_rec: "Tu asesor es {n}, quien te presentó isHere. Escríbele por WhatsApp o email.",
     asesor_is: "Te acompaña directamente el equipo de isHere. Escríbenos y te respondemos.",
@@ -311,7 +323,12 @@ const I18N = {
     photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
     l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
     cat_add: "Afegeix", ph_price: "Preu", cat_remove: "Treu", b_save: "Desar els canvis",
-    saving: "Desant…", saved: "Desat! La teva fitxa ja es veu així al cercador.", err_required: "El producte estrella i l'adreça són obligatoris.",
+    saving: "Desant…", saved: "Desat! Revisem la teva fitxa en uns segons i apareixerà al cercador.",
+    err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23). No s'ha desat cap canvi.",
+    mod_motivo: "Motiu:", mod_pend_t: "⏳ Revisant la teva fitxa…", mod_pend_p: "En uns segons apareixerà al cercador.",
+    mod_rev_t: "🟡 La teva fitxa està en revisió", mod_rev_p: "Encara no apareix al cercador. Corregeix el que s'indica i desa, o espera la nostra revisió (màxim 24 hores).",
+    mod_blo_t: "🔴 La teva fitxa no es publica", mod_blo_p: "Corregeix el que s'indica i desa: es tornarà a revisar automàticament.",
+    mod_reclamo: "Creus que és un error? Escriu-nos", mod_reclamo_subject: "Revisió de la meva fitxa: {c}", err_required: "El producte estrella i l'adreça són obligatoris.",
     err_save: "No s'ha pogut desar: {e}", t_help: "Necessites ajuda?",
     asesor_rec: "El teu assessor és {n}, que et va presentar isHere. Escriu-li per WhatsApp o correu.",
     asesor_is: "T'acompanya directament l'equip d'isHere. Escriu-nos i et responem.",
@@ -346,7 +363,12 @@ const I18N = {
     photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
     l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
     cat_add: "Add", ph_price: "Price", cat_remove: "Remove", b_save: "Save changes",
-    saving: "Saving…", saved: "Saved! This is how your listing now appears in search.", err_required: "Star product and address are required.",
+    saving: "Saving…", saved: "Saved! We'll review your listing in a few seconds and it will appear in search.",
+    err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23). No changes were saved.",
+    mod_motivo: "Reason:", mod_pend_t: "⏳ Reviewing your listing…", mod_pend_p: "It will appear in search in a few seconds.",
+    mod_rev_t: "🟡 Your listing is under review", mod_rev_p: "It doesn't appear in search yet. Fix what's indicated and save, or wait for our review (24 hours max).",
+    mod_blo_t: "🔴 Your listing isn't published", mod_blo_p: "Fix what's indicated and save: it will be reviewed again automatically.",
+    mod_reclamo: "Think it's a mistake? Write to us", mod_reclamo_subject: "Review of my listing: {c}", err_required: "Star product and address are required.",
     err_save: "Couldn't save: {e}", t_help: "Need help?",
     asesor_rec: "Your adviser is {n}, who introduced you to isHere. Message them on WhatsApp or by email.",
     asesor_is: "The isHere team supports you directly. Write to us and we'll reply.",
@@ -488,6 +510,8 @@ function pintarPanel(){
   $("p-plan").textContent = !activa ? t("plan_off")
     : cortesia ? (c.expires_at ? t("plan_courtesy", { d: fecha(c.expires_at) }) : t("plan_courtesy_open"))
     : futuro ? t("plan_promo", { d: fecha(c.expires_at) }) : t("plan_month");
+
+  pintarModeracion(c);
 
   $("s-7").textContent = c.vistas_7 ?? 0;
   $("s-30").textContent = c.vistas_30 ?? 0;
@@ -667,7 +691,8 @@ $("btn-guardar").addEventListener("click", async (e) => {
     if (address !== (actual.address || "") || lat == null){
       $("geo-estado").textContent = t("geo_buscando");
       const c = await geocodificar(address);
-      lat = c ? c.lat : null; lng = c ? c.lng : null;
+      if (!c){ msg("m-guardar", t("err_address")); $("geo-estado").textContent = t("geo_no"); return; }
+      lat = c.lat; lng = c.lng;
     }
     const { error } = await sb.rpc("actualizar_mi_comercio", {
       p_id: actual.id, p_star: star, p_precio: $("e-precio").value.trim(), p_tags: $("e-tags").value.trim(),
@@ -691,6 +716,35 @@ $("btn-guardar").addEventListener("click", async (e) => {
     e.target.disabled = false; e.target.textContent = t("b_save");
   }
 });
+
+/* ---------- estado de moderación de la ficha ---------- */
+let timerModeracion = null;
+function pintarModeracion(c){
+  const box = $("p-mod");
+  clearTimeout(timerModeracion);
+  const est = c.moderacion_estado;
+  const motivo = c.moderacion_motivo ? `<br>${t("mod_motivo")} <i>${esc(c.moderacion_motivo)}</i>` : "";
+  if (est === "pendiente"){
+    box.className = "mod-aviso pend";
+    box.innerHTML = `<b>${t("mod_pend_t")}</b>${t("mod_pend_p")}`;
+    box.hidden = false;
+    // Se vuelve a consultar sola a los 20 segundos para mostrar el resultado de la revisión.
+    timerModeracion = setTimeout(async () => {
+      const idx = comercios.indexOf(actual);
+      await cargar(); elegir(Math.max(0, idx)); $("selector").value = String(Math.max(0, idx));
+    }, 20000);
+  } else if (est === "revision"){
+    box.className = "mod-aviso rev";
+    box.innerHTML = `<b>${t("mod_rev_t")}</b>${t("mod_rev_p")}${motivo}`;
+    box.hidden = false;
+  } else if (est === "bloqueada"){
+    box.className = "mod-aviso blo";
+    box.innerHTML = `<b>${t("mod_blo_t")}</b>${t("mod_blo_p")}${motivo}<br><a href="mailto:isherebarcelona@gmail.com?subject=${encodeURIComponent(t("mod_reclamo_subject", { c: c.name }))}">${t("mod_reclamo")}</a>`;
+    box.hidden = false;
+  } else {
+    box.hidden = true;
+  }
+}
 
 /* ---------- portal de pagos de Stripe ---------- */
 document.querySelectorAll("[data-flujo]").forEach(b => b.addEventListener("click", async (e) => {
