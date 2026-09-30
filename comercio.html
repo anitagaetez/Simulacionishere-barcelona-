@@ -68,6 +68,15 @@
   .mod-aviso.rev{ background:rgba(217,164,65,.12); border:1px solid rgba(217,164,65,.45); }
   .mod-aviso.blo{ background:rgba(224,104,94,.12); border:1px solid rgba(224,104,94,.45); }
   .mod-aviso b{ display:block; margin-bottom:4px; }
+  .isa{ border:1px solid rgba(46,168,156,.45); }
+  .isa h2{ display:flex; align-items:center; gap:10px; }
+  .isa-avatar{ width:34px; height:34px; border-radius:50%; background:var(--teal-light); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:1.1rem; }
+  .isa-res{ margin-top:12px; font-size:.9rem; line-height:1.5; }
+  .isa-bloque{ background:var(--bg-deep); border-radius:10px; padding:10px 12px; margin-top:8px; }
+  .isa-bloque b{ display:block; color:var(--teal-light); font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .isa-bloque .btn-sec{ margin-top:8px; }
+  .isa-preg{ display:flex; gap:8px; margin-top:10px; }
+  .isa-preg input{ flex:1; }
   .mod-aviso a{ color:var(--teal-light); }
   .stats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .stat{ background:var(--bg-panel); border-radius:var(--r); padding:14px; border:1px solid rgba(242,233,216,.08); }
@@ -176,6 +185,19 @@
       <div class="stat"><div class="n" id="s-30">0</div><div class="l" data-i18n="s_30">en los últimos 30 días</div></div>
     </div>
 
+    <div class="card isa">
+      <h2><span class="isa-avatar">✨</span><span data-i18n="isa_t">Isa, tu asesora</span></h2>
+      <p class="muted" data-i18n="isa_p">Te ayudo a que más turistas te encuentren, con lo que buscan de verdad en tu barrio. Yo sugiero; tú decides qué guardar.</p>
+      <div class="acciones" style="margin-top:10px">
+        <button class="btn-sec" id="isa-mejorar" data-i18n="isa_mejorar">✨ Mejorar mi ficha</button>
+      </div>
+      <div class="isa-preg">
+        <input id="isa-q" maxlength="300" data-i18n-ph="isa_q_ph" placeholder="Pregúntale a Isa…">
+        <button class="btn-sec" id="isa-preguntar" data-i18n="isa_enviar">Enviar</button>
+      </div>
+      <div class="isa-res" id="isa-res" hidden></div>
+    </div>
+
     <div class="card">
       <h2 data-i18n="t_edit">Editar mi ficha</h2>
       <div class="row2">
@@ -222,6 +244,8 @@
       <div id="cat-list"></div>
       <div id="cat-chosen"></div>
 
+      <button class="btn-sec" id="isa-revisar" style="margin-top:16px" data-i18n="isa_revisar">🛡️ Que Isa lo revise antes de guardar</button>
+      <div class="isa-res" id="isa-rev" hidden></div>
       <button class="btn" id="btn-guardar" data-i18n="b_save">Guardar cambios</button>
       <div class="msg" id="m-guardar"></div>
     </div>
@@ -266,6 +290,12 @@ const $ = (id) => document.getElementById(id);
 /* ---------- idiomas ---------- */
 const I18N = {
   es: {
+    isa_t: "Isa, tu asesora", isa_p: "Te ayudo a que más turistas te encuentren, con lo que buscan de verdad en tu barrio. Yo sugiero; tú decides qué guardar.",
+    isa_mejorar: "✨ Mejorar mi ficha", isa_q_ph: "Pregúntale a Isa…", isa_enviar: "Enviar", isa_revisar: "🛡️ Que Isa lo revise antes de guardar",
+    isa_pensando: "Isa está pensando…", isa_error: "Isa no pudo responder ahora. Inténtalo en un momento.", isa_limite: "Llegaste al límite de consultas de hoy. Mañana seguimos 😊",
+    isa_b_desc: "Descripción sugerida", isa_b_claves: "Palabras clave sugeridas", isa_b_foto: "Consejo para tu foto", isa_b_promo: "Idea de promoción",
+    isa_usar: "Usar esta descripción", isa_anadir: "Añadir estas palabras", isa_recuerda: "Nada se guarda hasta que tú toques «Guardar cambios».",
+    isa_ok: "Todo bien: tu ficha cumple las normas. Puedes guardar.", isa_avisos: "Revisa esto antes de guardar:",
     t_title: "Mi comercio", t_intro: "Entra con el email con el que diste de alta tu comercio. Te enviaremos un código de acceso.",
     l_email: "Email del comercio", b_send: "Enviarme el código", t_code: "Revisa tu correo",
     sent: "Te enviamos un código a {e}. Si no lo ves, mira en la carpeta de spam.", l_code: "Código", b_verify: "Entrar",
@@ -306,6 +336,12 @@ const I18N = {
     err_load: "No se pudieron cargar tus datos. Inténtalo de nuevo."
   },
   ca: {
+    isa_t: "Isa, la teva assessora", isa_p: "T'ajudo perquè més turistes et trobin, amb el que busquen de veritat al teu barri. Jo suggereixo; tu decideixes què desar.",
+    isa_mejorar: "✨ Millorar la meva fitxa", isa_q_ph: "Pregunta-li a l'Isa…", isa_enviar: "Enviar", isa_revisar: "🛡️ Que l'Isa ho revisi abans de desar",
+    isa_pensando: "L'Isa està pensant…", isa_error: "L'Isa no ha pogut respondre ara. Torna-ho a provar d'aquí a un moment.", isa_limite: "Has arribat al límit de consultes d'avui. Demà continuem 😊",
+    isa_b_desc: "Descripció suggerida", isa_b_claves: "Paraules clau suggerides", isa_b_foto: "Consell per a la teva foto", isa_b_promo: "Idea de promoció",
+    isa_usar: "Fer servir aquesta descripció", isa_anadir: "Afegir aquestes paraules", isa_recuerda: "No es desa res fins que toquis «Desar canvis».",
+    isa_ok: "Tot bé: la teva fitxa compleix les normes. Pots desar.", isa_avisos: "Revisa això abans de desar:",
     t_title: "El meu comerç", t_intro: "Entra amb el correu amb què vas donar d'alta el teu comerç. T'enviarem un codi d'accés.",
     l_email: "Correu del comerç", b_send: "Envia'm el codi", t_code: "Revisa el teu correu",
     sent: "T'hem enviat un codi a {e}. Si no el veus, mira a la carpeta de correu brossa.", l_code: "Codi", b_verify: "Entra",
@@ -346,6 +382,12 @@ const I18N = {
     err_load: "No s'han pogut carregar les teves dades. Torna-ho a provar."
   },
   en: {
+    isa_t: "Isa, your advisor", isa_p: "I help more tourists find you, based on what they really search for in your neighbourhood. I suggest; you decide what to save.",
+    isa_mejorar: "✨ Improve my listing", isa_q_ph: "Ask Isa…", isa_enviar: "Send", isa_revisar: "🛡️ Let Isa check it before saving",
+    isa_pensando: "Isa is thinking…", isa_error: "Isa couldn't answer right now. Please try again in a moment.", isa_limite: "You've reached today's limit. See you tomorrow 😊",
+    isa_b_desc: "Suggested description", isa_b_claves: "Suggested keywords", isa_b_foto: "Tip for your photo", isa_b_promo: "Promotion idea",
+    isa_usar: "Use this description", isa_anadir: "Add these words", isa_recuerda: "Nothing is saved until you tap “Save changes”.",
+    isa_ok: "All good: your listing meets the rules. You can save.", isa_avisos: "Check this before saving:",
     t_title: "My business", t_intro: "Sign in with the email you used to register your business. We'll send you an access code.",
     l_email: "Business email", b_send: "Send me the code", t_code: "Check your email",
     sent: "We sent a code to {e}. If you can't see it, check your spam folder.", l_code: "Code", b_verify: "Sign in",
@@ -745,6 +787,70 @@ function pintarModeracion(c){
     box.hidden = true;
   }
 }
+
+/* ---------- Isa, la asesora (sugiere; nunca guarda) ---------- */
+async function llamarIsa(cuerpo, cajaId, boton){
+  const caja = $(cajaId);
+  caja.hidden = false;
+  caja.innerHTML = `<p class="muted">${t("isa_pensando")}</p>`;
+  if (boton) boton.disabled = true;
+  let data = null, err = null;
+  try {
+    const r = await sb.functions.invoke("isa", { body: { ...cuerpo, pyme_id: actual.id, idioma: lang } });
+    data = r.data; err = r.error;
+    if (err && err.context && typeof err.context.json === "function"){ try { data = await err.context.json(); } catch (e) {} }
+  } catch (e) { err = e; }
+  if (boton) boton.disabled = false;
+  if (data && data.error === "limite"){ caja.innerHTML = `<p class="muted">${t("isa_limite")}</p>`; return null; }
+  if (err || !data || data.error){ caja.innerHTML = `<p class="muted">${t("isa_error")}</p>`; return null; }
+  return data;
+}
+function bloqueIsa(titulo, texto, botonTxt, botonId){
+  return `<div class="isa-bloque"><b>${esc(titulo)}</b>${esc(texto || "")}${botonTxt ? `<br><button class="btn-sec" id="${botonId}">${esc(botonTxt)}</button>` : ""}</div>`;
+}
+$("isa-mejorar").addEventListener("click", async (e) => {
+  if (!actual) return;
+  const d = await llamarIsa({ accion: "mejorar" }, "isa-res", e.target);
+  if (!d) return;
+  $("isa-res").innerHTML =
+    (d.resumen ? `<p>${esc(d.resumen)}</p>` : "") +
+    bloqueIsa(t("isa_b_desc"), d.descripcion, t("isa_usar"), "isa-usar-desc") +
+    bloqueIsa(t("isa_b_claves"), d.claves, t("isa_anadir"), "isa-usar-claves") +
+    bloqueIsa(t("isa_b_foto"), d.foto) +
+    bloqueIsa(t("isa_b_promo"), d.promo) +
+    `<p class="muted" style="margin-top:8px">${t("isa_recuerda")}</p>`;
+  const bd = $("isa-usar-desc");
+  if (bd) bd.addEventListener("click", () => { $("e-desc").value = String(d.descripcion || "").slice(0, 300); $("e-desc").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  const bc = $("isa-usar-claves");
+  if (bc) bc.addEventListener("click", () => {
+    const actuales = $("e-tags").value.split(",").map(x => x.trim()).filter(Boolean);
+    const nuevas = String(d.claves || "").split(",").map(x => x.trim()).filter(Boolean);
+    const vistas = new Set(actuales.map(x => x.toLowerCase()));
+    nuevas.forEach(x => { if (!vistas.has(x.toLowerCase())){ actuales.push(x); vistas.add(x.toLowerCase()); } });
+    $("e-tags").value = actuales.join(", ");
+    $("e-tags").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+});
+$("isa-preguntar").addEventListener("click", async (e) => {
+  const q = $("isa-q").value.trim();
+  if (!actual || !q) return;
+  const d = await llamarIsa({ accion: "pregunta", pregunta: q }, "isa-res", e.target);
+  if (d) $("isa-res").innerHTML = `<div class="isa-bloque"><b>Isa</b>${esc(d.respuesta || "")}</div>`;
+});
+$("isa-q").addEventListener("keydown", (e) => { if (e.key === "Enter") $("isa-preguntar").click(); });
+$("isa-revisar").addEventListener("click", async (e) => {
+  if (!actual) return;
+  const formulario = {
+    producto_estrella: $("e-star").value, precio: $("e-precio").value, descripcion: $("e-desc").value,
+    palabras_clave: $("e-tags").value, direccion: $("e-address").value, whatsapp: $("e-wa").value, web: $("e-web").value,
+    instagram: $("e-ig").value, tiktok: $("e-tt").value, facebook: $("e-fb").value, carta
+  };
+  const d = await llamarIsa({ accion: "revisar", formulario }, "isa-rev", e.target);
+  if (!d) return;
+  $("isa-rev").innerHTML = d.ok || !(d.avisos || []).length
+    ? `<div class="mod-aviso pend"><b>✅ ${t("isa_ok")}</b></div>`
+    : `<div class="mod-aviso rev"><b>${t("isa_avisos")}</b>${(d.avisos || []).map(a => "• " + esc(a)).join("<br>")}</div>`;
+});
 
 /* ---------- portal de pagos de Stripe ---------- */
 document.querySelectorAll("[data-flujo]").forEach(b => b.addEventListener("click", async (e) => {
