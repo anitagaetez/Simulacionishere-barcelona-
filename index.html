@@ -1070,6 +1070,8 @@ const I18N = {
     l_nif: "NIF / NIE / CIF",
     accept_html: "He leído y acepto las <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condiciones Generales</a> y la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacidad</a>. Actúo en nombre del comercio indicado y en el ámbito de su actividad empresarial.",
     err_nif: "El NIF, NIE o CIF no es válido. Revísalo: lo necesitamos para tu factura.",
+    offline_last: "📶 Sin conexión: te muestro tu última búsqueda ({s}). El botón «¡Vamos!» funciona si tienes el mapa descargado en Google Maps.", offline_none: "📶 Sin conexión. Cuando vuelva la señal podrás buscar.", online_back: "Conexión recuperada ✅",
+    err_web: "El enlace no es válido. Escribe tu web completa (https://…) o tu usuario de Instagram (@tunegocio).",
     err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23).",
     err_accept: "Para continuar, marca la casilla de aceptación de las Condiciones Generales.",
     lk_aviso: "Aviso legal",
@@ -1165,7 +1167,7 @@ const I18N = {
     preparing_pay: "Preparando el pago…",
     paid_generic: "¡Pago recibido! Tu ficha se activa en unos minutos. Te llegará la factura por email.",
     paid_activating: '¡Pago recibido! Activando "{name}"…',
-    paid_ready: '¡Listo! "{name}" ya aparece en las búsquedas de isHere.',
+    paid_ready: '¡Pago confirmado! Revisamos "{name}" en unos segundos y aparecerá en las búsquedas. Puedes ver su estado en Mi comercio.',
     paid_until: " Tu promoción dura hasta el {date}.",
     invoice: " Te llegará la factura por email.",
     paid_later: '¡Pago recibido! "{name}" se activará en unos minutos. Si en una hora no aparece en las búsquedas, escríbenos.',
@@ -1251,6 +1253,8 @@ const I18N = {
     l_nif: "NIF / NIE / CIF",
     accept_html: "He llegit i accepto les <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">Condicions Generals</a> i la <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Política de privacitat</a>. Actuo en nom del comerç indicat i en l'àmbit de la seva activitat empresarial.",
     err_nif: "El NIF, NIE o CIF no és vàlid. Revisa'l: el necessitem per a la teva factura.",
+    offline_last: "📶 Sense connexió: et mostro la teva última cerca ({s}). El botó «Som-hi!» funciona si tens el mapa descarregat a Google Maps.", offline_none: "📶 Sense connexió. Quan torni el senyal podràs cercar.", online_back: "Connexió recuperada ✅",
+    err_web: "L'enllaç no és vàlid. Escriu la teva web completa (https://…) o el teu usuari d'Instagram (@elteunegoci).",
     err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23).",
     err_accept: "Per continuar, marca la casella d'acceptació de les Condicions Generals.",
     lk_aviso: "Avís legal",
@@ -1346,7 +1350,7 @@ const I18N = {
     preparing_pay: "Preparant el pagament…",
     paid_generic: "Pagament rebut! La teva fitxa s'activarà en uns minuts. Rebràs la factura per correu.",
     paid_activating: 'Pagament rebut! Activant "{name}"…',
-    paid_ready: 'Fet! "{name}" ja apareix a les cerques d\'isHere.',
+    paid_ready: 'Pagament confirmat! Revisem "{name}" en uns segons i apareixerà a les cerques. Pots veure\'n l\'estat a El meu comerç.',
     paid_until: " La teva promoció dura fins al {date}.",
     invoice: " Rebràs la factura per correu.",
     paid_later: 'Pagament rebut! "{name}" s\'activarà en uns minuts. Si d\'aquí a una hora no apareix a les cerques, escriu-nos.',
@@ -1432,6 +1436,8 @@ const I18N = {
     l_nif: "Spanish tax ID (NIF / NIE / CIF)",
     accept_html: "I have read and accept the <a href=\"legal.html#condiciones\" target=\"_blank\" rel=\"noopener\">General Terms</a> and the <a href=\"legal.html#privacidad\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a>. I act on behalf of the business indicated and within its business activity.",
     err_nif: "That NIF, NIE or CIF isn't valid. Please check it: we need it for your invoice.",
+    offline_last: "📶 Offline: here's your last search ({s}). “Let's go!” works if you downloaded the map in Google Maps.", offline_none: "📶 Offline. You can search again when the signal is back.", online_back: "Back online ✅",
+    err_web: "That link isn't valid. Write your full website (https://…) or your Instagram username (@yourshop).",
     err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23).",
     err_accept: "To continue, tick the box accepting the General Terms.",
     lk_aviso: "Legal notice",
@@ -1527,7 +1533,7 @@ const I18N = {
     preparing_pay: "Preparing payment…",
     paid_generic: "Payment received! Your listing will be active in a few minutes. Your invoice will arrive by email.",
     paid_activating: 'Payment received! Activating "{name}"…',
-    paid_ready: 'Done! "{name}" now shows up in isHere searches.',
+    paid_ready: 'Payment confirmed! We\'re reviewing "{name}" in a few seconds and it will show up in searches. You can check its status in My shop.',
     paid_until: " Your promotion runs until {date}.",
     invoice: " Your invoice will arrive by email.",
     paid_later: 'Payment received! "{name}" will be active in a few minutes. If it doesn\'t show up in searches within an hour, write to us.',
@@ -2227,6 +2233,7 @@ async function handleSpeechResult(speech){
   const zone = zoneSelect.value;
   const res = await searchNearestProduct(speech, zone);
 
+  if (res.error && !navigator.onLine && mostrarUltima()) return;
   if (res.error){
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
@@ -2237,6 +2244,7 @@ async function handleSpeechResult(speech){
   registrarEvento("busqueda", res.match ? res.match.id : null, speech, zone, !!res.match);
 
   if (res.match){
+    guardarUltima(res, zone, speech);
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
   } else {
@@ -2615,6 +2623,10 @@ async function enviarAlta(){
     mostrarErrorForm(t("err_nif"));
     return;
   }
+  if (datos.web && !/^(https?:\/\/[^\s.]+\.[^\s]{2,}|@?[A-Za-z0-9._]{2,30})$/.test(datos.web)){
+    mostrarErrorForm(t("err_web"));
+    return;
+  }
   if (!document.getElementById("f-acepto").checked){
     mostrarErrorForm(t("err_accept"));
     return;
@@ -2733,6 +2745,22 @@ async function abrirInvitacion(token){
     mostrarAviso(t("invite_fail"), "warn");
   }
 }
+
+/* ---------- modo sin conexión: la última búsqueda queda guardada en el móvil ---------- */
+function guardarUltima(res, zone, speech){
+  try { localStorage.setItem("ishere_ultima", JSON.stringify({ res: { match: res.match, candidatos: [] }, zone, speech, ts: Date.now() })); } catch (e) {}
+}
+function mostrarUltima(){
+  let u = null;
+  try { u = JSON.parse(localStorage.getItem("ishere_ultima") || "null"); } catch (e) {}
+  if (!u || !u.res || !u.res.match) return false;
+  mostrarAviso(t("offline_last", { s: u.speech || "" }), "warn");
+  transcriptEl.textContent = `"${u.speech || ""}"`;
+  mostrarResultado(u.res, u.zone, false);
+  return true;
+}
+window.addEventListener("offline", () => { if (!mostrarUltima()) mostrarAviso(t("offline_none"), "warn"); });
+window.addEventListener("online", () => mostrarAviso(t("online_back"), "ok"));
 
 /* ---------- vuelta desde Stripe y enlaces especiales ---------- */
 async function manejarRetorno(){
