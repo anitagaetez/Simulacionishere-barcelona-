@@ -494,18 +494,6 @@
   #voice-guide-btn.show{ display: none; }
 
   .btn-vamos[hidden]{ display: none !important; }
-  .brujula{ display: flex; align-items: center; gap: 14px; background: var(--bg-panel, #123449); border: 1px solid rgba(31,139,255,0.3);
-    border-radius: 16px; padding: 12px 14px; margin-top: 10px; }
-  .brujula[hidden]{ display: none; }
-  .bru-flecha{ width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0; background: rgba(31,139,255,0.14);
-    display: flex; align-items: center; justify-content: center; border: 2px solid rgba(31,139,255,0.5); position: relative; }
-  .bru-flecha svg{ width: 34px; height: 34px; color: var(--confianza); transition: transform .25s ease-out; }
-  .bru-flecha .n{ position: absolute; top: -2px; font-size: .6rem; font-weight: 700; color: var(--cream-dim, #B9C7CE); }
-  .bru-txt{ flex: 1; font-size: .92rem; line-height: 1.4; }
-  .bru-txt b{ display: block; font-size: 1rem; }
-  .bru-txt small{ display: block; color: var(--cream-dim, #B9C7CE); font-size: .75rem; margin-top: 2px; }
-  .bru-activar{ margin-top: 6px; background: none; border: 1px solid rgba(31,139,255,0.5); color: var(--cream, #F2E9D8);
-    border-radius: 999px; padding: 5px 12px; font-family: inherit; font-size: .8rem; cursor: pointer; }
   .btn-vamos{
     flex-shrink: 0; width: 76px; height: 76px; border-radius: 50%;
     border: none; cursor: pointer; font-family: inherit;
@@ -801,17 +789,6 @@
         </button>
         <a id="result-maps-link" href="#" hidden></a>
       </div>
-      <div class="brujula" id="brujula" hidden>
-        <div class="bru-flecha"><span class="n" id="bru-n">N</span>
-          <svg id="bru-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l6 18-6-4-6 4z"/></svg>
-        </div>
-        <div class="bru-txt">
-          <b id="bru-dist"></b>
-          <span id="bru-dir"></span>
-          <small id="bru-nota"></small>
-          <button type="button" class="bru-activar" id="bru-activar"></button>
-        </div>
-      </div>
       <div class="ficha-turista" id="ficha-turista">
         <img class="ft-foto" id="ft-foto" alt="" hidden>
         <div class="ft-body">
@@ -913,6 +890,7 @@
       <div id="form-alta" style="display:flex; flex-direction:column; gap:20px;">
 
         <h3 class="form-group-title" data-i18n="g_business">Tu negocio</h3>
+        <p class="form-group-note" data-i18n="alta_nota">Primero te identificas y pagas. Después, en Mi comercio, armas tu vitrina: productos, precios, fotos y redes. Isa te ayuda.</p>
 
         <div class="field">
           <label for="f-name"><span data-i18n="l_name">Nombre del negocio</span> <span class="req">*</span></label>
@@ -930,23 +908,23 @@
               <option>Sagrada Familia</option>
             </select>
           </div>
-          <div class="field">
+          <div class="field" style="display:none">
             <label for="f-price" data-i18n="l_price">Precio del producto</label>
             <input id="f-price" type="text" placeholder="2,50 €">
           </div>
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none">
           <label for="f-product"><span data-i18n="l_product">Producto estrella</span> <span class="req">*</span></label>
           <input id="f-product" type="text" data-i18n-ph="ph_product" placeholder="Kit de costura urgente">
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none">
           <label for="f-tags"><span data-i18n="l_tags">Palabras con las que te buscarían, separadas por comas</span></label>
           <input id="f-tags" type="text" placeholder="aguja, agulla, needle, hilo, fil, thread">
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none">
           <label for="f-cat" data-i18n="l_catalog">Productos del catálogo turista que vendes</label>
           <input id="f-cat" type="text" data-i18n-ph="ph_catalog" placeholder="Busca: protector, cargador, paraguas…" autocomplete="off">
           <div class="cat-list" id="cat-list"></div>
@@ -956,11 +934,12 @@
         <div class="field">
           <label for="f-address"><span data-i18n="l_address">Dirección exacta (calle y número)</span> <span class="req">*</span></label>
           <input id="f-address" type="text" placeholder="Carrer de Verdi 23, Gràcia" autocomplete="street-address">
+          <input id="f-local" type="text" data-i18n-ph="ph_local" placeholder="Local, piso o puerta (opcional)" style="margin-top:8px" maxlength="40">
           <button type="button" class="gps-btn" id="gps-btn" style="margin-top:8px" data-i18n="gps_btn">📍 Estoy en mi local</button>
           <p class="gps-estado" id="gps-estado" data-i18n="gps_help">Si estás en tu local ahora, toca el botón: confirma que la dirección es real.</p>
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none">
           <label for="f-foto" data-i18n="l_photo">Foto o logo del comercio</label>
           <input id="f-foto" type="file" accept="image/*" class="foto-input">
           <label for="f-foto" class="foto-btn" id="foto-btn">
@@ -979,7 +958,7 @@
           <p class="doc-priv" data-i18n="doc_priv">🔒 Solo lo ve isHere. Lo guardamos como respaldo para prevenir fraudes; nunca se publica.</p>
         </div>
 
-        <div class="field">
+        <div class="field" style="display:none">
           <label for="f-web" data-i18n="l_web">Página web o Instagram</label>
           <input id="f-web" type="text" placeholder="https://...">
         </div>
@@ -1058,7 +1037,7 @@ const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_3lbCgvyY1Zy547KhQ0npJA_k2QCPzRu";
 
 // Columnas públicas: nunca se piden email, teléfono ni datos de Stripe.
-const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp, horario, traducciones";
+const COLUMNAS_PUBLICAS = "id, name, zone, star_product_name, star_product_price, tags, status, distance_m, logo_url, address, expires_at, web, descripcion, carta, lat, lng, redes, google_url, whatsapp, horario, traducciones, verif_nivel";
 
 let supabaseClient = null;
 try {
@@ -1120,7 +1099,7 @@ const I18N = {
     err_web: "El enlace no es válido. Escribe tu web completa (https://…) o tu usuario de Instagram (@tunegocio).",
     err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23).",
     err_accept: "Para continuar, marca la casilla de aceptación de las Condiciones Generales.",
-    rumbos: "norte,noreste,este,sureste,sur,suroeste,oeste,noroeste", bru_txt: "hacia el {r} · unos {min} min a pie", bru_act: "🧭 Activar brújula", bru_norte: "La flecha indica la dirección con el norte arriba.", bru_vivo: "Gira hasta que la flecha apunte al frente y camina.", bru_sin: "Tu móvil no tiene brújula disponible: usa «¡Vamos!» para ir con Google Maps.", l_doc: "Documento oficial de tu actividad", doc_help: "Licencia o comunicación de actividad del Ajuntament, o certificado de situación censal de Hacienda (AEAT). Debe verse el nombre del local, tu NIF/NIE y la dirección. Foto o PDF.", doc_pick: "Subir foto o PDF del documento", doc_ok: "Documento listo: {n}", doc_priv: "🔒 Solo lo ve isHere. Lo guardamos como respaldo para prevenir fraudes; nunca se publica.", gps_btn: "📍 Estoy en mi local", gps_ok: "Ubicación guardada ✅", gps_err: "No se pudo obtener tu ubicación. Puedes seguir, pero revisaremos tu alta con más cuidado.", gps_wait: "Obteniendo ubicación…", gps_help: "Si estás en tu local ahora, toca el botón: confirma que la dirección es real.", err_doc: "Sube el documento oficial de tu actividad para continuar.", err_doc_size: "El documento es demasiado grande (máximo 8 MB).", err_doc_up: "No se pudo subir el documento ({e}).", err_doc_save: "No se pudo registrar tu documento. Inténtalo de nuevo.", lk_aviso: "Aviso legal", lk_uso: "Condiciones de uso",
+    l_doc: "Documento oficial de tu actividad", doc_help: "Licencia o comunicación de actividad del Ajuntament, o certificado de situación censal de Hacienda (AEAT). Debe verse el nombre del local, tu NIF/NIE y la dirección. Foto o PDF.", doc_pick: "Subir foto o PDF del documento", doc_ok: "Documento listo: {n}", doc_priv: "🔒 Solo lo ve isHere. Lo guardamos como respaldo para prevenir fraudes; nunca se publica.", gps_btn: "📍 Estoy en mi local", gps_ok: "Ubicación guardada ✅", gps_err: "No se pudo obtener tu ubicación. Puedes seguir, pero revisaremos tu alta con más cuidado.", gps_wait: "Obteniendo ubicación…", gps_help: "Si estás en tu local ahora, toca el botón: confirma que la dirección es real.", err_doc: "Sube el documento oficial de tu actividad para continuar.", err_doc_size: "El documento es demasiado grande (máximo 8 MB).", err_doc_up: "No se pudo subir el documento ({e}).", err_doc_save: "No se pudo registrar tu documento. Inténtalo de nuevo.", alta_nota: "Primero te identificas y pagas. Después, en Mi comercio, armas tu vitrina: productos, precios, fotos y redes. Isa te ayuda.", ph_local: "Local, piso o puerta (opcional)", paid_vitrina: "Ahora completa tu vitrina en Mi comercio (tienes 7 días). Tu ficha se publica cuando esté completa y verificada.", go_vitrina: "Completar mi vitrina →", lk_aviso: "Aviso legal", lk_uso: "Condiciones de uso",
     lk_priv: "Privacidad",
     lk_cookies: "Cookies",
     lk_cond: "Condiciones para comercios",
@@ -1303,7 +1282,7 @@ const I18N = {
     err_web: "L'enllaç no és vàlid. Escriu la teva web completa (https://…) o el teu usuari d'Instagram (@elteunegoci).",
     err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23).",
     err_accept: "Per continuar, marca la casella d'acceptació de les Condicions Generals.",
-    rumbos: "nord,nord-est,est,sud-est,sud,sud-oest,oest,nord-oest", bru_txt: "cap al {r} · uns {min} min a peu", bru_act: "🧭 Activar la brúixola", bru_norte: "La fletxa indica la direcció amb el nord a dalt.", bru_vivo: "Gira fins que la fletxa apunti endavant i camina.", bru_sin: "El teu mòbil no té brúixola disponible: fes servir «Som-hi!» per anar-hi amb Google Maps.", l_doc: "Document oficial de la teva activitat", doc_help: "Llicència o comunicació d'activitat de l'Ajuntament, o certificat de situació censal d'Hisenda (AEAT). Ha de veure's el nom del local, el teu NIF/NIE i l'adreça. Foto o PDF.", doc_pick: "Pujar foto o PDF del document", doc_ok: "Document llest: {n}", doc_priv: "🔒 Només el veu isHere. El guardem com a suport per prevenir fraus; mai es publica.", gps_btn: "📍 Sóc al meu local", gps_ok: "Ubicació desada ✅", gps_err: "No s'ha pogut obtenir la teva ubicació. Pots continuar, però revisarem la teva alta amb més cura.", gps_wait: "Obtenint ubicació…", gps_help: "Si ara ets al teu local, toca el botó: confirma que l'adreça és real.", err_doc: "Puja el document oficial de la teva activitat per continuar.", err_doc_size: "El document és massa gran (màxim 8 MB).", err_doc_up: "No s'ha pogut pujar el document ({e}).", err_doc_save: "No s'ha pogut registrar el teu document. Torna-ho a provar.", lk_aviso: "Avís legal", lk_uso: "Condicions d'ús",
+    l_doc: "Document oficial de la teva activitat", doc_help: "Llicència o comunicació d'activitat de l'Ajuntament, o certificat de situació censal d'Hisenda (AEAT). Ha de veure's el nom del local, el teu NIF/NIE i l'adreça. Foto o PDF.", doc_pick: "Pujar foto o PDF del document", doc_ok: "Document llest: {n}", doc_priv: "🔒 Només el veu isHere. El guardem com a suport per prevenir fraus; mai es publica.", gps_btn: "📍 Sóc al meu local", gps_ok: "Ubicació desada ✅", gps_err: "No s'ha pogut obtenir la teva ubicació. Pots continuar, però revisarem la teva alta amb més cura.", gps_wait: "Obtenint ubicació…", gps_help: "Si ara ets al teu local, toca el botó: confirma que l'adreça és real.", err_doc: "Puja el document oficial de la teva activitat per continuar.", err_doc_size: "El document és massa gran (màxim 8 MB).", err_doc_up: "No s'ha pogut pujar el document ({e}).", err_doc_save: "No s'ha pogut registrar el teu document. Torna-ho a provar.", alta_nota: "Primer t'identifiques i pagues. Després, a El meu comerç, muntes el teu aparador: productes, preus, fotos i xarxes. L'Isa t'hi ajuda.", ph_local: "Local, pis o porta (opcional)", paid_vitrina: "Ara completa el teu aparador a El meu comerç (tens 7 dies). La teva fitxa es publica quan estigui completa i verificada.", go_vitrina: "Completar el meu aparador →", lk_aviso: "Avís legal", lk_uso: "Condicions d'ús",
     lk_priv: "Privacitat",
     lk_cookies: "Galetes",
     lk_cond: "Condicions per a comerços",
@@ -1486,7 +1465,7 @@ const I18N = {
     err_web: "That link isn't valid. Write your full website (https://…) or your Instagram username (@yourshop).",
     err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23).",
     err_accept: "To continue, tick the box accepting the General Terms.",
-    rumbos: "north,north-east,east,south-east,south,south-west,west,north-west", bru_txt: "to the {r} · about {min} min walk", bru_act: "🧭 Turn on compass", bru_norte: "The arrow shows the direction with north at the top.", bru_vivo: "Turn until the arrow points straight ahead and walk.", bru_sin: "Your phone has no compass available: use “Let's go!” to go with Google Maps.", l_doc: "Official document of your business activity", doc_help: "Activity licence or notification from the Ajuntament, or census status certificate from the Tax Agency (AEAT). The shop name, your NIF/NIE and the address must be visible. Photo or PDF.", doc_pick: "Upload photo or PDF of the document", doc_ok: "Document ready: {n}", doc_priv: "🔒 Only isHere sees it. We keep it as a record to prevent fraud; it is never published.", gps_btn: "📍 I'm at my shop", gps_ok: "Location saved ✅", gps_err: "We couldn't get your location. You can continue, but we'll review your sign-up more carefully.", gps_wait: "Getting location…", gps_help: "If you're at your shop now, tap the button: it confirms the address is real.", err_doc: "Upload the official document of your business activity to continue.", err_doc_size: "The document is too large (8 MB maximum).", err_doc_up: "Couldn't upload the document ({e}).", err_doc_save: "Couldn't register your document. Please try again.", lk_aviso: "Legal notice", lk_uso: "Terms of use",
+    l_doc: "Official document of your business activity", doc_help: "Activity licence or notification from the Ajuntament, or census status certificate from the Tax Agency (AEAT). The shop name, your NIF/NIE and the address must be visible. Photo or PDF.", doc_pick: "Upload photo or PDF of the document", doc_ok: "Document ready: {n}", doc_priv: "🔒 Only isHere sees it. We keep it as a record to prevent fraud; it is never published.", gps_btn: "📍 I'm at my shop", gps_ok: "Location saved ✅", gps_err: "We couldn't get your location. You can continue, but we'll review your sign-up more carefully.", gps_wait: "Getting location…", gps_help: "If you're at your shop now, tap the button: it confirms the address is real.", err_doc: "Upload the official document of your business activity to continue.", err_doc_size: "The document is too large (8 MB maximum).", err_doc_up: "Couldn't upload the document ({e}).", err_doc_save: "Couldn't register your document. Please try again.", alta_nota: "First you identify yourself and pay. Then, in My business, you build your showcase: products, prices, photos and social media. Isa helps you.", ph_local: "Unit, floor or door (optional)", paid_vitrina: "Now complete your showcase in My business (you have 7 days). Your listing goes live once it is complete and verified.", go_vitrina: "Complete my showcase →", lk_aviso: "Legal notice", lk_uso: "Terms of use",
     lk_priv: "Privacy",
     lk_cookies: "Cookies",
     lk_cond: "Terms for businesses",
@@ -1669,7 +1648,7 @@ const I18N = {
     err_web: "Il link non è valido. Scrivi il tuo sito completo (https://…) o il tuo nome utente Instagram (@iltuonegozio).",
     err_address: "Non troviamo questo indirizzo a Barcellona. Scrivi via e numero come appaiono su Google Maps (es.: Carrer de Verdi 23).",
     err_accept: "Per continuare, spunta la casella di accettazione delle Condizioni Generali.",
-    rumbos: "nord,nord-est,est,sud-est,sud,sud-ovest,ovest,nord-ovest", bru_txt: "verso {r} · circa {min} min a piedi", bru_act: "🧭 Attiva la bussola", bru_norte: "La freccia indica la direzione con il nord in alto.", bru_vivo: "Girati finché la freccia punta davanti a te e cammina.", bru_sin: "Il tuo telefono non ha la bussola disponibile: usa «Andiamo!» per andare con Google Maps.", l_doc: "Documento ufficiale della tua attività", doc_help: "Licenza o comunicazione di attività del Comune, o certificato di situazione censuale dell'Agenzia delle Entrate spagnola (AEAT). Devono vedersi il nome del locale, il tuo NIF/NIE e l'indirizzo. Foto o PDF.", doc_pick: "Carica foto o PDF del documento", doc_ok: "Documento pronto: {n}", doc_priv: "🔒 Lo vede solo isHere. Lo conserviamo come prova per prevenire frodi; non viene mai pubblicato.", gps_btn: "📍 Sono nel mio locale", gps_ok: "Posizione salvata ✅", gps_err: "Non siamo riusciti a ottenere la tua posizione. Puoi continuare, ma controlleremo la tua registrazione con più attenzione.", gps_wait: "Rilevo la posizione…", gps_help: "Se sei nel tuo locale adesso, tocca il pulsante: conferma che l'indirizzo è reale.", err_doc: "Carica il documento ufficiale della tua attività per continuare.", err_doc_size: "Il documento è troppo grande (massimo 8 MB).", err_doc_up: "Impossibile caricare il documento ({e}).", err_doc_save: "Impossibile registrare il tuo documento. Riprova.", lk_aviso: "Note legali", lk_uso: "Condizioni d'uso",
+    l_doc: "Documento ufficiale della tua attività", doc_help: "Licenza o comunicazione di attività del Comune, o certificato di situazione censuale dell'Agenzia delle Entrate spagnola (AEAT). Devono vedersi il nome del locale, il tuo NIF/NIE e l'indirizzo. Foto o PDF.", doc_pick: "Carica foto o PDF del documento", doc_ok: "Documento pronto: {n}", doc_priv: "🔒 Lo vede solo isHere. Lo conserviamo come prova per prevenire frodi; non viene mai pubblicato.", gps_btn: "📍 Sono nel mio locale", gps_ok: "Posizione salvata ✅", gps_err: "Non siamo riusciti a ottenere la tua posizione. Puoi continuare, ma controlleremo la tua registrazione con più attenzione.", gps_wait: "Rilevo la posizione…", gps_help: "Se sei nel tuo locale adesso, tocca il pulsante: conferma che l'indirizzo è reale.", err_doc: "Carica il documento ufficiale della tua attività per continuare.", err_doc_size: "Il documento è troppo grande (massimo 8 MB).", err_doc_up: "Impossibile caricare il documento ({e}).", err_doc_save: "Impossibile registrare il tuo documento. Riprova.", alta_nota: "Prima ti identifichi e paghi. Poi, in Il mio negozio, prepari la tua vetrina: prodotti, prezzi, foto e social. Isa ti aiuta.", ph_local: "Locale, piano o porta (facoltativo)", paid_vitrina: "Ora completa la tua vetrina in Il mio negozio (hai 7 giorni). La tua scheda viene pubblicata quando è completa e verificata.", go_vitrina: "Completa la mia vetrina →", lk_aviso: "Note legali", lk_uso: "Condizioni d'uso",
     lk_priv: "Privacy",
     lk_cookies: "Cookie",
     lk_cond: "Condizioni per i negozi",
@@ -1852,7 +1831,7 @@ const I18N = {
     err_web: "Le lien n'est pas valide. Écris ton site complet (https://…) ou ton nom d'utilisateur Instagram (@toncommerce).",
     err_address: "Nous ne trouvons pas cette adresse à Barcelone. Écris la rue et le numéro comme sur Google Maps (ex. : Carrer de Verdi 23).",
     err_accept: "Pour continuer, coche la case d'acceptation des Conditions générales.",
-    rumbos: "nord,nord-est,est,sud-est,sud,sud-ouest,ouest,nord-ouest", bru_txt: "vers le {r} · environ {min} min à pied", bru_act: "🧭 Activer la boussole", bru_norte: "La flèche indique la direction avec le nord en haut.", bru_vivo: "Tourne-toi jusqu'à ce que la flèche pointe devant toi et marche.", bru_sin: "Ton téléphone n'a pas de boussole disponible : utilise « On y va ! » pour y aller avec Google Maps.", l_doc: "Document officiel de ton activité", doc_help: "Licence ou déclaration d'activité de la mairie, ou certificat de situation fiscale de l'administration fiscale espagnole (AEAT). Le nom du local, ton NIF/NIE et l'adresse doivent être visibles. Photo ou PDF.", doc_pick: "Envoyer une photo ou un PDF du document", doc_ok: "Document prêt : {n}", doc_priv: "🔒 Seul isHere le voit. Nous le conservons comme preuve pour prévenir la fraude ; il n'est jamais publié.", gps_btn: "📍 Je suis dans mon local", gps_ok: "Position enregistrée ✅", gps_err: "Impossible d'obtenir ta position. Tu peux continuer, mais nous examinerons ton inscription avec plus d'attention.", gps_wait: "Détection de la position…", gps_help: "Si tu es dans ton local maintenant, touche le bouton : cela confirme que l'adresse est réelle.", err_doc: "Envoie le document officiel de ton activité pour continuer.", err_doc_size: "Le document est trop volumineux (8 Mo maximum).", err_doc_up: "Impossible d'envoyer le document ({e}).", err_doc_save: "Impossible d'enregistrer ton document. Réessaie.", lk_aviso: "Mentions légales", lk_uso: "Conditions d'utilisation",
+    l_doc: "Document officiel de ton activité", doc_help: "Licence ou déclaration d'activité de la mairie, ou certificat de situation fiscale de l'administration fiscale espagnole (AEAT). Le nom du local, ton NIF/NIE et l'adresse doivent être visibles. Photo ou PDF.", doc_pick: "Envoyer une photo ou un PDF du document", doc_ok: "Document prêt : {n}", doc_priv: "🔒 Seul isHere le voit. Nous le conservons comme preuve pour prévenir la fraude ; il n'est jamais publié.", gps_btn: "📍 Je suis dans mon local", gps_ok: "Position enregistrée ✅", gps_err: "Impossible d'obtenir ta position. Tu peux continuer, mais nous examinerons ton inscription avec plus d'attention.", gps_wait: "Détection de la position…", gps_help: "Si tu es dans ton local maintenant, touche le bouton : cela confirme que l'adresse est réelle.", err_doc: "Envoie le document officiel de ton activité pour continuer.", err_doc_size: "Le document est trop volumineux (8 Mo maximum).", err_doc_up: "Impossible d'envoyer le document ({e}).", err_doc_save: "Impossible d'enregistrer ton document. Réessaie.", alta_nota: "D'abord tu t'identifies et tu paies. Ensuite, dans Mon commerce, tu prépares ta vitrine : produits, prix, photos et réseaux. Isa t'aide.", ph_local: "Local, étage ou porte (facultatif)", paid_vitrina: "Complète maintenant ta vitrine dans Mon commerce (tu as 7 jours). Ta fiche est publiée une fois complète et vérifiée.", go_vitrina: "Compléter ma vitrine →", lk_aviso: "Mentions légales", lk_uso: "Conditions d'utilisation",
     lk_priv: "Confidentialité",
     lk_cookies: "Cookies",
     lk_cond: "Conditions pour les commerces",
@@ -2370,14 +2349,14 @@ function refrescarDinamicos(){
 
 // Traducciones automáticas de Isa: devuelve el texto en el idioma del turista (o el original).
 function tr(p){ return (p && p.traducciones && p.traducciones[lang]) || {}; }
-function trStar(p){ return tr(p).star || p.star_product_name; }
-function trCarta(p, i, original){ const c = tr(p).carta; return (Array.isArray(c) && c[i] && c[i].nombre) || original; }
+function trStar(p){ const x = tr(p).star; return (typeof x === "string" && x.trim()) ? x : p.star_product_name; }
+function trCarta(p, i, original){ const c = tr(p).carta; const x = Array.isArray(c) && c[i] ? c[i].nombre : null; return (typeof x === "string" && x.trim()) ? x : original; }
 function textosTraducidos(p){
   const t0 = p.traducciones || {};
-  const partes = [t0.claves || ""];
+  const partes = [typeof t0.claves === "string" ? t0.claves : ""];
   ["es", "ca", "en", "it", "fr"].forEach(L => {
     const x = t0[L] || {};
-    partes.push(x.star || "");
+    partes.push(typeof x.star === "string" ? x.star : "");
     if (Array.isArray(x.carta)) partes.push(x.carta.map(c => (c && c.nombre) || "").join(","));
   });
   return partes.join(",");
@@ -2388,7 +2367,7 @@ async function searchNearestProduct(userSpeech, userZone){
   if (!supabaseClient) return { error: true };
 
   const [{ data, error }, mapaProductos] = await Promise.all([
-    supabaseClient.from("pymes").select(COLUMNAS_PUBLICAS).eq("status", "beta_active"),
+    supabaseClient.from("pymes").select(COLUMNAS_PUBLICAS).eq("status", "beta_active").gte("verif_nivel", 1),
     productosDePymes()
   ]);
   const buscados = productosQueCoinciden(words);
@@ -2516,7 +2495,8 @@ function pintarFicha(match, res){
   if (fotoOk){ foto.src = match.logo_url; foto.alt = match.name; }
 
   const desc = document.getElementById("ft-desc");
-  const descTxt = tr(match).desc || match.descripcion || "";
+  const dTr = tr(match).desc;
+  const descTxt = (typeof dTr === "string" && dTr) || match.descripcion || "";
   desc.hidden = !descTxt;
   desc.textContent = descTxt;
 
@@ -2535,7 +2515,7 @@ function pintarFicha(match, res){
 
   // Lista: producto estrella, carta propia y productos del catálogo, cada uno con su precio.
   const items = [];
-  const clave = (n) => normalize(n || "");
+  const clave = (n) => normalize(String(n || ""));
   const vistos = new Set();
   const add = (nombre, precio, destacado) => {
     const k = clave(nombre);
@@ -2567,8 +2547,8 @@ function pintarFicha(match, res){
     : match.star_product_name;
   const waTxt = producto ? t("wa_hola_p", { p: String(producto).toLowerCase() }) : t("wa_hola");
   const waEl = document.getElementById("ft-wa");
-  waEl.hidden = waNum.length < 8;
-  if (waNum.length >= 8) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
+  waEl.hidden = waNum.length < 8 || Number(match.verif_nivel || 0) < 1;
+  if (!waEl.hidden) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
 
   // Denuncia de contenido (Reglamento de Servicios Digitales): va al correo oficial de isHere.
   document.getElementById("ft-seguro").hidden = waEl.hidden;
@@ -2691,7 +2671,6 @@ async function handleSpeechResult(speech){
 function mostrarResultado(res, zone, conVoz){
   const match = res.match;
   pymeActualId = match.id;
-  pintarBrujula(match);
   {
     const thumb = document.getElementById("result-thumb");
     if (match.logo_url && /^https?:\/\//i.test(match.logo_url)){
@@ -2936,6 +2915,14 @@ function mostrarEstado(texto, tipo){
   statusBanner.textContent = texto;
   statusBanner.className = "status-banner show " + (tipo || "ok");
 }
+function avisoVitrina(){
+  const p = document.createElement("p");
+  p.style.marginTop = "8px";
+  p.textContent = t("paid_vitrina") + " ";
+  const a = document.createElement("a");
+  a.href = "comercio.html"; a.textContent = t("go_vitrina"); a.style.fontWeight = "700";
+  p.appendChild(a); statusBanner.appendChild(p);
+}
 function valor(id){ return document.getElementById(id).value.trim(); }
 
 /* ---------- foto del comercio ---------- */
@@ -2944,19 +2931,19 @@ const fotoPreview = document.getElementById("foto-preview");
 const fotoTexto = document.getElementById("foto-texto");
 let fotoComprimida = null;
 
-function comprimirFoto(file){
+function comprimirFoto(file, MAXP = 1200, CAL = 0.82){
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      const MAX = 1200;
+      const MAX = MAXP;
       const escala = Math.min(1, MAX / Math.max(img.width, img.height));
       const canvas = document.createElement("canvas");
       canvas.width = Math.round(img.width * escala);
       canvas.height = Math.round(img.height * escala);
       canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t("err_photo_process"))), "image/jpeg", 0.82);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t("err_photo_process"))), "image/jpeg", CAL);
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error(t("err_photo_format"))); };
     img.src = url;
@@ -3012,10 +2999,14 @@ document.getElementById("gps-btn").addEventListener("click", (e) => {
   );
 });
 async function subirDocumento(id){
-  const f = docArchivo;
-  const ext = (f.type === "application/pdf") ? "pdf" : (f.type.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 5) || "jpg";
+  let archivo = docArchivo, tipo = docArchivo.type || "application/octet-stream";
+  let ext = tipo === "application/pdf" ? "pdf" : "jpg";
+  if (tipo.startsWith("image/")){
+    try { archivo = await comprimirFoto(docArchivo, 2000, 0.85); tipo = "image/jpeg"; }
+    catch (e) { ext = (tipo.split("/")[1] || "jpg").replace(/[^a-z0-9]/gi, "").slice(0, 5) || "jpg"; }
+  }
   const ruta = `${id}/documento.${ext}`;
-  const { error } = await supabaseClient.storage.from("documentos-pymes").upload(ruta, f, { contentType: f.type || "application/octet-stream", upsert: false });
+  const { error } = await supabaseClient.storage.from("documentos-pymes").upload(ruta, archivo, { contentType: tipo, upsert: false });
   if (error) throw new Error(t("err_doc_up", { e: error.message }));
   return { ruta, tipo: ext };
 }
@@ -3067,15 +3058,12 @@ async function enviarAlta(){
     telefono: valor("f-telefono"),
     ref: valor("f-ref").toUpperCase(),
     razon: valor("f-razon"),
-    nif: valor("f-nif").toUpperCase().replace(/[\s.\-]/g, "")
+    nif: valor("f-nif").toUpperCase().replace(/[\s.\-]/g, ""),
+    local: valor("f-local")
   };
 
-  if (!datos.name || !datos.product || !datos.address || !datos.contacto || !datos.email || !datos.telefono || !datos.razon || !datos.nif){
+  if (!datos.name || !datos.address || !datos.contacto || !datos.email || !datos.telefono || !datos.razon || !datos.nif){
     mostrarErrorForm(t("err_required"));
-    return;
-  }
-  if (!datos.tagsRaw && elegidos.size === 0){
-    mostrarErrorForm(t("err_tags_or_products"));
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)){
@@ -3128,10 +3116,10 @@ async function enviarAlta(){
       id,
       name: datos.name,
       zone: datos.zone,
-      star_product_name: datos.product,
-      star_product_price: datos.price,
+      star_product_name: datos.product || null,
+      star_product_price: datos.price || null,
       tags: tags.join(", "),
-      address: datos.address,
+      address: datos.local ? `${datos.address}, ${datos.local}` : datos.address,
       lat: coords ? coords.lat : null,
       lng: coords ? coords.lng : null,
       logo_url: logoUrl,
@@ -3187,6 +3175,7 @@ async function confirmarActivacion(){
 
   if (!ultima || !supabaseClient){
     mostrarEstado(t("paid_generic"), "ok");
+    avisoVitrina();
     return;
   }
 
@@ -3199,12 +3188,14 @@ async function confirmarActivacion(){
         ? new Date(data.expires_at).toLocaleDateString(LOCALE[lang], { day: "numeric", month: "long", year: "numeric" })
         : null;
       mostrarEstado(t("paid_ready", { name: data.name }) + (fecha ? t("paid_until", { date: fecha }) : "") + t("invoice"), "ok");
+      avisoVitrina();
       localStorage.removeItem("ishere_ultima_pyme");
       return;
     }
     await new Promise(r => setTimeout(r, 3000));
   }
   mostrarEstado(t("paid_later", { name: ultima.name }), "ok");
+  avisoVitrina();
 }
 
 /* ---------- invitaciones de reclutadores ---------- */
@@ -3220,69 +3211,6 @@ async function abrirInvitacion(token){
     mostrarAviso(t("invite_fail"), "warn");
   }
 }
-
-/* ---------- brújula de isHere: orientación inicial sin IA (GPS + brújula del móvil) ---------- */
-let bruDestino = null, bruRumbo = 0, bruCompas = null, bruWatch = null;
-function rumboDeg(a, b){
-  const r = Math.PI / 180, y = Math.sin((b.lng - a.lng) * r) * Math.cos(b.lat * r);
-  const x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lng - a.lng) * r);
-  return (Math.atan2(y, x) / r + 360) % 360;
-}
-function nombreRumbo(g){ return t("rumbos").split(",")[Math.round(g / 45) % 8]; }
-function actualizarBrujula(){
-  if (!bruDestino || !posicionUsuario) return;
-  const km = distanceKm(posicionUsuario.lat, posicionUsuario.lng, bruDestino.lat, bruDestino.lng);
-  bruRumbo = rumboDeg(posicionUsuario, bruDestino);
-  const d = km < 1 ? `${Math.max(10, Math.round(km * 100) * 10)} m` : `${km.toLocaleString(LOCALE[lang], { maximumFractionDigits: 1 })} km`;
-  document.getElementById("bru-dist").textContent = d;
-  document.getElementById("bru-dir").textContent = t("bru_txt", { r: nombreRumbo(bruRumbo), min: Math.max(1, Math.round(km * 1000 / 80)) });
-  girarFlecha();
-}
-function girarFlecha(){
-  // Con brújula activa la flecha apunta a la tienda; sin brújula, se orienta respecto al norte (N arriba).
-  const giro = bruCompas == null ? bruRumbo : bruRumbo - bruCompas;
-  document.getElementById("bru-svg").style.transform = `rotate(${giro}deg)`;
-  document.getElementById("bru-n").hidden = bruCompas != null;
-  document.getElementById("bru-nota").textContent = bruCompas == null ? t("bru_norte") : t("bru_vivo");
-}
-function pintarBrujula(match){
-  const caja = document.getElementById("brujula");
-  bruDestino = (match.lat != null && match.lng != null) ? { lat: Number(match.lat), lng: Number(match.lng) } : null;
-  if (!bruDestino || !posicionUsuario){ caja.hidden = true; return; }
-  const km = distanceKm(posicionUsuario.lat, posicionUsuario.lng, bruDestino.lat, bruDestino.lng);
-  if (km > 5){ caja.hidden = true; return; } // Lejos: mejor directamente Google Maps.
-  caja.hidden = false;
-  const btn = document.getElementById("bru-activar");
-  btn.textContent = t("bru_act");
-  btn.hidden = bruCompas != null;
-  actualizarBrujula();
-}
-function alGirar(e){
-  let h = null;
-  if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;           // iPhone
-  else if ((e.absolute || e.type === "deviceorientationabsolute") && e.alpha != null) h = 360 - e.alpha; // Android
-  if (h == null) return;
-  bruCompas = h;
-  girarFlecha();
-}
-document.getElementById("bru-activar").addEventListener("click", async () => {
-  try {
-    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
-      const r = await DeviceOrientationEvent.requestPermission();
-      if (r !== "granted"){ document.getElementById("bru-nota").textContent = t("bru_sin"); return; }
-    }
-  } catch (e) {}
-  if ("ondeviceorientationabsolute" in window) window.addEventListener("deviceorientationabsolute", alGirar);
-  else window.addEventListener("deviceorientation", alGirar);
-  document.getElementById("bru-activar").hidden = true;
-  if (navigator.geolocation && bruWatch == null){
-    bruWatch = navigator.geolocation.watchPosition(p => {
-      posicionUsuario = { lat: p.coords.latitude, lng: p.coords.longitude };
-      actualizarBrujula();
-    }, () => {}, { enableHighAccuracy: true, maximumAge: 5000 });
-  }
-  setTimeout(() => { if (bruCompas == null) document.getElementById("bru-nota").textContent = t("bru_sin"); }, 3000);
-});
 
 /* ---------- modo sin conexión: la última búsqueda queda guardada en el móvil ---------- */
 function guardarUltima(res, zone, speech){

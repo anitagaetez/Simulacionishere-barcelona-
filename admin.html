@@ -150,6 +150,13 @@
       <div class="msg" id="m-revision"></div>
     </section>
 
+    <section class="card" id="sec-verif">
+      <h2>Verificaciones <span class="pill gold" id="ver-total">0</span></h2>
+      <p class="muted">Comercios pagados cuyo documento la IA marcó para revisar, a los que les falta la ubicación, o elegidos al azar para comprobar el CSV en la web de Hacienda.</p>
+      <div id="l-verif"><p class="muted">Cargando…</p></div>
+      <div class="msg" id="m-verif"></div>
+    </section>
+
     <section class="card" id="sec-solicitudes">
       <h2>Solicitudes de reclutadores <span class="pill gold" id="sol-total">0</span></h2>
       <div id="l-solicitudes"><p class="muted">Cargando…</p></div>
@@ -351,6 +358,7 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 /* ---------- panel ---------- */
 async function cargarPanel(){
   cargarRevision();
+  cargarVerificaciones();
   cargarSolicitudes();
   cargarBusquedas();
   cargarPendientes();
@@ -460,6 +468,48 @@ async function decidirFicha(id, estado, motivo, boton){
   if (error || !data){ msg("m-revision", "No se pudo guardar: " + (error ? error.message : "ficha no encontrada")); return; }
   msg("m-revision", estado === "aprobada" ? "Ficha aprobada: ya aparece en el buscador." : "Ficha rechazada.", "ok");
   cargarRevision();
+}
+
+/* ---------- verificación de comercios (la IA prepara, tú decides) ---------- */
+const ESTADO_VERIF = { pendiente: "sin revisar", procesando: "revisando", revisar: "revisar", falta_ubicacion: "falta ubicación", error: "error de lectura", verificada: "verificada", verificada_manual: "verificada" };
+async function cargarVerificaciones(){
+  const { data, error } = await sb.rpc("admin_verificaciones");
+  if (error){ $("l-verif").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  $("ver-total").textContent = lista.length;
+  $("l-verif").innerHTML = lista.length ? lista.map(v => {
+    const d = v.detalle || {};
+    const motivos = (d.motivos || []).map(m => "• " + esc(m)).join("<br>");
+    return `
+    <div class="item">
+      <b>${esc(v.name)}</b> <span class="pill ${v.estado === "revisar" || v.estado === "error" ? "off" : "gold"}">${esc(ESTADO_VERIF[v.estado] || v.estado)}</span>
+      ${d.muestra ? '<span class="pill on">comprobar CSV</span>' : ""}
+      <div class="muted">${v.dist != null ? `Alta a ${v.dist} m del local` : "Sin ubicación"}${v.duplicado ? " · posible ficha duplicada" : ""}${d.tipo ? " · " + esc(d.tipo) : ""}${d.csv ? " · CSV " + esc(d.csv) : ""}</div>
+      ${motivos ? `<div class="rev-desc">${motivos}</div>` : ""}
+      <div class="actions">
+        ${v.doc ? `<button class="btn-sec" data-ver-doc="${esc(v.doc)}">Ver documento</button>` : ""}
+        <button class="btn-ok" data-ver-ok="${v.id}">Aprobar</button>
+        ${d.muestra ? `<button class="btn-sec" data-ver-csv="${v.id}">CSV comprobado</button>` : ""}
+        <button class="btn-no" data-ver-no="${v.id}">Rechazar</button>
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">No hay verificaciones pendientes. 🎉</p>';
+  document.querySelectorAll("[data-ver-doc]").forEach(b => b.addEventListener("click", async () => {
+    const { data: u, error: e2 } = await sb.storage.from("documentos-pymes").createSignedUrl(b.dataset.verDoc, 300);
+    if (e2 || !u){ msg("m-verif", "No se pudo abrir el documento: " + (e2 ? e2.message : "")); return; }
+    window.open(u.signedUrl, "_blank", "noopener");
+  }));
+  const decidir = async (id, decision) => {
+    const { error: e3 } = await sb.rpc("admin_verificar", { p_pyme: id, p_decision: decision });
+    if (e3){ msg("m-verif", "No se pudo guardar: " + e3.message); return; }
+    msg("m-verif", decision === "rechazar" ? "Rechazada y oculta. Recuerda devolver el pago y cancelar la suscripción en Stripe." : "Guardado.", "ok");
+    cargarVerificaciones();
+  };
+  document.querySelectorAll("[data-ver-ok]").forEach(b => b.addEventListener("click", () => decidir(b.dataset.verOk, "aprobar")));
+  document.querySelectorAll("[data-ver-csv]").forEach(b => b.addEventListener("click", () => decidir(b.dataset.verCsv, "csv_ok")));
+  document.querySelectorAll("[data-ver-no]").forEach(b => b.addEventListener("click", () => {
+    if (confirm("¿Rechazar este comercio? Se ocultará y tendrás que devolver el pago en Stripe.")) decidir(b.dataset.verNo, "rechazar");
+  }));
 }
 
 /* ---------- solicitudes de reclutadores ---------- */

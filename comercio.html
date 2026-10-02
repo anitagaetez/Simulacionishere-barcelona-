@@ -185,17 +185,11 @@
       <div class="stat"><div class="n" id="s-30">0</div><div class="l" data-i18n="s_30">en los últimos 30 días</div></div>
     </div>
 
-    <div class="card isa">
-      <h2><span class="isa-avatar">✨</span><span data-i18n="isa_t">Isa, tu asesora</span></h2>
-      <p class="muted" data-i18n="isa_p">Te ayudo a que más turistas te encuentren, con lo que buscan de verdad en tu barrio. Yo sugiero; tú decides qué guardar.</p>
-      <div class="acciones" style="margin-top:10px">
-        <button class="btn-sec" id="isa-mejorar" data-i18n="isa_mejorar">✨ Mejorar mi ficha</button>
-      </div>
-      <div class="isa-preg">
-        <input id="isa-q" maxlength="300" data-i18n-ph="isa_q_ph" placeholder="Pregúntale a Isa…">
-        <button class="btn-sec" id="isa-preguntar" data-i18n="isa_enviar">Enviar</button>
-      </div>
-      <div class="isa-res" id="isa-res" hidden></div>
+    <div class="card" id="c-verif" hidden>
+      <h2 data-i18n="v_t">Verificación de tu comercio</h2>
+      <p class="muted" id="v-texto"></p>
+      <button class="btn-sec" id="v-ubic" hidden data-i18n="v_ubic">📍 Estoy en mi local</button>
+      <div class="msg" id="m-ubic"></div>
     </div>
 
     <div class="card">
@@ -244,10 +238,10 @@
       <div id="cat-list"></div>
       <div id="cat-chosen"></div>
 
-      <button class="btn-sec" id="isa-revisar" style="margin-top:16px" data-i18n="isa_revisar">🛡️ Que Isa lo revise antes de guardar</button>
-      <div class="isa-res" id="isa-rev" hidden></div>
-      <button class="btn" id="btn-guardar" data-i18n="b_save">Guardar cambios</button>
+      <p class="muted" id="mods-info" style="margin-top:16px"></p>
+      <button class="btn" id="btn-guardar" data-i18n="b_save">Finalizar cambios</button>
       <div class="msg" id="m-guardar"></div>
+      <div class="isa-res" id="isa-diag" hidden></div>
     </div>
 
     <div class="card">
@@ -290,6 +284,9 @@ const $ = (id) => document.getElementById(id);
 /* ---------- idiomas ---------- */
 const I18N = {
   es: {
+    saved_final: "Tu ficha se guardó exitosamente.", isa_pregunta: "¿Quieres que Isa haga un diagnóstico de tu ficha? Isa es una IA: te sugiere cambios y te explica por qué. Tú decides.", isa_si: "Sí, quiero", isa_no: "No, terminar", isa_modificar: "Modificar con estas sugerencias", isa_terminar: "Terminar", isa_b_comp: "Tu competencia", isa_b_porque: "Por qué", isa_limite_mes: "Isa ya hizo los diagnósticos de este mes. Vuelve el día 1.",
+    mods_info: "Cambios este mes: {u} de {m}. El horario no cuenta.", err_limite_mods: "Ya usaste los cambios de este mes. Podrás editar tu ficha de nuevo el día 1. El horario sí puedes cambiarlo.",
+    v_t: "Verificación de tu comercio", v_ubic: "📍 Estoy en mi local", v_pend: "Estamos verificando tu documento oficial.", v_ubic_falta: "Tu documento está bien. Falta confirmar tu ubicación: cuando estés en tu local, toca el botón.", v_revisar: "Revisaremos tu documento a mano y te contaremos el resultado.", v_rechazada: "No pudimos verificar tu comercio. Escríbenos para revisar tu caso.", v_ok: "✅ Comercio verificado.", v_lejos: "Tu ubicación está a {d} m del local: revisaremos tu ficha a mano.", ubic_ok: "Ubicación guardada ({d} m del local).", vitrina_falta: "Completa tu vitrina (producto estrella y precio) para aparecer en el buscador.", err_ubic: "No se pudo obtener tu ubicación. Activa el GPS e inténtalo de nuevo.",
     isa_t: "Isa, tu asesora", isa_p: "Te ayudo a que más turistas te encuentren, con lo que buscan de verdad en tu barrio. Yo sugiero; tú decides qué guardar.",
     isa_mejorar: "✨ Mejorar mi ficha", isa_q_ph: "Pregúntale a Isa…", isa_enviar: "Enviar", isa_revisar: "🛡️ Que Isa lo revise antes de guardar",
     isa_pensando: "Isa está pensando…", isa_error: "Isa no pudo responder ahora. Inténtalo en un momento.", isa_limite: "Llegaste al límite de consultas de hoy. Mañana seguimos 😊",
@@ -312,7 +309,7 @@ const I18N = {
     l_address: "Dirección exacta (calle y número)", l_web: "Página web o Instagram", l_photo: "Foto o logo",
     photo_change: "Cambiar foto", photo_ready: "Foto nueva lista. Se guardará al pulsar Guardar.",
     l_catalog: "Productos del catálogo turista que vendes", ph_catalog: "Busca: protector, cargador, paraguas…",
-    cat_add: "Añadir", ph_price: "Precio", cat_remove: "Quitar", b_save: "Guardar cambios",
+    cat_add: "Añadir", ph_price: "Precio", cat_remove: "Quitar", b_save: "Finalizar cambios",
     saving: "Guardando…", saved: "¡Guardado! Revisamos tu ficha en unos segundos y aparecerá en el buscador.",
     err_address: "No encontramos esa dirección en Barcelona. Escribe la calle y el número tal como aparecen en Google Maps (ej: Carrer de Verdi 23). No se guardó ningún cambio.",
     mod_motivo: "Motivo:", mod_pend_t: "⏳ Revisando tu ficha…", mod_pend_p: "En unos segundos aparecerá en el buscador.",
@@ -336,6 +333,9 @@ const I18N = {
     err_load: "No se pudieron cargar tus datos. Inténtalo de nuevo."
   },
   ca: {
+    saved_final: "La teva fitxa s'ha desat correctament.", isa_pregunta: "Vols que l'Isa faci un diagnòstic de la teva fitxa? L'Isa és una IA: et suggereix canvis i t'explica per què. Tu decideixes.", isa_si: "Sí, vull", isa_no: "No, acabar", isa_modificar: "Modificar amb aquests suggeriments", isa_terminar: "Acabar", isa_b_comp: "La teva competència", isa_b_porque: "Per què", isa_limite_mes: "L'Isa ja ha fet els diagnòstics d'aquest mes. Torna el dia 1.",
+    mods_info: "Canvis aquest mes: {u} de {m}. L'horari no compta.", err_limite_mods: "Ja has fet servir els canvis d'aquest mes. Podràs tornar a editar la fitxa el dia 1. L'horari sí que el pots canviar.",
+    v_t: "Verificació del teu comerç", v_ubic: "📍 Sóc al meu local", v_pend: "Estem verificant el teu document oficial.", v_ubic_falta: "El teu document és correcte. Falta confirmar la ubicació: quan siguis al local, toca el botó.", v_revisar: "Revisarem el document a mà i t'explicarem el resultat.", v_rechazada: "No hem pogut verificar el teu comerç. Escriu-nos per revisar el teu cas.", v_ok: "✅ Comerç verificat.", v_lejos: "La teva ubicació és a {d} m del local: revisarem la fitxa a mà.", ubic_ok: "Ubicació desada ({d} m del local).", vitrina_falta: "Completa el teu aparador (producte estrella i preu) per aparèixer al cercador.", err_ubic: "No s'ha pogut obtenir la teva ubicació. Activa el GPS i torna-ho a provar.",
     isa_t: "Isa, la teva assessora", isa_p: "T'ajudo perquè més turistes et trobin, amb el que busquen de veritat al teu barri. Jo suggereixo; tu decideixes què desar.",
     isa_mejorar: "✨ Millorar la meva fitxa", isa_q_ph: "Pregunta-li a l'Isa…", isa_enviar: "Enviar", isa_revisar: "🛡️ Que l'Isa ho revisi abans de desar",
     isa_pensando: "L'Isa està pensant…", isa_error: "L'Isa no ha pogut respondre ara. Torna-ho a provar d'aquí a un moment.", isa_limite: "Has arribat al límit de consultes d'avui. Demà continuem 😊",
@@ -358,7 +358,7 @@ const I18N = {
     l_address: "Adreça exacta (carrer i número)", l_web: "Pàgina web o Instagram", l_photo: "Foto o logotip",
     photo_change: "Canviar la foto", photo_ready: "Foto nova a punt. Es desarà en prémer Desar.",
     l_catalog: "Productes del catàleg turista que vens", ph_catalog: "Cerca: protector, carregador, paraigua…",
-    cat_add: "Afegeix", ph_price: "Preu", cat_remove: "Treu", b_save: "Desar els canvis",
+    cat_add: "Afegeix", ph_price: "Preu", cat_remove: "Treu", b_save: "Finalitzar els canvis",
     saving: "Desant…", saved: "Desat! Revisem la teva fitxa en uns segons i apareixerà al cercador.",
     err_address: "No trobem aquesta adreça a Barcelona. Escriu el carrer i el número tal com surten a Google Maps (ex: Carrer de Verdi 23). No s'ha desat cap canvi.",
     mod_motivo: "Motiu:", mod_pend_t: "⏳ Revisant la teva fitxa…", mod_pend_p: "En uns segons apareixerà al cercador.",
@@ -382,6 +382,9 @@ const I18N = {
     err_load: "No s'han pogut carregar les teves dades. Torna-ho a provar."
   },
   en: {
+    saved_final: "Your listing was saved successfully.", isa_pregunta: "Would you like Isa to review your listing? Isa is an AI: it suggests changes and explains why. You decide.", isa_si: "Yes, please", isa_no: "No, finish", isa_modificar: "Apply these suggestions", isa_terminar: "Finish", isa_b_comp: "Your competition", isa_b_porque: "Why", isa_limite_mes: "Isa has already done this month's reviews. Come back on the 1st.",
+    mods_info: "Changes this month: {u} of {m}. Opening hours don't count.", err_limite_mods: "You've used this month's changes. You can edit your listing again on the 1st. You can still change your opening hours.",
+    v_t: "Verification of your business", v_ubic: "📍 I'm at my shop", v_pend: "We're verifying your official document.", v_ubic_falta: "Your document is fine. Your location still needs confirming: when you're at your shop, tap the button.", v_revisar: "We'll review your document manually and let you know the result.", v_rechazada: "We couldn't verify your business. Write to us so we can review your case.", v_ok: "✅ Business verified.", v_lejos: "Your location is {d} m from the shop: we'll review your listing manually.", ubic_ok: "Location saved ({d} m from the shop).", vitrina_falta: "Complete your showcase (star product and price) to appear in search.", err_ubic: "We couldn't get your location. Turn on GPS and try again.",
     isa_t: "Isa, your advisor", isa_p: "I help more tourists find you, based on what they really search for in your neighbourhood. I suggest; you decide what to save.",
     isa_mejorar: "✨ Improve my listing", isa_q_ph: "Ask Isa…", isa_enviar: "Send", isa_revisar: "🛡️ Let Isa check it before saving",
     isa_pensando: "Isa is thinking…", isa_error: "Isa couldn't answer right now. Please try again in a moment.", isa_limite: "You've reached today's limit. See you tomorrow 😊",
@@ -404,7 +407,7 @@ const I18N = {
     l_address: "Exact address (street and number)", l_web: "Website or Instagram", l_photo: "Photo or logo",
     photo_change: "Change photo", photo_ready: "New photo ready. It will be saved when you tap Save.",
     l_catalog: "Tourist catalogue products you sell", ph_catalog: "Search: sunscreen, charger, umbrella…",
-    cat_add: "Add", ph_price: "Price", cat_remove: "Remove", b_save: "Save changes",
+    cat_add: "Add", ph_price: "Price", cat_remove: "Remove", b_save: "Finish changes",
     saving: "Saving…", saved: "Saved! We'll review your listing in a few seconds and it will appear in search.",
     err_address: "We can't find that address in Barcelona. Write the street and number as shown on Google Maps (e.g. Carrer de Verdi 23). No changes were saved.",
     mod_motivo: "Reason:", mod_pend_t: "⏳ Reviewing your listing…", mod_pend_p: "It will appear in search in a few seconds.",
@@ -554,6 +557,8 @@ function pintarPanel(){
     : futuro ? t("plan_promo", { d: fecha(c.expires_at) }) : t("plan_month");
 
   pintarModeracion(c);
+  pintarUso(c);
+  pintarVerif(c);
 
   $("s-7").textContent = c.vistas_7 ?? 0;
   $("s-30").textContent = c.vistas_30 ?? 0;
@@ -751,9 +756,12 @@ $("btn-guardar").addEventListener("click", async (e) => {
     const idx = comercios.indexOf(actual);
     await cargar();
     elegir(Math.max(0, idx)); $("selector").value = String(Math.max(0, idx));
-    msg("m-guardar", t("saved"), "ok");
+    if (aplicandoIsa){ aplicandoIsa = false; terminarIsa(); }
+    else { msg("m-guardar", t("saved"), "ok"); ofrecerDiagnostico(); }
   } catch (err) {
-    msg("m-guardar", t("err_save", { e: err.message || err }));
+    aplicandoIsa = false;
+    const m = String((err && err.message) || err);
+    msg("m-guardar", m.includes("limite_modificaciones") ? t("err_limite_mods") : t("err_save", { e: m }));
   } finally {
     e.target.disabled = false; e.target.textContent = t("b_save");
   }
@@ -788,68 +796,84 @@ function pintarModeracion(c){
   }
 }
 
-/* ---------- Isa, la asesora (sugiere; nunca guarda) ---------- */
-async function llamarIsa(cuerpo, cajaId, boton){
-  const caja = $(cajaId);
+/* ---------- Isa: diagnóstico opcional al finalizar cambios (sugiere; el comercio decide) ---------- */
+let aplicandoIsa = false;
+function bloqueIsa(titulo, texto, porQue){
+  if (!texto) return "";
+  return `<div class="isa-bloque"><b>${esc(titulo)}</b>${esc(texto)}${porQue ? `<br><span class="muted">${esc(t("isa_b_porque"))}: ${esc(porQue)}</span>` : ""}</div>`;
+}
+function terminarIsa(){ $("isa-diag").hidden = true; msg("m-guardar", t("saved_final"), "ok"); }
+function ofrecerDiagnostico(){
+  const caja = $("isa-diag");
   caja.hidden = false;
-  caja.innerHTML = `<p class="muted">${t("isa_pensando")}</p>`;
-  if (boton) boton.disabled = true;
+  caja.innerHTML = `<div class="isa-bloque"><b>✨ Isa</b>${esc(t("isa_pregunta"))}
+    <div class="acciones" style="margin-top:8px"><button class="btn-sec" id="isa-si">${esc(t("isa_si"))}</button>
+    <button class="btn-sec" id="isa-no">${esc(t("isa_no"))}</button></div></div>`;
+  $("isa-si").onclick = diagnosticar;
+  $("isa-no").onclick = terminarIsa;
+}
+async function diagnosticar(){
+  const caja = $("isa-diag");
+  caja.innerHTML = `<p class="muted">${esc(t("isa_pensando"))}</p>`;
   let data = null, err = null;
   try {
-    const r = await sb.functions.invoke("isa", { body: { ...cuerpo, pyme_id: actual.id, idioma: lang } });
+    const r = await sb.functions.invoke("isa", { body: { accion: "diagnostico", pyme_id: actual.id, idioma: lang } });
     data = r.data; err = r.error;
     if (err && err.context && typeof err.context.json === "function"){ try { data = await err.context.json(); } catch (e) {} }
   } catch (e) { err = e; }
-  if (boton) boton.disabled = false;
-  if (data && data.error === "limite"){ caja.innerHTML = `<p class="muted">${t("isa_limite")}</p>`; return null; }
-  if (err || !data || data.error){ caja.innerHTML = `<p class="muted">${t("isa_error")}</p>`; return null; }
-  return data;
-}
-function bloqueIsa(titulo, texto, botonTxt, botonId){
-  return `<div class="isa-bloque"><b>${esc(titulo)}</b>${esc(texto || "")}${botonTxt ? `<br><button class="btn-sec" id="${botonId}">${esc(botonTxt)}</button>` : ""}</div>`;
-}
-$("isa-mejorar").addEventListener("click", async (e) => {
-  if (!actual) return;
-  const d = await llamarIsa({ accion: "mejorar" }, "isa-res", e.target);
-  if (!d) return;
-  $("isa-res").innerHTML =
-    (d.resumen ? `<p>${esc(d.resumen)}</p>` : "") +
-    bloqueIsa(t("isa_b_desc"), d.descripcion, t("isa_usar"), "isa-usar-desc") +
-    bloqueIsa(t("isa_b_claves"), d.claves, t("isa_anadir"), "isa-usar-claves") +
-    bloqueIsa(t("isa_b_foto"), d.foto) +
-    bloqueIsa(t("isa_b_promo"), d.promo) +
-    `<p class="muted" style="margin-top:8px">${t("isa_recuerda")}</p>`;
-  const bd = $("isa-usar-desc");
-  if (bd) bd.addEventListener("click", () => { $("e-desc").value = String(d.descripcion || "").slice(0, 300); $("e-desc").scrollIntoView({ behavior: "smooth", block: "center" }); });
-  const bc = $("isa-usar-claves");
-  if (bc) bc.addEventListener("click", () => {
-    const actuales = $("e-tags").value.split(",").map(x => x.trim()).filter(Boolean);
-    const nuevas = String(d.claves || "").split(",").map(x => x.trim()).filter(Boolean);
-    const vistas = new Set(actuales.map(x => x.toLowerCase()));
-    nuevas.forEach(x => { if (!vistas.has(x.toLowerCase())){ actuales.push(x); vistas.add(x.toLowerCase()); } });
-    $("e-tags").value = actuales.join(", ");
-    $("e-tags").scrollIntoView({ behavior: "smooth", block: "center" });
-  });
-});
-$("isa-preguntar").addEventListener("click", async (e) => {
-  const q = $("isa-q").value.trim();
-  if (!actual || !q) return;
-  const d = await llamarIsa({ accion: "pregunta", pregunta: q }, "isa-res", e.target);
-  if (d) $("isa-res").innerHTML = `<div class="isa-bloque"><b>Isa</b>${esc(d.respuesta || "")}</div>`;
-});
-$("isa-q").addEventListener("keydown", (e) => { if (e.key === "Enter") $("isa-preguntar").click(); });
-$("isa-revisar").addEventListener("click", async (e) => {
-  if (!actual) return;
-  const formulario = {
-    producto_estrella: $("e-star").value, precio: $("e-precio").value, descripcion: $("e-desc").value,
-    palabras_clave: $("e-tags").value, direccion: $("e-address").value, whatsapp: $("e-wa").value, web: $("e-web").value,
-    instagram: $("e-ig").value, tiktok: $("e-tt").value, facebook: $("e-fb").value, carta
+  if (data && data.error === "limite"){ caja.innerHTML = `<p class="muted">${esc(t("isa_limite_mes"))}</p>`; return; }
+  if (err || !data || data.error){ caja.innerHTML = `<p class="muted">${esc(t("isa_error"))}</p>`; return; }
+  caja.innerHTML =
+    (data.resumen ? `<p>${esc(data.resumen)}</p>` : "") +
+    bloqueIsa(t("isa_b_comp"), data.competencia) +
+    bloqueIsa(t("isa_b_desc"), data.descripcion, data.por_que_descripcion) +
+    bloqueIsa(t("isa_b_claves"), data.claves, data.por_que_claves) +
+    bloqueIsa(t("isa_b_foto"), data.foto) +
+    bloqueIsa(t("isa_b_promo"), data.promo) +
+    `<div class="acciones" style="margin-top:10px"><button class="btn" id="isa-aplicar">${esc(t("isa_modificar"))}</button>
+     <button class="btn-sec" id="isa-terminar">${esc(t("isa_terminar"))}</button></div>`;
+  $("isa-terminar").onclick = terminarIsa;
+  $("isa-aplicar").onclick = () => {
+    if (data.descripcion) $("e-desc").value = String(data.descripcion).slice(0, 300);
+    if (data.claves){
+      const actuales = $("e-tags").value.split(",").map(x => x.trim()).filter(Boolean);
+      const vistas = new Set(actuales.map(x => x.toLowerCase()));
+      String(data.claves).split(",").map(x => x.trim()).filter(Boolean).forEach(x => { if (!vistas.has(x.toLowerCase())){ actuales.push(x); vistas.add(x.toLowerCase()); } });
+      $("e-tags").value = actuales.join(", ");
+    }
+    aplicandoIsa = true;
+    $("btn-guardar").click();
   };
-  const d = await llamarIsa({ accion: "revisar", formulario }, "isa-rev", e.target);
-  if (!d) return;
-  $("isa-rev").innerHTML = d.ok || !(d.avisos || []).length
-    ? `<div class="mod-aviso pend"><b>✅ ${t("isa_ok")}</b></div>`
-    : `<div class="mod-aviso rev"><b>${t("isa_avisos")}</b>${(d.avisos || []).map(a => "• " + esc(a)).join("<br>")}</div>`;
+}
+
+/* ---------- uso del mes y verificación ---------- */
+function pintarUso(c){
+  $("mods-info").textContent = t("mods_info", { u: Number(c.mods_mes || 0), m: Number(c.mods_max || 4) });
+}
+function pintarVerif(c){
+  const box = $("c-verif");
+  const est = c.verif_estado || "";
+  const falta = !!c.falta_ubicacion;
+  const textos = { verificada: "v_ok", verificada_manual: "v_ok", falta_ubicacion: "v_ubic_falta", revisar: "v_revisar", rechazada: "v_rechazada" };
+  const partes = [];
+  if (!c.star_product_name) partes.push(t("vitrina_falta"));
+  partes.push(t(textos[est] || "v_pend"));
+  box.hidden = Number(c.verif_nivel || 0) >= 1 && !falta && !!c.star_product_name;
+  $("v-texto").textContent = partes.join(" ");
+  $("v-ubic").hidden = !falta || est === "rechazada";
+}
+$("v-ubic").addEventListener("click", (e) => {
+  if (!navigator.geolocation){ msg("m-ubic", t("err_ubic")); return; }
+  e.target.disabled = true;
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { data, error } = await sb.rpc("confirmar_ubicacion", { p_id: actual.id, p_lat: pos.coords.latitude, p_lng: pos.coords.longitude });
+    e.target.disabled = false;
+    if (error){ msg("m-ubic", t("err_save", { e: error.message })); return; }
+    const d = data && data.distancia_m;
+    msg("m-ubic", data && data.estado === "verificada" ? t("v_ok") : data && data.estado === "revisar" ? t("v_lejos", { d }) : t("ubic_ok", { d }), "ok");
+    const idx = comercios.indexOf(actual);
+    await cargar(); elegir(Math.max(0, idx)); $("selector").value = String(Math.max(0, idx));
+  }, () => { e.target.disabled = false; msg("m-ubic", t("err_ubic")); }, { enableHighAccuracy: true, timeout: 12000 });
 });
 
 /* ---------- portal de pagos de Stripe ---------- */
