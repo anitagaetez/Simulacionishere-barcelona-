@@ -248,7 +248,7 @@
         <label for="c-name">Nombre del comercio</label><input id="c-name">
         <div class="grid2">
           <div><label for="c-zone">Barrio</label>
-            <select id="c-zone"><option>Gràcia</option><option>Gòtic</option><option>Eixample</option><option>El Raval</option><option>Sagrada Familia</option></select></div>
+            <select id="c-zone"><option>Gràcia</option><option>Gòtic</option><option>Eixample</option><option>El Raval</option><option>Sagrada Familia</option><option>Les Corts</option><option>El Born</option><option>Barceloneta</option><option>Sant Andreu</option><option>Sant Martí</option></select></div>
           <div><label for="c-meses">Duración</label>
             <select id="c-meses"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="0">Sin vencimiento</option></select></div>
         </div>
@@ -964,7 +964,7 @@ $("btn-reclutador").addEventListener("click", async (e) => {
 });
 
 /* ---------- alta de cortesía en el local (documentación completa o no entra) ---------- */
-const CONDICIONES_VERSION = "1.1";
+const CONDICIONES_VERSION = "1.3";
 let cGps = null;
 function nifValido(v){
   const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
