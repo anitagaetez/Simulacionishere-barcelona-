@@ -447,6 +447,13 @@
          color: var(--cream); font: inherit; cursor: pointer; margin-bottom: 8px; }
   .otra .o-n{ font-size: 0.92rem; font-weight: 600; }
   .otra .o-s{ font-size: 0.78rem; color: var(--cream-dim); margin-top: 2px; }
+  .zona-t{ font-size: 0.8rem; color: var(--gold); font-weight: 600; margin: 14px 0 6px; }
+  .otra.activa{ border-color: #1F8BFF; background: rgba(31,139,255,0.12); }
+  .con-resultado .listen-stage{ padding: 8px 0 4px; gap: 8px; }
+  .con-resultado .mic-wrap{ width: 72px; height: 72px; }
+  .con-resultado #btn-mic{ width: 56px; height: 56px; }
+  .con-resultado #btn-mic svg{ width: 24px; height: 24px; }
+  .con-resultado .ring{ display: none; }
   .otra .o-d{ font-size: 0.8rem; color: var(--success); white-space: nowrap; }
   /* Horario en la ficha */
   .ft-horario summary{ cursor: pointer; font-size: 0.85rem; color: var(--gold); }
@@ -774,6 +781,10 @@
         <p class="transcript" id="transcript"></p>
       </div>
 
+      <div class="otras" id="otras">
+        <h4 data-i18n="otras_title">Otras opciones cerca</h4>
+        <div id="otras-lista"></div>
+      </div>
       <div class="result-card" id="result-card">
         <div class="product-thumb" id="result-thumb"></div>
         <div class="info-pyme">
@@ -838,10 +849,6 @@
           <button class="ruta-cancel" id="ruta-cancel" type="button" data-i18n="go_cancel">Cancelar</button>
           <p class="ruta-nota" data-i18n="route_note">Ruta calculada por Google Maps. Atiende siempre al tráfico y a tu entorno.</p>
         </div>
-      </div>
-      <div class="otras" id="otras">
-        <h4 data-i18n="otras_title">Otras opciones cerca</h4>
-        <div id="otras-lista"></div>
       </div>
 
       <section class="sugerencias" aria-labelledby="sug-title">
@@ -1056,6 +1063,7 @@ function normalize(str){
 /* ---------- idiomas: català, español, english ---------- */
 const I18N = {
   es: {
+    z_pie: "🚶 A pie · hasta 10 min", z_trans: "🚇 En metro o bus · unos 10 min (aprox.)", z_lejos: "🗺️ Más lejos",
     zone_label: "Estás en",
     locate_aria: "Detectar mi ubicación",
     search_ph: "O escribe qué buscas (ej: costura, botones)",
@@ -1104,7 +1112,7 @@ const I18N = {
     lk_cookies: "Cookies",
     lk_cond: "Condiciones para comercios",
     h_ver: "Ver horario",
-    otras_title: "Otras opciones cerca",
+    otras_title: "Dónde encontrarlo",
     h_open: "Abierto · cierra a las {h}",
     h_opens: "Cerrado · abre a las {h}",
     h_opens_day: "Cerrado · abre el {d} a las {h}",
@@ -1239,6 +1247,7 @@ const I18N = {
     rot_delivery: "🛵 ¿Sin ganas de salir del hotel? Comida a domicilio."
   },
   ca: {
+    z_pie: "🚶 A peu · fins a 10 min", z_trans: "🚇 En metro o bus · uns 10 min (aprox.)", z_lejos: "🗺️ Més lluny",
     zone_label: "Ets a",
     locate_aria: "Detectar la meva ubicació",
     search_ph: "O escriu què busques (ex.: costura, botons)",
@@ -1287,7 +1296,7 @@ const I18N = {
     lk_cookies: "Galetes",
     lk_cond: "Condicions per a comerços",
     h_ver: "Veure l'horari",
-    otras_title: "Altres opcions a prop",
+    otras_title: "On trobar-ho",
     h_open: "Obert · tanca a les {h}",
     h_opens: "Tancat · obre a les {h}",
     h_opens_day: "Tancat · obre {d} a les {h}",
@@ -1422,6 +1431,7 @@ const I18N = {
     rot_delivery: "🛵 Sense ganes de sortir de l'hotel? Menjar a domicili."
   },
   en: {
+    z_pie: "🚶 On foot · up to 10 min", z_trans: "🚇 By metro or bus · about 10 min (approx.)", z_lejos: "🗺️ Further away",
     zone_label: "You're in",
     locate_aria: "Detect my location",
     search_ph: "Or type what you need (e.g. sewing, buttons)",
@@ -1470,7 +1480,7 @@ const I18N = {
     lk_cookies: "Cookies",
     lk_cond: "Terms for businesses",
     h_ver: "See opening hours",
-    otras_title: "Other options nearby",
+    otras_title: "Where to find it",
     h_open: "Open · closes at {h}",
     h_opens: "Closed · opens at {h}",
     h_opens_day: "Closed · opens {d} at {h}",
@@ -1605,6 +1615,7 @@ const I18N = {
     rot_delivery: "🛵 Don't feel like leaving the hotel? Food delivered."
   },
   it: {
+    z_pie: "🚶 A piedi · fino a 10 min", z_trans: "🚇 In metro o bus · circa 10 min (stima)", z_lejos: "🗺️ Più lontano",
     zone_label: "Sei a",
     locate_aria: "Rileva la mia posizione",
     search_ph: "Oppure scrivi cosa cerchi (es.: cucito, bottoni)",
@@ -1653,7 +1664,7 @@ const I18N = {
     lk_cookies: "Cookie",
     lk_cond: "Condizioni per i negozi",
     h_ver: "Vedi orari",
-    otras_title: "Altre opzioni vicine",
+    otras_title: "Dove trovarlo",
     h_open: "Aperto · chiude alle {h}",
     h_opens: "Chiuso · apre alle {h}",
     h_opens_day: "Chiuso · apre {d} alle {h}",
@@ -1788,6 +1799,7 @@ const I18N = {
     rot_delivery: "🛵 Non hai voglia di uscire dall'hotel? Cibo a domicilio."
   },
   fr: {
+    z_pie: "🚶 À pied · jusqu'à 10 min", z_trans: "🚇 En métro ou bus · environ 10 min (approx.)", z_lejos: "🗺️ Plus loin",
     zone_label: "Tu es à",
     locate_aria: "Détecter ma position",
     search_ph: "Ou écris ce que tu cherches (ex. : couture, boutons)",
@@ -1836,7 +1848,7 @@ const I18N = {
     lk_cookies: "Cookies",
     lk_cond: "Conditions pour les commerces",
     h_ver: "Voir les horaires",
-    otras_title: "Autres options à proximité",
+    otras_title: "Où le trouver",
     h_open: "Ouvert · ferme à {h}",
     h_opens: "Fermé · ouvre à {h}",
     h_opens_day: "Fermé · ouvre {d} à {h}",
@@ -2362,6 +2374,15 @@ function textosTraducidos(p){
   return partes.join(",");
 }
 
+// Zonas aproximadas por distancia en línea recta (hasta tener los datos de metro y bus):
+// a pie ≈ 10 min (80 m/min, calles un 30 % más largas); en transporte ≈ 10 min de viaje.
+function zonaDe(km){
+  if (km == null || km >= 900) return "lejos";
+  if (km <= 0.62) return "pie";
+  if (km <= 4) return "trans";
+  return "lejos";
+}
+
 async function searchNearestProduct(userSpeech, userZone){
   const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
@@ -2394,10 +2415,13 @@ async function searchNearestProduct(userSpeech, userZone){
       });
       // Productos del catálogo que la pyme marcó y que coinciden con la búsqueda (valen doble).
       const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
-      return { pyme: p, score: hits.length + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos[0] || null, cartaHit,
-               productos: mapaProductos.get(p.id) || [] };
+      // Solo se muestran comercios con precio publicado (estipulación 11 de las condiciones).
+      const conPrecio = !!((cartaHit && String(cartaHit.precio || "").trim()) || suyos.some(r => String(r.precio || "").trim())
+        || String(p.star_product_price || "").trim());
+      return { pyme: p, score: hits.length + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
+               productos: mapaProductos.get(p.id) || [], conPrecio };
     })
-    .filter(c => c.score > 0)
+    .filter(c => c.score > 0 && c.conPrecio)
     .map(c => {
       const e = estadoHorario(c.pyme.horario);
       // 0 = abierto ahora, 1 = sin horario indicado, 2 = cerrado ahora
@@ -2413,9 +2437,9 @@ async function searchNearestProduct(userSpeech, userZone){
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
   const mejor = candidates[0];
-  const aRes = (c) => ({ match: c.pyme, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos });
+  const aRes = (c) => ({ match: c.pyme, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos, zona: zonaDe(c.km) });
   return { ...(mejor ? aRes(mejor) : { match: null, km: null, producto: null, cartaHit: null, productos: [] }),
-           candidatos: candidates.slice(0, 4).map(aRes) };
+           candidatos: candidates.map(aRes) };
 }
 
 /* ---------- horario (hora de Barcelona) ---------- */
@@ -2661,6 +2685,7 @@ async function handleSpeechResult(speech){
   } else {
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
+    document.getElementById("otras").classList.remove("hay");
     const clave = frasesSinResultado[Math.floor(Math.random() * frasesSinResultado.length)];
     listenStatus.innerHTML = t(clave, { s: esc(speech) });
     registrarSinResultado(speech, zone);
@@ -2670,6 +2695,7 @@ async function handleSpeechResult(speech){
 // Muestra un resultado (el mejor o el que el turista elige entre las otras opciones).
 function mostrarResultado(res, zone, conVoz){
   const match = res.match;
+  document.body.classList.add("con-resultado");
   pymeActualId = match.id;
   {
     const thumb = document.getElementById("result-thumb");
@@ -2733,24 +2759,32 @@ function mostrarResultado(res, zone, conVoz){
 function pintarOtras(candidatos, actual, zone){
   const box = document.getElementById("otras");
   const lista = document.getElementById("otras-lista");
-  const otras = (candidatos || []).filter(c => c.match.id !== actual.id).slice(0, 3);
-  box.classList.toggle("hay", otras.length > 0);
+  const todos = candidatos || [];
+  box.classList.toggle("hay", todos.length > 1);
   lista.innerHTML = "";
-  otras.forEach(c => {
-    const p = c.match;
-    const e = estadoHorario(p.horario);
-    const prod = c.cartaHit ? [c.cartaHit.nombre, c.cartaHit.precio].filter(Boolean).join(" · ")
-      : [p.star_product_name, p.star_product_price].filter(Boolean).join(" · ");
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "otra";
-    b.innerHTML = `<span><div class="o-n">${esc(p.name)}</div><div class="o-s">${esc(prod)}${e.conocido ? " · " + esc(e.texto) : ""}</div></span>
-      <span class="o-d">${esc(p.lat != null && c.km != null && c.km < 900 ? formatoDistancia(c.km) : p.zone)}</span>`;
-    b.addEventListener("click", () => {
-      mostrarResultado(c, zone, false);
-      pintarOtras(candidatos, p, zone);
-      document.getElementById("result-card").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "start" });
+  [["pie", "z_pie"], ["trans", "z_trans"], ["lejos", "z_lejos"]].forEach(([g, clave]) => {
+    const grupo = todos.filter(c => (c.zona || "lejos") === g);
+    if (!grupo.length) return;
+    const h = document.createElement("h5");
+    h.className = "zona-t";
+    h.textContent = `${t(clave)} (${grupo.length})`;
+    lista.appendChild(h);
+    grupo.forEach(c => {
+      const p = c.match;
+      const e = estadoHorario(p.horario);
+      const prod = c.cartaHit ? [c.cartaHit.nombre, c.cartaHit.precio].filter(Boolean).join(" · ")
+        : [trStar(p), p.star_product_price].filter(Boolean).join(" · ");
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "otra" + (p.id === actual.id ? " activa" : "");
+      b.innerHTML = `<span><div class="o-n">${esc(p.name)}</div><div class="o-s">${esc(prod)}${e.conocido ? " · " + esc(e.texto) : ""}</div></span>
+        <span class="o-d">${esc(p.lat != null && c.km != null && c.km < 900 ? formatoDistancia(c.km) : p.zone)}</span>`;
+      b.addEventListener("click", () => {
+        if (p.id !== actual.id){ mostrarResultado(c, zone, false); pintarOtras(candidatos, p, zone); }
+        document.getElementById("result-card").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "start" });
+      });
+      lista.appendChild(b);
     });
-    lista.appendChild(b);
   });
 }
 
