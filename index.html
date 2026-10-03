@@ -708,6 +708,7 @@
   .intro{ position: fixed; inset: 0; z-index: 9999; background: rgba(6,20,30,0.82); display: flex; align-items: center; justify-content: center; padding: 20px; }
   .intro[hidden]{ display: none; }
   .intro-card{ background: var(--bg-panel, #123449); color: var(--cream, #F2E9D8); border-radius: 20px; padding: 24px 20px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+  .intro-flags{ justify-content: center; margin-bottom: 14px; }
   .intro-card img{ width: 56px; height: 56px; border-radius: 50%; margin-bottom: 8px; }
   .intro-card h2{ font-family: Georgia, serif; font-weight: 500; font-size: 1.45rem; margin: 0 0 8px; }
   .intro-card p{ font-size: .95rem; line-height: 1.45; color: var(--cream-dim, #B9C7CE); margin: 0 0 12px; }
@@ -1062,6 +1063,23 @@
 
 <div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="intro-t">
   <div class="intro-card">
+    <div class="flags intro-flags" role="group" aria-label="Idioma / Language">
+      <button class="flag-btn" data-lang="ca" aria-label="Català" title="Català">
+        <svg viewBox="0 0 27 18" preserveAspectRatio="none"><rect width="27" height="18" fill="#FCDD09"/><rect y="2" width="27" height="2" fill="#DA121A"/><rect y="6" width="27" height="2" fill="#DA121A"/><rect y="10" width="27" height="2" fill="#DA121A"/><rect y="14" width="27" height="2" fill="#DA121A"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="es" aria-label="Español" title="Español">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="3" height="2" fill="#C60B1E"/><rect y="0.5" width="3" height="1" fill="#FFC400"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="en" aria-label="English" title="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="none"><clipPath id="uk-t2"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t2)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="it" aria-label="Italiano" title="Italiano">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="1" height="2" fill="#009246"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#CE2B37"/></svg>
+      </button>
+      <button class="flag-btn" data-lang="fr" aria-label="Français" title="Français">
+        <svg viewBox="0 0 3 2" preserveAspectRatio="none"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>
+      </button>
+    </div>
     <img src="logo-mark.png" alt="">
     <h2 id="intro-t" data-i18n="intro_t">Hola, soy isHere 👋</h2>
     <p data-i18n="intro_p">Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.</p>
