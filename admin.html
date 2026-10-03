@@ -213,20 +213,37 @@
 
     <section class="card">
       <details>
-        <summary>Negocio de cortesía</summary>
-        <p class="muted" style="margin-top:8px">Aparece en el buscador sin pagar. Para negocios estrella o acuerdos especiales.</p>
-        <label for="c-name">Nombre del negocio</label><input id="c-name">
+        <summary>Alta de cortesía en el local</summary>
+        <p class="muted" style="margin-top:8px">Gratis, hecha por ti <b>en el local</b>. Solo entra si la documentación está completa: documento oficial, ubicación a menos de 150 m y aceptación de las condiciones por el titular. Queda verificada por ti y publicada.</p>
+        <label for="c-name">Nombre del comercio</label><input id="c-name">
         <div class="grid2">
           <div><label for="c-zone">Barrio</label>
             <select id="c-zone"><option>Gràcia</option><option>Gòtic</option><option>Eixample</option><option>El Raval</option><option>Sagrada Familia</option></select></div>
           <div><label for="c-meses">Duración</label>
             <select id="c-meses"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12" selected>12 meses</option><option value="0">Sin vencimiento</option></select></div>
         </div>
-        <label for="c-product">Producto estrella</label><input id="c-product">
-        <label for="c-tags">Palabras de búsqueda (catalán, español e inglés), separadas por comas</label><input id="c-tags">
-        <label for="c-address">Dirección exacta</label><input id="c-address" placeholder="Carrer de Verdi 23">
-        <button class="btn" id="btn-cortesia">Dar de alta gratis</button>
+        <label for="c-address">Dirección (calle y número)</label><input id="c-address" placeholder="Carrer de Verdi 23">
+        <label for="c-local">Local, piso o puerta (opcional)</label><input id="c-local">
+        <button class="btn-sec" id="c-gps" type="button" style="margin-top:8px">📍 Estoy en el local</button>
+        <p class="muted" id="c-gps-estado">Toca el botón estando dentro del comercio.</p>
+        <div class="grid2">
+          <div><label for="c-product">Producto estrella</label><input id="c-product"></div>
+          <div><label for="c-precio">Precio</label><input id="c-precio" placeholder="3,50 €"></div>
+        </div>
+        <label for="c-contacto">Nombre del titular o responsable</label><input id="c-contacto">
+        <div class="grid2">
+          <div><label for="c-email">Email (para entrar a Mi comercio)</label><input id="c-email" type="email"></div>
+          <div><label for="c-tel">Teléfono / WhatsApp</label><input id="c-tel" type="tel" placeholder="+34 600 000 000"></div>
+        </div>
+        <label for="c-razon">Razón social</label><input id="c-razon">
+        <label for="c-nif">NIF / NIE / CIF</label><input id="c-nif" autocapitalize="characters">
+        <label for="c-doc">Documento oficial (licencia del Ajuntament o certificado censal de Hacienda)</label>
+        <input id="c-doc" type="file" accept="image/*,application/pdf">
+        <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="c-acepta" style="width:auto;margin-top:3px">
+          <span>El titular ha leído y acepta las <a href="legal.html#condiciones" target="_blank" rel="noopener">Condiciones para comercios</a> y la <a href="legal.html#privacidad" target="_blank" rel="noopener">Política de privacidad</a>, y actúa en nombre del comercio.</span></label>
+        <button class="btn" id="btn-cortesia" style="margin-top:12px">Dar de alta gratis</button>
         <div class="msg" id="m-cortesia"></div>
+        <div id="c-ok"></div>
       </details>
     </section>
 
@@ -687,21 +704,90 @@ $("btn-reclutador").addEventListener("click", async (e) => {
   cargarPanel();
 });
 
-/* ---------- negocio de cortesía ---------- */
+/* ---------- alta de cortesía en el local (documentación completa o no entra) ---------- */
+const CONDICIONES_VERSION = "1.1";
+let cGps = null;
+function nifValido(v){
+  const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+  if (/^\d{8}[A-Z]$/.test(v)) return letras[Number(v.slice(0, 8)) % 23] === v[8];
+  if (/^[XYZ]\d{7}[A-Z]$/.test(v)){ const n = Number(String("XYZ".indexOf(v[0])) + v.slice(1, 8)); return letras[n % 23] === v[8]; }
+  return /^[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]$/.test(v);
+}
+async function geocodificar(direccion){
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q=${encodeURIComponent(direccion + ", Barcelona, España")}`);
+    const d = await r.json();
+    if (!d || !d[0]) return null;
+    const lat = Number(d[0].lat), lng = Number(d[0].lon);
+    return (lat > 41.25 && lat < 41.5 && lng > 1.95 && lng < 2.35) ? { lat, lng } : null;
+  } catch (e) { return null; }
+}
+function comprimir(file, MAX = 2000){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, MAX / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(b => b ? resolve(b) : reject(new Error("no se pudo procesar la foto")), "image/jpeg", 0.85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("formato de foto no válido")); };
+    img.src = url;
+  });
+}
+$("c-gps").addEventListener("click", (e) => {
+  if (!navigator.geolocation){ $("c-gps-estado").textContent = "Este móvil no da la ubicación."; return; }
+  e.target.disabled = true; $("c-gps-estado").textContent = "Obteniendo ubicación…";
+  navigator.geolocation.getCurrentPosition(
+    (pos) => { cGps = { lat: pos.coords.latitude, lng: pos.coords.longitude }; e.target.disabled = false; $("c-gps-estado").textContent = "Ubicación guardada ✅"; },
+    () => { cGps = null; e.target.disabled = false; $("c-gps-estado").textContent = "No se pudo obtener la ubicación. Activa el GPS."; },
+    { enableHighAccuracy: true, timeout: 12000 });
+});
 $("btn-cortesia").addEventListener("click", async (e) => {
-  limpiar("m-cortesia");
-  const p = {
-    p_name: $("c-name").value.trim(), p_zone: $("c-zone").value, p_product: $("c-product").value.trim(),
-    p_tags: $("c-tags").value.trim(), p_address: $("c-address").value.trim(), p_meses: Number($("c-meses").value)
-  };
-  if (!p.p_name || !p.p_product || !p.p_tags || !p.p_address){ msg("m-cortesia", "Completa nombre, producto, palabras y dirección."); return; }
-  e.target.disabled = true;
-  const { error } = await sb.rpc("admin_crear_cortesia", p);
-  e.target.disabled = false;
-  if (error){ msg("m-cortesia", "No se pudo dar de alta: " + error.message); return; }
-  msg("m-cortesia", `"${p.p_name}" ya aparece en el buscador.`, "ok");
-  ["c-name", "c-product", "c-tags", "c-address"].forEach(id => $(id).value = "");
-  cargarPanel();
+  limpiar("m-cortesia"); $("c-ok").innerHTML = "";
+  const v = (id) => $(id).value.trim();
+  const d = { name: v("c-name"), zone: $("c-zone").value, meses: Number($("c-meses").value), calle: v("c-address"), local: v("c-local"),
+    producto: v("c-product"), precio: v("c-precio"), contacto: v("c-contacto"), email: v("c-email").toLowerCase(), telefono: v("c-tel"),
+    razon_social: v("c-razon"), nif: v("c-nif").toUpperCase().replace(/[\s.\-]/g, "") };
+  const doc = $("c-doc").files && $("c-doc").files[0];
+  const faltan = [];
+  if (!d.name) faltan.push("nombre"); if (!d.calle) faltan.push("dirección"); if (!d.producto) faltan.push("producto");
+  if (!d.precio) faltan.push("precio"); if (!d.email) faltan.push("email"); if (!d.telefono) faltan.push("teléfono");
+  if (!d.razon_social) faltan.push("razón social"); if (!d.nif) faltan.push("NIF"); if (!doc) faltan.push("documento oficial");
+  if (!cGps) faltan.push("ubicación (📍)"); if (!$("c-acepta").checked) faltan.push("aceptación del titular");
+  if (faltan.length){ msg("m-cortesia", "Falta: " + faltan.join(", ") + "."); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)){ msg("m-cortesia", "El email no es válido."); return; }
+  if (!nifValido(d.nif)){ msg("m-cortesia", "El NIF / NIE / CIF no es válido."); return; }
+  e.target.disabled = true; e.target.textContent = "Comprobando…";
+  try {
+    const c = await geocodificar(d.calle);
+    if (!c) throw new Error("No encuentro esa dirección en el mapa. Escríbela como en Google Maps.");
+    const id = crypto.randomUUID();
+    let archivo = doc, tipo = doc.type || "application/octet-stream", ext = tipo === "application/pdf" ? "pdf" : "jpg";
+    if (tipo.startsWith("image/")){ archivo = await comprimir(doc); tipo = "image/jpeg"; }
+    const ruta = `${id}/documento.${ext}`;
+    const up = await sb.storage.from("documentos-pymes").upload(ruta, archivo, { contentType: tipo, upsert: false });
+    if (up.error) throw new Error("No se pudo subir el documento: " + up.error.message);
+    const { error } = await sb.rpc("admin_alta_cortesia", { p: {
+      id, name: d.name, zone: d.zone, meses: d.meses, address: d.local ? `${d.calle}, ${d.local}` : d.calle, lat: c.lat, lng: c.lng,
+      gps_lat: cGps.lat, gps_lng: cGps.lng, producto: d.producto, precio: d.precio, contacto: d.contacto, email: d.email,
+      telefono: d.telefono, razon_social: d.razon_social, nif: d.nif, doc_path: ruta, doc_tipo: ext, acepta: true,
+      condiciones_version: CONDICIONES_VERSION } });
+    if (error) throw new Error(error.message);
+    msg("m-cortesia", `"${d.name}" ya está activa y verificada. Aparecerá en el buscador cuando pase la moderación (segundos).`, "ok");
+    const tel = d.telefono.replace(/\D/g, "");
+    const texto = `Hola${d.contacto ? " " + d.contacto : ""}, soy Anita de isHere 👋 "${d.name}" ya está en isHere. Completa tu vitrina (fotos, horario, redes) entrando con tu email ${d.email} aquí: ${APP}comercio.html`;
+    if (tel.length >= 8) $("c-ok").innerHTML = `<a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Mandarle el acceso por WhatsApp</a>`;
+    ["c-name", "c-address", "c-local", "c-product", "c-precio", "c-contacto", "c-email", "c-tel", "c-razon", "c-nif"].forEach(x => $(x).value = "");
+    $("c-doc").value = ""; $("c-acepta").checked = false; cGps = null; $("c-gps-estado").textContent = "Toca el botón estando dentro del comercio.";
+    cargarPanel();
+  } catch (err) {
+    const m = String(err.message || err);
+    msg("m-cortesia", m.includes("lejos del local") ? "La ubicación está demasiado lejos de la dirección (" + m.replace(/\D+/g, " ").trim() + " m). Revisa la dirección o toca 📍 dentro del local."
+      : m.includes("ya hay una ficha") ? "Ya hay una ficha activa en esa dirección." : "No se pudo dar de alta: " + m);
+  } finally {
+    e.target.disabled = false; e.target.textContent = "Dar de alta gratis";
+  }
 });
 
 // Permite instalar el panel como app («isHere Admin»).
