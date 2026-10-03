@@ -704,6 +704,18 @@
     .field-row{ flex-direction: column; }
   }
 </style>
+<style>
+  .intro{ position: fixed; inset: 0; z-index: 9999; background: rgba(6,20,30,0.82); display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .intro[hidden]{ display: none; }
+  .intro-card{ background: var(--bg-panel, #123449); color: var(--cream, #F2E9D8); border-radius: 20px; padding: 24px 20px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+  .intro-card img{ width: 56px; height: 56px; border-radius: 50%; margin-bottom: 8px; }
+  .intro-card h2{ font-family: Georgia, serif; font-weight: 500; font-size: 1.45rem; margin: 0 0 8px; }
+  .intro-card p{ font-size: .95rem; line-height: 1.45; color: var(--cream-dim, #B9C7CE); margin: 0 0 12px; }
+  .intro-card ul{ list-style: none; padding: 0; margin: 0 0 12px; text-align: left; }
+  .intro-card li{ font-size: .95rem; padding: 8px 10px; margin: 6px 0; background: rgba(242,233,216,.06); border-radius: 12px; }
+  .intro-card small{ display: block; color: var(--cream-dim, #B9C7CE); margin-bottom: 14px; }
+  .intro-card button{ width: 100%; padding: 14px; border: none; border-radius: 999px; background: #1F8BFF; color: #fff; font-size: 1.05rem; font-weight: 700; cursor: pointer; font-family: inherit; }
+</style>
 </head>
 <body>
 <div class="lluvia izq" aria-hidden="true"><div class="pista" id="pista-izq"></div></div>
@@ -874,7 +886,7 @@
           <div class="app-guia" id="guia-instalar" hidden><p id="guia-texto"></p></div>
           <button type="button" class="app-cerrar" id="app-cerrar" data-i18n-aria="app_close" aria-label="Ahora no">×</button>
         </div>
-        <div class="legal-links"><a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#uso" data-i18n="lk_uso">Condiciones de uso</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones para comercios</a></div>
+        <div class="legal-links"><a href="#" id="ver-intro" data-i18n="intro_link">¿Qué es isHere?</a> · <a href="legal.html#aviso" data-i18n="lk_aviso">Aviso legal</a> · <a href="legal.html#uso" data-i18n="lk_uso">Condiciones de uso</a> · <a href="legal.html#privacidad" data-i18n="lk_priv">Privacidad</a> · <a href="legal.html#cookies" data-i18n="lk_cookies">Cookies</a> · <a href="legal.html#condiciones" data-i18n="lk_cond">Condiciones para comercios</a></div>
         <div style="font-size:0.7rem;opacity:0.6;margin-top:6px">Ubicaciones © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:inherit">OpenStreetMap</a></div>
         <div class="business-link"><a href="#" id="link-to-comercio" data-i18n="biz_link">¿Tienes un comercio? Aparece en isHere</a></div>
         <div class="business-link"><a href="reclutadores.html" data-i18n="recruit_link">💼 ¿Quieres ganar dinero extra? Hazte reclutador/a</a></div>
@@ -1038,6 +1050,20 @@
   </main>
 </div>
 
+<div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="intro-t">
+  <div class="intro-card">
+    <img src="logo-mark.png" alt="">
+    <h2 id="intro-t" data-i18n="intro_t">Hola, soy isHere 👋</h2>
+    <p data-i18n="intro_p">Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.</p>
+    <ul>
+      <li data-i18n="intro_1">🎙️ Dime o escribe qué buscas</li>
+      <li data-i18n="intro_2">🏪 Te muestro las tiendas que lo tienen, con su precio</li>
+      <li data-i18n="intro_3">🚶 Te llevo hasta la puerta</li>
+    </ul>
+    <small data-i18n="intro_free">Gratis y sin registro.</small>
+    <button type="button" id="intro-ok" data-i18n="intro_btn">¡Empezar!</button>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SUPABASE_URL = "https://zmudkcpsczsfphzbzjzt.supabase.co";
@@ -1063,6 +1089,7 @@ function normalize(str){
 /* ---------- idiomas: català, español, english ---------- */
 const I18N = {
   es: {
+    intro_t: "Hola, soy isHere 👋", intro_p: "Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.", intro_1: "🎙️ Dime o escribe qué buscas", intro_2: "🏪 Te muestro las tiendas que lo tienen, con su precio", intro_3: "🚶 Te llevo hasta la puerta", intro_free: "Gratis y sin registro.", intro_btn: "¡Empezar!", intro_link: "¿Qué es isHere?",
     z_pie: "🚶 A pie · hasta 10 min", z_trans: "🚇 En metro o bus · unos 10 min (aprox.)", z_lejos: "🗺️ Más lejos",
     zone_label: "Estás en",
     locate_aria: "Detectar mi ubicación",
@@ -1247,6 +1274,7 @@ const I18N = {
     rot_delivery: "🛵 ¿Sin ganas de salir del hotel? Comida a domicilio."
   },
   ca: {
+    intro_t: "Hola, sóc isHere 👋", intro_p: "Et dic on comprar el que necessites en botigues de barri de Barcelona, a prop teu.", intro_1: "🎙️ Digues-me o escriu què busques", intro_2: "🏪 T'ensenyo les botigues que ho tenen, amb el preu", intro_3: "🚶 T'hi porto fins a la porta", intro_free: "Gratis i sense registre.", intro_btn: "Comencem!", intro_link: "Què és isHere?",
     z_pie: "🚶 A peu · fins a 10 min", z_trans: "🚇 En metro o bus · uns 10 min (aprox.)", z_lejos: "🗺️ Més lluny",
     zone_label: "Ets a",
     locate_aria: "Detectar la meva ubicació",
@@ -1431,6 +1459,7 @@ const I18N = {
     rot_delivery: "🛵 Sense ganes de sortir de l'hotel? Menjar a domicili."
   },
   en: {
+    intro_t: "Hi, I'm isHere 👋", intro_p: "I tell you where to buy what you need in local shops in Barcelona, close to you.", intro_1: "🎙️ Say or type what you're looking for", intro_2: "🏪 I show you the shops that have it, with prices", intro_3: "🚶 I take you to the door", intro_free: "Free, no sign-up.", intro_btn: "Start", intro_link: "What is isHere?",
     z_pie: "🚶 On foot · up to 10 min", z_trans: "🚇 By metro or bus · about 10 min (approx.)", z_lejos: "🗺️ Further away",
     zone_label: "You're in",
     locate_aria: "Detect my location",
@@ -1615,6 +1644,7 @@ const I18N = {
     rot_delivery: "🛵 Don't feel like leaving the hotel? Food delivered."
   },
   it: {
+    intro_t: "Ciao, sono isHere 👋", intro_p: "Ti dico dove comprare ciò che ti serve nei negozi di quartiere di Barcellona, vicino a te.", intro_1: "🎙️ Dimmi o scrivi cosa cerchi", intro_2: "🏪 Ti mostro i negozi che ce l'hanno, con il prezzo", intro_3: "🚶 Ti porto fino alla porta", intro_free: "Gratis e senza registrazione.", intro_btn: "Iniziamo!", intro_link: "Cos'è isHere?",
     z_pie: "🚶 A piedi · fino a 10 min", z_trans: "🚇 In metro o bus · circa 10 min (stima)", z_lejos: "🗺️ Più lontano",
     zone_label: "Sei a",
     locate_aria: "Rileva la mia posizione",
@@ -1799,6 +1829,7 @@ const I18N = {
     rot_delivery: "🛵 Non hai voglia di uscire dall'hotel? Cibo a domicilio."
   },
   fr: {
+    intro_t: "Bonjour, je suis isHere 👋", intro_p: "Je te dis où acheter ce dont tu as besoin dans les commerces de quartier de Barcelone, près de toi.", intro_1: "🎙️ Dis-moi ou écris ce que tu cherches", intro_2: "🏪 Je te montre les boutiques qui l’ont, avec le prix", intro_3: "🚶 Je t'emmène jusqu'à la porte", intro_free: "Gratuit et sans inscription.", intro_btn: "C'est parti !", intro_link: "Qu'est-ce que isHere ?",
     z_pie: "🚶 À pied · jusqu'à 10 min", z_trans: "🚇 En métro ou bus · environ 10 min (approx.)", z_lejos: "🗺️ Plus loin",
     zone_label: "Tu es à",
     locate_aria: "Détecter ma position",
@@ -3060,7 +3091,7 @@ async function geocodificar(direccion){
   } catch (e) { return null; }
 }
 
-const CONDICIONES_VERSION = "1.1";
+const CONDICIONES_VERSION = "1.3";
 // Valida DNI, NIE (con su letra de control) y el formato de CIF.
 function nifValido(v){
   const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
@@ -3247,6 +3278,19 @@ async function abrirInvitacion(token){
     mostrarAviso(t("invite_fail"), "warn");
   }
 }
+
+/* ---------- presentación de isHere (primera visita) ---------- */
+(function(){
+  const intro = document.getElementById("intro");
+  const cerrar = () => { intro.hidden = true; try { localStorage.setItem("ishere_intro", "1"); } catch (e) {} };
+  document.getElementById("intro-ok").addEventListener("click", cerrar);
+  intro.addEventListener("click", (e) => { if (e.target === intro) cerrar(); });
+  document.getElementById("ver-intro").addEventListener("click", (e) => { e.preventDefault(); intro.hidden = false; });
+  let visto = false;
+  try { visto = localStorage.getItem("ishere_intro") === "1"; } catch (e) {}
+  const flujo = /[?&](pago|session_id|invite|ref|comercio|alta|cancel)/i.test(location.search);
+  if (!visto && !flujo) intro.hidden = false;
+})();
 
 /* ---------- modo sin conexión: la última búsqueda queda guardada en el móvil ---------- */
 function guardarUltima(res, zone, speech){
