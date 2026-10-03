@@ -151,6 +151,19 @@
       </div>
     </section>
 
+    <section class="card" id="sec-comercios">
+      <h2>🔎 Comercios</h2>
+      <input id="q-com" placeholder="Busca por nombre, NIF, email, teléfono, barrio o dirección" autocomplete="off">
+      <div id="l-com" style="margin-top:8px"></div>
+      <div id="ficha-com" hidden style="margin-top:12px"></div>
+    </section>
+
+    <section class="card" id="sec-alertas">
+      <h2>🚨 Alertas <span class="pill gold" id="al-total">0</span></h2>
+      <p class="muted">Fichas activas con un problema de moderación o de verificación. Avisa con un toque; si en 72 horas no cambia nada, te pide intervenir.</p>
+      <div id="l-alertas"><p class="muted">Cargando…</p></div>
+    </section>
+
     <section class="card" id="sec-revision">
       <h2>En revisión <span class="pill gold" id="rev-total">0</span></h2>
       <div class="semana" id="rev-semana"></div>
@@ -392,6 +405,7 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 /* ---------- panel ---------- */
 async function cargarPanel(){
   cargarRevision();
+  cargarAlertas();
   cargarEstadisticas();
   cargarRecEstado();
   cargarVerificaciones();
@@ -666,8 +680,135 @@ async function cargarSolicitudes(){
   }));
 }
 
+/* ---------- buscador de comercios y ficha completa ---------- */
+const ESTADO_COM = { beta_active: ["activa", "on"], pending_payment: ["sin pagar", "gold"], inactive: ["de baja", "off"] };
+const MOTIVOS_BAJA_ADMIN = { admin_impago: "Impago", admin_incumplimiento: "Incumplimiento de las condiciones", admin_ilegal: "Contenido o actividad ilegal", admin_cierre: "Cierre del local", admin_peticion: "A petición del comercio", admin_otro: "Otro motivo" };
+const pillCom = (st) => { const [t2, cls] = ESTADO_COM[st] || [st || "—", "off"]; return `<span class="pill ${cls}">${esc(t2)}</span>`; };
+let timerCom = null;
+$("q-com").addEventListener("input", () => { clearTimeout(timerCom); timerCom = setTimeout(buscarComercios, 350); });
+async function buscarComercios(){
+  const q = $("q-com").value.trim();
+  if (q.length < 2){ $("l-com").innerHTML = ""; return; }
+  const { data, error } = await sb.rpc("admin_buscar_comercios", { p_q: q });
+  if (error){ $("l-com").innerHTML = '<p class="muted">No se pudo buscar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  $("l-com").innerHTML = lista.length ? lista.map(c => `
+    <div class="item" data-ficha="${c.id}" style="cursor:pointer">
+      <b>${esc(c.name)}</b> ${pillCom(c.status)}${c.plan_type === "courtesy" ? ' <span class="pill gold">cortesía</span>' : ""}
+      <div class="muted">${esc(c.zone || "")}${c.nif ? " · " + esc(c.nif) : ""}${c.telefono ? " · " + esc(c.telefono) : ""}${c.email ? " · " + esc(c.email) : ""}</div>
+    </div>`).join("") : '<p class="muted">Sin resultados.</p>';
+  document.querySelectorAll("[data-ficha]").forEach(el => el.addEventListener("click", () => abrirFicha(el.dataset.ficha)));
+}
+function fila(et, val){ return val ? `<div class="muted"><b style="color:var(--cream,#F2E9D8)">${esc(et)}:</b> ${esc(val)}</div>` : ""; }
+async function abrirFicha(id){
+  const box = $("ficha-com");
+  box.hidden = false; box.innerHTML = '<p class="muted">Cargando…</p>';
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+  const { data: f, error } = await sb.rpc("admin_ficha", { p_id: id });
+  if (error || !f){ box.innerHTML = '<p class="muted">No se pudo abrir: ' + esc(error ? error.message : "") + '</p>'; return; }
+  const v = f.privado || {};
+  const tel = String(v.telefono || "").replace(/\D/g, "");
+  const problema = ["revision", "bloqueada"].includes(f.moderacion_estado) ? (f.moderacion_motivo || "revisión pendiente")
+    : (v.verif_estado === "falta_ubicacion" ? "falta confirmar la ubicación desde el local" : ((v.verif_detalle || {}).motivos || []).join("; "));
+  const texto = `Hola${v.contacto_nombre ? " " + v.contacto_nombre : ""}, soy Anita de isHere 👋 ` + (problema
+    ? `Tu ficha "${f.name}" tiene esto pendiente: ${problema}. Puedes revisarlo en Mi comercio: ${APP}comercio.html`
+    : `Te escribo por tu ficha "${f.name}" en isHere.`);
+  const redes = f.redes || {};
+  box.innerHTML = `<div class="item" style="border:1px solid rgba(31,139,255,.4)">
+    <h3 style="margin:0 0 6px">${esc(f.name)} ${pillCom(f.status)}</h3>
+    <div class="actions" style="margin-bottom:8px">
+      <span class="pill ${f.moderacion_estado === "aprobada" ? "on" : "gold"}">moderación: ${esc(f.moderacion_estado || "—")}</span>
+      <span class="pill ${Number(f.verif_nivel) >= 1 ? "on" : "gold"}">verificación: ${esc(v.verif_estado || (Number(f.verif_nivel) >= 1 ? "verificada" : "—"))}</span>
+      ${f.plan === "courtesy" ? '<span class="pill gold">cortesía</span>' : ""}
+    </div>
+    <h4>Lo que ve el turista</h4>
+    ${fila("Dirección", f.address)}${fila("Barrio", f.zone)}${fila("Producto", [f.star, f.precio].filter(Boolean).join(" · "))}
+    ${fila("WhatsApp", f.whatsapp)}${fila("Web", f.web)}${fila("Instagram", redes.instagram)}${fila("TikTok", redes.tiktok)}${fila("Facebook", redes.facebook)}
+    ${fila("Motivo de moderación", f.moderacion_motivo)}
+    <h4>Ficha privada</h4>
+    ${fila("Titular / contacto", v.contacto_nombre)}${fila("Email", v.email)}${fila("Teléfono", v.telefono)}
+    ${fila("Razón social", v.razon_social)}${fila("NIF", v.nif)}
+    ${fila("Condiciones aceptadas", v.condiciones_aceptadas_at ? "v" + (v.condiciones_version || "?") + " el " + fecha(v.condiciones_aceptadas_at) : "")}
+    ${fila("Alta a", v.gps_dist_m != null ? v.gps_dist_m + " m del local" : "")}
+    <h4>Actividad</h4>
+    ${fila("Apariciones (30 días)", String(f.vistas_30 ?? 0))}${fila("Cambios este mes", (f.mods_mes ?? 0) + " de 4")}
+    ${fila("Activa desde", f.activated_at ? fecha(f.activated_at) : "")}${fila("Vence", f.expires_at ? fecha(f.expires_at) : "")}
+    ${fila("Reclutador", f.reclutador)}
+    ${fila("Pagos", (f.pagos || []).map(g => fecha(g.fecha) + " · " + Number(g.total).toFixed(2) + " €").join(" | "))}
+    ${fila("Avisos enviados", (f.avisos || []).map(x => fecha(x.fecha) + " (" + x.canal + ")").join(" | "))}
+    ${fila("Bajas", (f.bajas || []).map(b => fecha(b.fecha) + ": " + (b.detalle || MOTIVO_TXT[b.motivo] || b.motivo)).join(" | "))}
+    <div class="actions" style="margin-top:10px">
+      ${tel.length >= 8 ? `<a class="btn-sec" id="fc-wa" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn-sec" href="tel:${esc(v.telefono)}">Llamar</a>` : ""}
+      ${v.email ? `<a class="btn-sec" href="mailto:${esc(v.email)}">Email</a>` : ""}
+      ${v.doc_path ? `<button class="btn-sec" id="fc-doc">Ver documento</button>` : ""}
+    </div>
+    ${f.status !== "inactive" ? `<details style="margin-top:10px"><summary>Dar de baja</summary>
+      <p class="muted">Salvo casos graves (actividad ilegal o fraude), avisa antes al comercio con el motivo. Esto cancela su cobro en Stripe y la oculta.</p>
+      <select id="fc-motivo">${Object.entries(MOTIVOS_BAJA_ADMIN).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("")}</select>
+      <textarea id="fc-detalle" maxlength="300" placeholder="Explica el motivo (lo verá el comercio en Mi comercio)" style="width:100%;margin-top:6px"></textarea>
+      <button class="btn-no" id="fc-baja" style="margin-top:6px">Dar de baja ahora</button>
+      <div class="msg" id="m-fc"></div></details>` : ""}
+  </div>`;
+  const wa = $("fc-wa");
+  if (wa && problema) wa.addEventListener("click", () => { sb.rpc("admin_registrar_aviso", { p_pyme: f.id, p_motivo: problema, p_canal: "whatsapp" }).then(() => {}, () => {}); });
+  const bd = $("fc-doc");
+  if (bd) bd.addEventListener("click", async () => {
+    const { data: u } = await sb.storage.from("documentos-pymes").createSignedUrl(v.doc_path, 300);
+    if (u) window.open(u.signedUrl, "_blank", "noopener");
+  });
+  const bb = $("fc-baja");
+  if (bb) bb.addEventListener("click", async () => {
+    const motivo = $("fc-motivo").value, detalle = $("fc-detalle").value.trim();
+    if (!confirm(`¿Dar de baja "${f.name}" por: ${MOTIVOS_BAJA_ADMIN[motivo]}? Se cancelará su cobro en Stripe.`)) return;
+    bb.disabled = true;
+    const { data: { session } } = await sb.auth.getSession();
+    let res = {}, ok = false;
+    try {
+      const r = await fetch(`${SUPABASE_URL}/functions/v1/admin-baja`, { method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + (session ? session.access_token : "") },
+        body: JSON.stringify({ pyme_id: f.id, motivo, detalle }) });
+      res = await r.json().catch(() => ({})); ok = r.ok && res.ok;
+    } catch (e) { res = { error: e.message }; }
+    bb.disabled = false;
+    if (!ok){ msg("m-fc", "No se pudo dar de baja: " + (res.error || "error")); return; }
+    msg("m-fc", "Dada de baja. Cobro en Stripe: " + res.stripe + ".", "ok");
+    cargarPanel(); setTimeout(() => abrirFicha(f.id), 800);
+  });
+}
+
+/* ---------- alertas con escalado (aviso → 72 h sin cambios → intervenir) ---------- */
+async function cargarAlertas(){
+  const { data, error } = await sb.rpc("admin_alertas");
+  if (error){ $("l-alertas").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  $("al-total").textContent = lista.length;
+  $("l-alertas").innerHTML = lista.length ? lista.map(x => {
+    const problema = ["revision", "bloqueada"].includes(x.moderacion_estado) ? (x.moderacion_motivo || "revisión pendiente")
+      : (x.verif_estado === "falta_ubicacion" ? "falta confirmar la ubicación desde el local" : ((x.verif_detalle || {}).motivos || []).join("; ") || "verificación pendiente");
+    const horas = x.ultimo_aviso ? (Date.now() - new Date(x.ultimo_aviso).getTime()) / 3600000 : null;
+    const estado = horas == null ? '<span class="pill gold">sin avisar</span>'
+      : horas >= 72 ? `<span class="pill off">notificado el ${fecha(x.ultimo_aviso)}, sin cambios: intervenir</span>`
+      : `<span class="pill on">avisado hace ${Math.max(1, Math.round(horas))} h</span>`;
+    const tel = String(x.telefono || "").replace(/\D/g, "");
+    const texto = `Hola${x.contacto ? " " + x.contacto : ""}, soy Anita de isHere 👋 Tu ficha "${x.name}" no se está mostrando a los turistas por esto: ${problema}. Puedes corregirlo en Mi comercio: ${APP}comercio.html`;
+    return `<div class="item"><b>${esc(x.name)}</b> ${estado}
+      <div class="muted">${esc(x.zone || "")} · ${esc(problema)}</div>
+      <div class="actions">
+        ${tel.length >= 8 ? `<a class="btn-sec" data-avisar="${x.id}" data-motivo="${esc(problema)}" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Avisar por WhatsApp</a>` : '<span class="muted">sin teléfono</span>'}
+        <button class="btn-sec" data-abrir="${x.id}">Abrir ficha</button>
+      </div></div>`;
+  }).join("") : '<p class="muted">Sin alertas. 🎉</p>';
+  document.querySelectorAll("[data-avisar]").forEach(el => el.addEventListener("click", () => {
+    sb.rpc("admin_registrar_aviso", { p_pyme: el.dataset.avisar, p_motivo: el.dataset.motivo, p_canal: "whatsapp" })
+      .then(() => setTimeout(cargarAlertas, 1500), () => {});
+  }));
+  document.querySelectorAll("[data-abrir]").forEach(el => el.addEventListener("click", () => abrirFicha(el.dataset.abrir)));
+}
+
 /* ---------- estadísticas con gráficos ---------- */
-const MOTIVO_TXT = { baja_caro: "Es caro", baja_visitas: "Pocas visitas", baja_cierre: "Cierra o cambia el local", baja_app: "No entiende la app", baja_otro: "Otro motivo" };
+const MOTIVO_TXT = { baja_caro: "Es caro", baja_visitas: "Pocas visitas", baja_cierre: "Cierra o cambia el local", baja_app: "No entiende la app", baja_otro: "Otro motivo",
+  admin_impago: "Baja por isHere: impago", admin_incumplimiento: "Baja por isHere: incumplimiento", admin_ilegal: "Baja por isHere: actividad ilegal", admin_cierre: "Baja por isHere: cierre del local", admin_peticion: "Baja por isHere: a petición del comercio", admin_otro: "Baja por isHere: otro motivo" };
 const ZONA_TXT = { pie: "🚶 A pie (hasta 10 min)", trans: "🚇 Metro o bus (≈10 min)", lejos: "🗺️ Más lejos" };
 const MOTIVO_WA = {
   baja_caro: "vi que te diste de baja porque te resultaba caro. ¿Lo hablamos? Me gustaría ver cómo ayudarte.",
@@ -697,7 +838,7 @@ async function cargarEstadisticas(){
       ${tel.length >= 8 ? `<div class="actions"><a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a></div>` : ""}</div>`;
   }).join("");
   $("l-estadisticas").innerHTML =
-    grafico("Por qué se van los comercios", (d.motivos || []).map(m => ({ label: MOTIVO_TXT[m.motivo] || m.motivo, n: m.n })), "Aún nadie pidió la baja.") +
+    grafico("Por qué se van los comercios", (d.motivos || []).filter(m => !String(m.motivo).startsWith("admin_")).map(m => ({ label: MOTIVO_TXT[m.motivo] || m.motivo, n: m.n })), "Aún nadie pidió la baja.") +
     (bajas ? `<details style="margin-bottom:12px"><summary>Últimas bajas y su motivo</summary>${bajas}</details>` : "") +
     grafico("Cómo eligen los turistas (al tocar «¡Vamos!»)", (d.zonas || []).map(z => ({ label: ZONA_TXT[z.zona] || z.zona, n: z.n })), "Aún no hay rutas registradas.") +
     grafico("Lo más buscado", (d.buscado || []).map(b => ({ label: b.texto, n: b.n, extra: b.encontrado + "% encontrado" })), "Aún no hay búsquedas.") +
