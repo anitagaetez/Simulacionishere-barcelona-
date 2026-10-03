@@ -1,9 +1,10 @@
 {
+  "id": "./admin.html",
   "name": "isHere Admin",
   "short_name": "isHere Admin",
   "description": "Panel de administración de isHere",
   "start_url": "./admin.html",
-  "scope": "./",
+  "scope": "./admin.html",
   "display": "standalone",
   "background_color": "#0D2B3E",
   "theme_color": "#0D2B3E",
