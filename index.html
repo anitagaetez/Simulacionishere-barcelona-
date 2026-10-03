@@ -705,6 +705,17 @@
   }
 </style>
 <style>
+  .wa-nota{ font-size: .75rem; color: var(--cream-dim, #B9C7CE); text-align: center; margin: 6px 0 0; }
+  .wa-nota[hidden]{ display: none; }
+  .lf{ position: fixed; left: 12px; right: 12px; bottom: 16px; z-index: 9000; background: var(--bg-panel, #123449); color: var(--cream, #F2E9D8);
+       border: 1px solid rgba(31,139,255,.5); border-radius: 16px; padding: 14px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.4); text-align: center; }
+  .lf[hidden]{ display: none; }
+  .lf p{ margin: 0 0 10px; font-size: .95rem; }
+  .lf-btns{ display: flex; gap: 10px; justify-content: center; }
+  .lf-btns[hidden]{ display: none; }
+  .lf-btns button{ flex: 1; max-width: 140px; padding: 10px; border-radius: 999px; border: none; font-weight: 700; font-family: inherit; cursor: pointer; }
+  #lf-si{ background: #2EA89C; color: #fff; } #lf-no{ background: rgba(242,233,216,.12); color: var(--cream, #F2E9D8); }
+  .lf-x{ position: absolute; top: 6px; right: 10px; background: none; border: none; color: var(--cream-dim, #B9C7CE); font-size: 1.2rem; cursor: pointer; }
   .intro{ position: fixed; inset: 0; z-index: 9999; background: rgba(6,20,30,0.82); display: flex; align-items: center; justify-content: center; padding: 20px; }
   .intro[hidden]{ display: none; }
   .intro-card{ background: var(--bg-panel, #123449); color: var(--cream, #F2E9D8); border-radius: 20px; padding: 24px 20px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
@@ -835,6 +846,7 @@
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>
             <span data-i18n="ft_wa">Escribir por WhatsApp</span>
           </a>
+          <p class="wa-nota" id="ft-wa-nota" data-i18n="wa_nota" hidden>El mensaje le llegará en castellano.</p>
           <p class="ft-seguro" id="ft-seguro" hidden>🛡️ <b data-i18n="seguro_t">isHere nunca pide pagos.</b> <span data-i18n="seguro_p">Paga siempre en la tienda. Si alguien te pide pagar por adelantado, denuncia esta ficha.</span></p>
           <div class="ft-links">
             <a id="ft-google" target="_blank" rel="noopener" hidden>⭐ <span data-i18n="ft_reviews">Reseñas en Google</span></a>
@@ -1061,6 +1073,14 @@
   </main>
 </div>
 
+<div class="lf" id="lf" hidden role="dialog" aria-live="polite">
+  <button type="button" class="lf-x" id="lf-x" aria-label="×">×</button>
+  <p id="lf-q"></p>
+  <div class="lf-btns" id="lf-btns">
+    <button type="button" id="lf-si" data-i18n="lf_si">Sí</button>
+    <button type="button" id="lf-no" data-i18n="lf_no">No</button>
+  </div>
+</div>
 <div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="intro-t">
   <div class="intro-card">
     <div class="flags intro-flags" role="group" aria-label="Idioma / Language">
@@ -1117,6 +1137,7 @@ function normalize(str){
 /* ---------- idiomas: català, español, english ---------- */
 const I18N = {
   es: {
+    wa_nota: "El mensaje le llegará en castellano.", lf_q: "¿Lo encontraste en «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "¡Gracias! Nos ayuda a mejorar.",
     intro_t: "Hola, soy isHere 👋", intro_p: "Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.", intro_1: "🎙️ Dime o escribe qué buscas", intro_2: "🏪 Te muestro las tiendas que lo tienen, con su precio", intro_3: "🚶 Te llevo hasta la puerta", intro_free: "Gratis y sin registro.", intro_btn: "¡Empezar!", intro_link: "¿Qué es isHere?",
     z_pie: "🚶 A pie · hasta 10 min", z_trans: "🚇 En metro o bus · unos 10 min (aprox.)", z_lejos: "🗺️ Más lejos",
     zone_label: "Estás en",
@@ -1302,6 +1323,7 @@ const I18N = {
     rot_delivery: "🛵 ¿Sin ganas de salir del hotel? Comida a domicilio."
   },
   ca: {
+    wa_nota: "El missatge li arribarà en castellà.", lf_q: "Ho has trobat a «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "Gràcies! Ens ajuda a millorar.",
     intro_t: "Hola, sóc isHere 👋", intro_p: "Et dic on comprar el que necessites en botigues de barri de Barcelona, a prop teu.", intro_1: "🎙️ Digues-me o escriu què busques", intro_2: "🏪 T'ensenyo les botigues que ho tenen, amb el preu", intro_3: "🚶 T'hi porto fins a la porta", intro_free: "Gratis i sense registre.", intro_btn: "Comencem!", intro_link: "Què és isHere?",
     z_pie: "🚶 A peu · fins a 10 min", z_trans: "🚇 En metro o bus · uns 10 min (aprox.)", z_lejos: "🗺️ Més lluny",
     zone_label: "Ets a",
@@ -1487,6 +1509,7 @@ const I18N = {
     rot_delivery: "🛵 Sense ganes de sortir de l'hotel? Menjar a domicili."
   },
   en: {
+    wa_nota: "The message will reach the shop in Spanish.", lf_q: "Did you find it at “{n}”?", lf_si: "Yes", lf_no: "No", lf_gracias: "Thanks! It helps us improve.",
     intro_t: "Hi, I'm isHere 👋", intro_p: "I tell you where to buy what you need in local shops in Barcelona, close to you.", intro_1: "🎙️ Say or type what you're looking for", intro_2: "🏪 I show you the shops that have it, with prices", intro_3: "🚶 I take you to the door", intro_free: "Free, no sign-up.", intro_btn: "Start", intro_link: "What is isHere?",
     z_pie: "🚶 On foot · up to 10 min", z_trans: "🚇 By metro or bus · about 10 min (approx.)", z_lejos: "🗺️ Further away",
     zone_label: "You're in",
@@ -1672,6 +1695,7 @@ const I18N = {
     rot_delivery: "🛵 Don't feel like leaving the hotel? Food delivered."
   },
   it: {
+    wa_nota: "Il messaggio arriverà al negozio in spagnolo.", lf_q: "L’hai trovato da «{n}»?", lf_si: "Sì", lf_no: "No", lf_gracias: "Grazie! Ci aiuta a migliorare.",
     intro_t: "Ciao, sono isHere 👋", intro_p: "Ti dico dove comprare ciò che ti serve nei negozi di quartiere di Barcellona, vicino a te.", intro_1: "🎙️ Dimmi o scrivi cosa cerchi", intro_2: "🏪 Ti mostro i negozi che ce l'hanno, con il prezzo", intro_3: "🚶 Ti porto fino alla porta", intro_free: "Gratis e senza registrazione.", intro_btn: "Iniziamo!", intro_link: "Cos'è isHere?",
     z_pie: "🚶 A piedi · fino a 10 min", z_trans: "🚇 In metro o bus · circa 10 min (stima)", z_lejos: "🗺️ Più lontano",
     zone_label: "Sei a",
@@ -1857,6 +1881,7 @@ const I18N = {
     rot_delivery: "🛵 Non hai voglia di uscire dall'hotel? Cibo a domicilio."
   },
   fr: {
+    wa_nota: "Le message arrivera au commerce en espagnol.", lf_q: "L’as-tu trouvé chez « {n} » ?", lf_si: "Oui", lf_no: "Non", lf_gracias: "Merci ! Ça nous aide à nous améliorer.",
     intro_t: "Bonjour, je suis isHere 👋", intro_p: "Je te dis où acheter ce dont tu as besoin dans les commerces de quartier de Barcelone, près de toi.", intro_1: "🎙️ Dis-moi ou écris ce que tu cherches", intro_2: "🏪 Je te montre les boutiques qui l’ont, avec le prix", intro_3: "🚶 Je t'emmène jusqu'à la porte", intro_free: "Gratuit et sans inscription.", intro_btn: "C'est parti !", intro_link: "Qu'est-ce que isHere ?",
     z_pie: "🚶 À pied · jusqu'à 10 min", z_trans: "🚇 En métro ou bus · environ 10 min (approx.)", z_lejos: "🗺️ Plus loin",
     zone_label: "Tu es à",
@@ -2628,7 +2653,14 @@ function pintarFicha(match, res){
   const producto = res.cartaHit ? res.cartaHit.nombre
     : (res.producto && catalogo.find(c => c.id === res.producto.producto_id)) ? nombreProducto(catalogo.find(c => c.id === res.producto.producto_id))
     : match.star_product_name;
-  const waTxt = producto ? t("wa_hola_p", { p: String(producto).toLowerCase() }) : t("wa_hola");
+  // El mensaje llega al comercio en castellano, con el nombre del producto tal como lo escribió el comercio.
+  const prodCat = res.producto ? catalogo.find(c => c.id === res.producto.producto_id) : null;
+  const productoOriginal = res.cartaHit ? res.cartaHit.nombre : (prodCat ? prodCat.es : match.star_product_name);
+  const IDIOMA_TURISTA = { ca: "catalán", en: "inglés", it: "italiano", fr: "francés" };
+  const nota = IDIOMA_TURISTA[lang] ? ` (Soy turista y hablo ${IDIOMA_TURISTA[lang]}.)` : "";
+  const waTxt = (productoOriginal ? `Hola, os encontré en isHere. ¿Tenéis ${String(productoOriginal).toLowerCase()}?` : "Hola, os encontré en isHere.") + nota;
+  const waNota = document.getElementById("ft-wa-nota");
+  if (waNota) waNota.hidden = !IDIOMA_TURISTA[lang];
   const waEl = document.getElementById("ft-wa");
   waEl.hidden = waNum.length < 8 || Number(match.verif_nivel || 0) < 1;
   if (!waEl.hidden) waEl.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waTxt)}`;
@@ -2725,12 +2757,35 @@ btnLocate.addEventListener("click", () => detectLocation(false));
 
 const frasesSinResultado = ["noresult_1", "noresult_2"];
 
+// Si la búsqueda normal no encuentra nada, Isa traduce la necesidad a productos del catálogo.
+// Lo aprendido se guarda: la próxima vez la misma frase no gasta IA.
+async function entenderNecesidad(q){
+  try {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 9000);
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/isa-entiende`, { method: "POST", signal: ctl.signal,
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ q: String(q).slice(0, 200), idioma: lang }) });
+    clearTimeout(timer);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d && d.terminos ? d : null;
+  } catch (e) { return null; }
+}
+
 async function handleSpeechResult(speech){
   transcriptEl.textContent = `"${speech}"`;
   listenStatus.classList.remove("pocket-mode");
   listenStatus.textContent = t("searching");
   const zone = zoneSelect.value;
-  const res = await searchNearestProduct(speech, zone);
+  let res = await searchNearestProduct(speech, zone);
+  let entendido = null;
+  if (!res.error && !res.match && navigator.onLine){
+    const alt = await entenderNecesidad(speech);
+    if (alt && alt.terminos){
+      const res2 = await searchNearestProduct(alt.terminos, zone);
+      if (res2 && !res2.error && res2.match){ res = res2; entendido = alt; }
+    }
+  }
 
   if (res.error && !navigator.onLine && mostrarUltima()) return;
   if (res.error){
@@ -2746,6 +2801,7 @@ async function handleSpeechResult(speech){
     guardarUltima(res, zone, speech);
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
+    if (entendido) transcriptEl.textContent = `"${speech}" → ${entendido.terminos}`;
   } else {
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
@@ -2857,6 +2913,7 @@ function pintarOtras(candidatos, actual, zone){
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
   registrarEvento("ruta", pymeActualId, zonaActual);
+  recordarRuta();
   hablar(L => t(aPie ? "open_walk" : "open_transit", {}, L));
   window.open(rutaActual, "_blank", "noopener");
 });
@@ -2876,6 +2933,7 @@ function cerrarRuta(){ rutaSheet.hidden = true; }
 function irRuta(modo){
   cerrarRuta();
   registrarEvento("ruta", pymeActualId, zonaActual);
+  recordarRuta();
   // dir_action=navigate: abre Google Maps directamente en modo navegación (flecha y voz) desde donde está el turista.
   const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoActual)}&travelmode=${modo}&dir_action=navigate`;
   hablar(L => t(modo === "walking" ? "open_walk" : "open_transit", {}, L));
@@ -3311,6 +3369,35 @@ async function abrirInvitacion(token){
     mostrarAviso(t("invite_fail"), "warn");
   }
 }
+
+/* ---------- «¿Lo encontraste?» al volver de la ruta ---------- */
+function recordarRuta(){
+  try { localStorage.setItem("ishere_ruta", JSON.stringify({ id: pymeActualId, n: document.getElementById("result-name").textContent, t: Date.now() })); } catch (e) {}
+}
+function preguntarSiLoEncontro(){
+  let r = null;
+  try { r = JSON.parse(localStorage.getItem("ishere_ruta") || "null"); } catch (e) {}
+  if (!r || !r.id) return;
+  const edad = Date.now() - Number(r.t || 0);
+  if (edad < 2 * 60000) return;
+  if (edad > 6 * 3600000){ try { localStorage.removeItem("ishere_ruta"); } catch (e) {} return; }
+  const box = document.getElementById("lf");
+  document.getElementById("lf-q").textContent = t("lf_q", { n: r.n || "" });
+  box.hidden = false;
+  const responder = (si) => {
+    try { localStorage.removeItem("ishere_ruta"); } catch (e) {}
+    if (si !== null && supabaseClient) supabaseClient.rpc("registrar_resultado_ruta", { p_pyme: r.id, p_encontrado: si, p_idioma: lang }).then(() => {}, () => {});
+    if (si === null){ box.hidden = true; return; }
+    document.getElementById("lf-q").textContent = t("lf_gracias");
+    document.getElementById("lf-btns").hidden = true;
+    setTimeout(() => { box.hidden = true; document.getElementById("lf-btns").hidden = false; }, 2500);
+  };
+  document.getElementById("lf-si").onclick = () => responder(true);
+  document.getElementById("lf-no").onclick = () => responder(false);
+  document.getElementById("lf-x").onclick = () => responder(null);
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") preguntarSiLoEncontro(); });
+setTimeout(preguntarSiLoEncontro, 1500);
 
 /* ---------- presentación de isHere (primera visita) ---------- */
 (function(){

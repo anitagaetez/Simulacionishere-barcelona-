@@ -203,6 +203,10 @@
 
       <label data-i18n="l_carta">Tu carta: productos propios con su precio</label>
       <p class="muted" data-i18n="carta_help" style="font-size:.8rem">Aparecen en tu ficha y también sirven para que te encuentren.</p>
+      <input type="file" id="carta-foto" accept="image/*,application/pdf" hidden>
+      <button type="button" class="btn-sec" id="btn-carta-isa" style="margin:4px 0 8px" data-i18n="carta_isa">📸 Sube tu carta y Isa la lee por ti</button>
+      <div class="msg" id="m-carta"></div>
+      <div class="isa-res" id="carta-prop" hidden></div>
       <div id="carta"></div>
       <button type="button" class="btn-sec" id="btn-add-item" style="margin-top:8px" data-i18n="b_add_item">+ Añadir producto</button>
 
@@ -284,6 +288,7 @@ const $ = (id) => document.getElementById(id);
 /* ---------- idiomas ---------- */
 const I18N = {
   es: {
+    carta_isa: "📸 Sube tu carta y Isa la lee por ti", carta_leyendo: "Isa está leyendo tu carta…", carta_limite: "Ya usaste las 2 lecturas de carta de este mes.", carta_nada: "Isa no pudo leer productos con precio. Prueba con una foto más nítida y recta.", carta_ok: "Isa encontró {n} productos. Revisa y marca los que quieres añadir:", carta_revisa: "Revisa nombre y precio: Isa es una IA y puede equivocarse.", carta_anadir: "Añadir a mi carta", carta_listo: "Añadidos. Revisa la carta y toca «Finalizar cambios» para guardar.",
     baja_pregunta: "Antes de irte, ¿por qué te das de baja?", baja_caro: "Es caro para mí", baja_visitas: "Tengo pocas visitas", baja_cierre: "Cierro o cambio el local", baja_app: "No entiendo cómo funciona", baja_otro: "Otro motivo", baja_det_ph: "Cuéntanos más (opcional)", baja_seguir: "Continuar con la baja", baja_quedarme: "Mejor me quedo", baja_elige: "Elige un motivo.", baja_txt: "Tu ficha está dada de baja. Motivo: {m}. Si crees que es un error, escríbenos.",
     saved_final: "Tu ficha se guardó exitosamente.", isa_pregunta: "¿Quieres que Isa haga un diagnóstico de tu ficha? Isa es una IA: te sugiere cambios y te explica por qué. Tú decides.", isa_si: "Sí, quiero", isa_no: "No, terminar", isa_modificar: "Modificar con estas sugerencias", isa_terminar: "Terminar", isa_b_comp: "Tu competencia", isa_b_porque: "Por qué", isa_limite_mes: "Isa ya hizo los diagnósticos de este mes. Vuelve el día 1.",
     mods_info: "Cambios este mes: {u} de {m}. El horario no cuenta.", err_limite_mods: "Ya usaste los cambios de este mes. Podrás editar tu ficha de nuevo el día 1. El horario sí puedes cambiarlo.",
@@ -334,6 +339,7 @@ const I18N = {
     err_load: "No se pudieron cargar tus datos. Inténtalo de nuevo."
   },
   ca: {
+    carta_isa: "📸 Puja la teva carta i l'Isa la llegeix per tu", carta_leyendo: "L'Isa està llegint la teva carta…", carta_limite: "Ja has fet servir les 2 lectures de carta d'aquest mes.", carta_nada: "L'Isa no ha pogut llegir productes amb preu. Prova una foto més nítida i recta.", carta_ok: "L'Isa ha trobat {n} productes. Revisa i marca els que vols afegir:", carta_revisa: "Revisa nom i preu: l'Isa és una IA i es pot equivocar.", carta_anadir: "Afegir a la meva carta", carta_listo: "Afegits. Revisa la carta i toca «Finalitzar els canvis» per desar.",
     baja_pregunta: "Abans de marxar, per què et dones de baixa?", baja_caro: "És car per a mi", baja_visitas: "Tinc poques visites", baja_cierre: "Tanco o canvio el local", baja_app: "No entenc com funciona", baja_otro: "Un altre motiu", baja_det_ph: "Explica'ns-en més (opcional)", baja_seguir: "Continuar amb la baixa", baja_quedarme: "Millor em quedo", baja_elige: "Tria un motiu.", baja_txt: "La teva fitxa està donada de baixa. Motiu: {m}. Si creus que és un error, escriu-nos.",
     saved_final: "La teva fitxa s'ha desat correctament.", isa_pregunta: "Vols que l'Isa faci un diagnòstic de la teva fitxa? L'Isa és una IA: et suggereix canvis i t'explica per què. Tu decideixes.", isa_si: "Sí, vull", isa_no: "No, acabar", isa_modificar: "Modificar amb aquests suggeriments", isa_terminar: "Acabar", isa_b_comp: "La teva competència", isa_b_porque: "Per què", isa_limite_mes: "L'Isa ja ha fet els diagnòstics d'aquest mes. Torna el dia 1.",
     mods_info: "Canvis aquest mes: {u} de {m}. L'horari no compta.", err_limite_mods: "Ja has fet servir els canvis d'aquest mes. Podràs tornar a editar la fitxa el dia 1. L'horari sí que el pots canviar.",
@@ -384,6 +390,7 @@ const I18N = {
     err_load: "No s'han pogut carregar les teves dades. Torna-ho a provar."
   },
   en: {
+    carta_isa: "📸 Upload your menu and Isa reads it for you", carta_leyendo: "Isa is reading your menu…", carta_limite: "You've used this month's 2 menu readings.", carta_nada: "Isa couldn't read products with prices. Try a sharper, straighter photo.", carta_ok: "Isa found {n} products. Check them and tick the ones to add:", carta_revisa: "Check names and prices: Isa is an AI and can make mistakes.", carta_anadir: "Add to my menu", carta_listo: "Added. Check your menu and tap “Finish changes” to save.",
     baja_pregunta: "Before you go, why are you cancelling?", baja_caro: "It's too expensive for me", baja_visitas: "I get few visits", baja_cierre: "I'm closing or moving my shop", baja_app: "I don't understand how it works", baja_otro: "Another reason", baja_det_ph: "Tell us more (optional)", baja_seguir: "Continue cancelling", baja_quedarme: "I'll stay", baja_elige: "Choose a reason.", baja_txt: "Your listing has been deactivated. Reason: {m}. If you think this is a mistake, write to us.",
     saved_final: "Your listing was saved successfully.", isa_pregunta: "Would you like Isa to review your listing? Isa is an AI: it suggests changes and explains why. You decide.", isa_si: "Yes, please", isa_no: "No, finish", isa_modificar: "Apply these suggestions", isa_terminar: "Finish", isa_b_comp: "Your competition", isa_b_porque: "Why", isa_limite_mes: "Isa has already done this month's reviews. Come back on the 1st.",
     mods_info: "Changes this month: {u} of {m}. Opening hours don't count.", err_limite_mods: "You've used this month's changes. You can edit your listing again on the 1st. You can still change your opening hours.",
@@ -681,9 +688,81 @@ function renderCarta(){
   });
 }
 $("btn-add-item").addEventListener("click", () => {
-  if (carta.length >= 30) return;
+  if (carta.length >= 60) return;
   carta.push({ nombre: "", precio: "" }); renderCarta();
   const filas = $("carta").querySelectorAll(".n"); filas[filas.length - 1].focus();
+});
+
+
+/* ---------- Isa lee la carta (foto o PDF) ---------- */
+function leerCartaArchivo(file){
+  return new Promise((resolve, reject) => {
+    const aB64 = (blob) => { const r = new FileReader(); r.onload = () => resolve({ tipo: blob.type || "image/jpeg", b64: String(r.result).split(",")[1] }); r.onerror = () => reject(new Error("no se pudo leer el archivo")); r.readAsDataURL(blob); };
+    if (file.type === "application/pdf"){
+      if (file.size > 7 * 1024 * 1024) return reject(new Error("PDF demasiado grande (máx. 7 MB)"));
+      return aB64(file);
+    }
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1800 / Math.max(img.width, img.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      cv.toBlob(b => b ? aB64(b) : reject(new Error("no se pudo procesar la foto")), "image/jpeg", 0.85);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("formato de foto no válido")); };
+    img.src = url;
+  });
+}
+async function llamarIsaCarta(cuerpo){
+  let data = null, err = null;
+  try {
+    const r = await sb.functions.invoke("isa-carta", { body: cuerpo });
+    data = r.data; err = r.error;
+    if (err && err.context && typeof err.context.json === "function"){ try { data = await err.context.json(); } catch (e) {} }
+  } catch (e) { err = e; }
+  if (data && data.error) return { error: data.error };
+  if (err || !data) return { error: "fallo" };
+  return data;
+}
+function pintarPropuesta(caja, productos, textos, alAceptar){
+  caja.hidden = false;
+  caja.innerHTML = `<p class="muted">${textos.revisa}</p>` + productos.map((p, i) => `
+    <label style="display:flex;gap:8px;align-items:center;margin:4px 0;font-size:.9rem">
+      <input type="checkbox" data-prop="${i}" checked style="width:auto">
+      <span>${esc(p.nombre)}${p.precio ? " · <b>" + esc(p.precio) + "</b>" : ""}</span></label>`).join("") +
+    `<button type="button" class="btn-sec" data-prop-ok style="margin-top:8px">${textos.anadir}</button>`;
+  caja.querySelector("[data-prop-ok]").addEventListener("click", () => {
+    const elegidosCarta = productos.filter((_, i) => caja.querySelector(`[data-prop="${i}"]`).checked);
+    alAceptar(elegidosCarta);
+    caja.hidden = true;
+  });
+}
+$("btn-carta-isa").addEventListener("click", () => $("carta-foto").click());
+$("carta-foto").addEventListener("change", async (e) => {
+  const f = e.target.files && e.target.files[0]; e.target.value = "";
+  if (!f || !actual) return;
+  const b = $("btn-carta-isa"); b.disabled = true; msg("m-carta", t("carta_leyendo"), "ok");
+  let archivo;
+  try { archivo = await leerCartaArchivo(f); } catch (er) { b.disabled = false; msg("m-carta", er.message); return; }
+  const d = await llamarIsaCarta({ modo: "comercio", pyme_id: actual.id, archivo, idioma: lang });
+  b.disabled = false;
+  if (d.error === "limite"){ msg("m-carta", t("carta_limite")); return; }
+  if (d.error || !(d.productos || []).length){ msg("m-carta", t("carta_nada")); return; }
+  msg("m-carta", t("carta_ok", { n: d.productos.length }), "ok");
+  pintarPropuesta($("carta-prop"), d.productos, { revisa: t("carta_revisa"), anadir: t("carta_anadir") }, (sel) => {
+    const vistos = new Set(carta.map(x => String(x.nombre || "").trim().toLowerCase()));
+    sel.forEach(p => { if (carta.length < 60 && !vistos.has(p.nombre.toLowerCase())){ carta.push({ nombre: p.nombre, precio: p.precio || "" }); vistos.add(p.nombre.toLowerCase()); } });
+    renderCarta();
+    // Los productos que coinciden con el catálogo turístico se suman también (así aparecen en los 5 idiomas).
+    try { sel.forEach(p => { if (p.catalogo_id && !elegidos.has(p.catalogo_id)) elegidos.set(p.catalogo_id, p.precio || ""); }); renderElegidos(); } catch (er) {}
+    if (!$("e-star").value.trim() && d.estrella && d.estrella.nombre){ $("e-star").value = d.estrella.nombre; $("e-precio").value = d.estrella.precio || ""; }
+    if (d.claves){
+      const act = $("e-tags").value.split(",").map(x => x.trim()).filter(Boolean), v = new Set(act.map(x => x.toLowerCase()));
+      String(d.claves).split(",").map(x => x.trim()).filter(Boolean).forEach(x => { if (!v.has(x.toLowerCase())){ act.push(x); v.add(x.toLowerCase()); } });
+      $("e-tags").value = act.join(", ");
+    }
+    msg("m-carta", t("carta_listo"), "ok");
+  });
 });
 
 /* ---------- foto ---------- */
