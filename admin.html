@@ -472,6 +472,16 @@ async function decidirFicha(id, estado, motivo, boton){
 
 /* ---------- verificación de comercios (la IA prepara, tú decides) ---------- */
 const ESTADO_VERIF = { pendiente: "sin revisar", procesando: "revisando", revisar: "revisar", falta_ubicacion: "falta ubicación", error: "error de lectura", verificada: "verificada", verificada_manual: "verificada" };
+function waVerif(v){
+  const tel = String(v.telefono || "").replace(/\D/g, "");
+  if (tel.length < 8) return "";
+  const hola = `Hola${v.contacto ? " " + v.contacto : ""}, soy Anita de isHere 👋 `;
+  const motivos = ((v.detalle || {}).motivos || []).join("; ");
+  const texto = v.estado === "falta_ubicacion"
+    ? hola + `Para publicar "${v.name}" solo falta confirmar la ubicación: entra a Mi comercio estando en tu local y toca «📍 Estoy en mi local». ${APP}comercio.html`
+    : hola + `Revisando la ficha de "${v.name}" encontramos esto: ${motivos || "necesitamos revisar tu documento"}. ¿Me ayudas a corregirlo? ${APP}comercio.html`;
+  return `<a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>`;
+}
 async function cargarVerificaciones(){
   const { data, error } = await sb.rpc("admin_verificaciones");
   if (error){ $("l-verif").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
@@ -487,6 +497,7 @@ async function cargarVerificaciones(){
       <div class="muted">${v.dist != null ? `Alta a ${v.dist} m del local` : "Sin ubicación"}${v.duplicado ? " · posible ficha duplicada" : ""}${d.tipo ? " · " + esc(d.tipo) : ""}${d.csv ? " · CSV " + esc(d.csv) : ""}</div>
       ${motivos ? `<div class="rev-desc">${motivos}</div>` : ""}
       <div class="actions">
+        ${waVerif(v)}
         ${v.doc ? `<button class="btn-sec" data-ver-doc="${esc(v.doc)}">Ver documento</button>` : ""}
         <button class="btn-ok" data-ver-ok="${v.id}">Aprobar</button>
         ${d.muestra ? `<button class="btn-sec" data-ver-csv="${v.id}">CSV comprobado</button>` : ""}
