@@ -2693,8 +2693,10 @@ async function handleSpeechResult(speech){
 }
 
 // Muestra un resultado (el mejor o el que el turista elige entre las otras opciones).
+let zonaActual = null;
 function mostrarResultado(res, zone, conVoz){
   const match = res.match;
+  zonaActual = res.zona || zonaDe(res.km);
   document.body.classList.add("con-resultado");
   pymeActualId = match.id;
   {
@@ -2790,7 +2792,7 @@ function pintarOtras(candidatos, actual, zone){
 
 voiceGuideBtn.addEventListener("click", () => {
   if (!rutaActual) return;
-  registrarEvento("ruta", pymeActualId);
+  registrarEvento("ruta", pymeActualId, zonaActual);
   hablar(L => t(aPie ? "open_walk" : "open_transit", {}, L));
   window.open(rutaActual, "_blank", "noopener");
 });
@@ -2809,7 +2811,7 @@ function abrirRuta(){
 function cerrarRuta(){ rutaSheet.hidden = true; }
 function irRuta(modo){
   cerrarRuta();
-  registrarEvento("ruta", pymeActualId);
+  registrarEvento("ruta", pymeActualId, zonaActual);
   // dir_action=navigate: abre Google Maps directamente en modo navegación (flecha y voz) desde donde está el turista.
   const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destinoActual)}&travelmode=${modo}&dir_action=navigate`;
   hablar(L => t(modo === "walking" ? "open_walk" : "open_transit", {}, L));

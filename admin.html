@@ -87,6 +87,14 @@
   .busq .veces{ color:var(--gold); font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; }
   h3.sub{ font-size:.8rem; color:var(--cream-dim); font-weight:500; margin:14px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
 </style>
+<style>
+  .graf{ margin: 6px 0 14px; }
+  .graf-fila{ display: grid; grid-template-columns: minmax(90px, 40%) 1fr auto; gap: 8px; align-items: center; margin: 5px 0; font-size: .85rem; }
+  .graf-barra{ height: 12px; border-radius: 6px; background: rgba(242,233,216,.08); overflow: hidden; }
+  .graf-barra span{ display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, #1F8BFF, #2EA89C); }
+  .graf-n{ color: var(--cream-dim, #B9C7CE); white-space: nowrap; font-size: .8rem; }
+  .graf h3{ font-size: .95rem; margin: 14px 0 6px; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -163,6 +171,12 @@
       <div class="msg" id="m-solicitudes"></div>
     </section>
 
+    <section class="card" id="sec-estadisticas">
+      <h2>📊 Estadísticas</h2>
+      <p class="muted">Últimos 30 días, salvo los motivos de baja (desde el inicio).</p>
+      <div id="l-estadisticas"><p class="muted">Cargando…</p></div>
+    </section>
+
     <section class="card" id="sec-busquedas">
       <h2>Lo que buscan y no hay</h2>
       <p class="muted">Últimos 30 días. Úsalo para saber qué comercios captar y en qué barrio.</p>
@@ -192,6 +206,9 @@
     <section class="card">
       <h2>Reclutadores</h2>
       <div id="l-reclutadores"></div>
+      <h3 style="margin-top:16px;font-size:1rem">¿Listos para cobrar?</h3>
+      <p class="muted">Lo completa cada reclutador al abrir su invitación. El número de cuenta lo guarda Stripe, no isHere.</p>
+      <div id="l-rec-estado"><p class="muted">Cargando…</p></div>
     </section>
 
     <section class="card">
@@ -281,7 +298,7 @@
       <details>
         <summary>Últimas pymes</summary>
         <div class="scroll" style="margin-top:10px"><table class="table">
-          <thead><tr><th>Negocio</th><th>Estado</th><th>Vence</th></tr></thead>
+          <thead><tr><th>Negocio</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
           <tbody id="t-pymes"></tbody>
         </table></div>
       </details>
@@ -375,6 +392,8 @@ $("btn-recargar").addEventListener("click", cargarPanel);
 /* ---------- panel ---------- */
 async function cargarPanel(){
   cargarRevision();
+  cargarEstadisticas();
+  cargarRecEstado();
   cargarVerificaciones();
   cargarSolicitudes();
   cargarBusquedas();
@@ -414,23 +433,36 @@ async function cargarPanel(){
   document.querySelectorAll("[data-invite]").forEach(b =>
     b.addEventListener("click", () => copiar(APP + "?invitacion=" + encodeURIComponent(b.dataset.invite), b)));
 
-  $("l-bajas").innerHTML = data.bajas.length ? data.bajas.map(p => `
+  const ORIGEN = { comercio: ["se fue", "gold"], admin: ["dada de baja por ti", "off"], rechazo: ["rechazada", "off"] };
+  $("l-bajas").innerHTML = data.bajas.length ? data.bajas.map(p => {
+    const [txtO, clsO] = ORIGEN[p.origen] || ["sin motivo", ""];
+    const tel = String(p.telefono || "").replace(/\D/g, "");
+    const recuperable = !p.origen || p.origen === "comercio";
+    const hola = `Hola${p.contacto ? " " + p.contacto : ""}, soy Anita de isHere 👋 `;
+    const texto = p.motivo
+      ? hola + `Vimos que "${p.name}" dejó isHere (${p.motivo}). ¿Te puedo ayudar en algo? Me encantaría saber cómo mejorar.`
+      : hola + `Vimos que "${p.name}" dejó isHere. ¿Nos cuentas por qué? Nos ayuda mucho a mejorar.`;
+    return `
     <div class="item">
-      <b>${esc(p.name)}</b> <span class="muted">· ${esc(p.zone)} · baja el ${fecha(p.fecha)}</span>
+      <b>${esc(p.name)}</b> <span class="pill ${clsO}">${esc(txtO)}</span> <span class="muted">· ${esc(p.zone)} · baja el ${fecha(p.fecha)}</span>
+      ${p.motivo ? `<div class="rev-desc">Motivo: ${esc(p.motivo)}${p.detalle ? " — «" + esc(p.detalle) + "»" : ""}</div>` : ""}
       <div class="muted">${esc(p.contacto || "")}</div>
-      <div class="actions">
-        ${p.telefono ? `<a class="btn-sec" href="https://wa.me/${esc(String(p.telefono).replace(/\D/g, ""))}" target="_blank" rel="noopener">WhatsApp</a>
+      ${recuperable ? `<div class="actions">
+        ${tel.length >= 8 ? `<a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a>
         <a class="btn-sec" href="tel:${esc(p.telefono)}">Llamar</a>` : ""}
-        ${p.email ? `<a class="btn-sec" href="mailto:${esc(p.email)}">Email</a>` : ""}
-      </div>
-    </div>`).join("") : '<p class="muted">Ninguna baja por ahora. 🎉</p>';
+        ${p.email ? `<a class="btn-sec" href="mailto:${esc(p.email)}?subject=${encodeURIComponent("isHere")}&body=${encodeURIComponent(texto)}">Email</a>` : ""}
+      </div>` : ""}
+    </div>`;
+  }).join("") : '<p class="muted">Ninguna baja por ahora. 🎉</p>';
 
   const estado = { beta_active: ["activa", "on"], pending_payment: ["sin pagar", "gold"] };
   $("t-pymes").innerHTML = data.pymes.map(p => {
     const [txt, cls] = estado[p.status] || [p.status || "—", "off"];
     return `<tr><td>${esc(p.name)}<div class="muted">${esc(p.zone)}${p.reclutador ? " · " + esc(p.reclutador) : ""}${p.plan === "courtesy" ? " · cortesía" : ""}</div></td>
-      <td><span class="pill ${cls}">${esc(txt)}</span></td><td>${p.expira ? fecha(p.expira) : "—"}</td></tr>`;
+      <td><span class="pill ${cls}">${esc(txt)}</span></td><td>${p.expira ? fecha(p.expira) : "—"}</td>
+      <td>${p.status === "beta_active" && p.id ? `<button class="btn-no" data-baja="${p.id}" data-nombre="${esc(p.name)}">Dar de baja</button>` : ""}</td></tr>`;
   }).join("");
+  document.querySelectorAll("[data-baja]").forEach(b => b.addEventListener("click", () => pedirBaja(b.dataset.baja, b.dataset.nombre)));
 }
 
 /* ---------- en revisión (fichas dudosas y bloqueadas por la IA) ---------- */
@@ -530,7 +562,11 @@ async function cargarVerificaciones(){
   const decidir = async (id, decision) => {
     const { error: e3 } = await sb.rpc("admin_verificar", { p_pyme: id, p_decision: decision });
     if (e3){ msg("m-verif", "No se pudo guardar: " + e3.message); return; }
-    msg("m-verif", decision === "rechazar" ? "Rechazada y oculta. Recuerda devolver el pago y cancelar la suscripción en Stripe." : "Guardado.", "ok");
+    if (decision === "rechazar"){
+      try { await llamarBaja(id, "rechazo", "Verificación rechazada", ""); }
+      catch (e4) { msg("m-verif", "Rechazada, pero no se pudo cancelar el cobro en Stripe: " + e4.message + ". Cancélalo a mano."); cargarVerificaciones(); return; }
+    }
+    msg("m-verif", decision === "rechazar" ? "Rechazada, oculta y cobro cancelado. Según el contrato, devuélvele el alta desde Stripe." : "Guardado.", "ok");
     cargarVerificaciones();
   };
   document.querySelectorAll("[data-ver-ok]").forEach(b => b.addEventListener("click", () => decidir(b.dataset.verOk, "aprobar")));
@@ -538,6 +574,49 @@ async function cargarVerificaciones(){
   document.querySelectorAll("[data-ver-no]").forEach(b => b.addEventListener("click", () => {
     if (confirm("¿Rechazar este comercio? Se ocultará y tendrás que devolver el pago en Stripe.")) decidir(b.dataset.verNo, "rechazar");
   }));
+}
+
+/* ---------- dar de baja (cancela el cobro en Stripe y guarda el motivo) ---------- */
+const MOTIVOS_BAJA = ["Impago", "Incumplimiento de las condiciones", "Cierre del local", "A petición del comercio", "Otro"];
+async function llamarBaja(id, origen, motivo, detalle){
+  const { data: { session } } = await sb.auth.getSession();
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-baja`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + (session ? session.access_token : "") },
+    body: JSON.stringify({ pyme_id: id, origen, motivo, detalle })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) throw new Error(data.error || ("error " + res.status));
+  return data;
+}
+async function pedirBaja(id, nombre){
+  const n = prompt(`Dar de baja «${nombre}». Escribe el número del motivo:\n` + MOTIVOS_BAJA.map((m, i) => `${i + 1}. ${m}`).join("\n"));
+  const motivo = MOTIVOS_BAJA[Number(n) - 1];
+  if (!motivo) return;
+  const detalle = prompt("Detalle (opcional). El comercio verá el motivo en Mi comercio:") || "";
+  if (!confirm(`¿Dar de baja «${nombre}» por «${motivo}»? Se cancela su cobro en Stripe y deja de aparecer al momento.`)) return;
+  try {
+    await llamarBaja(id, "admin", motivo, detalle);
+    alert("Dada de baja. Si corresponde devolver algún pago, hazlo desde Stripe.");
+    cargarPanel();
+  } catch (e) { alert("No se pudo dar de baja: " + e.message); }
+}
+
+/* ---------- estado de cada reclutador para poder pagarle ---------- */
+async function cargarRecEstado(){
+  const { data, error } = await sb.rpc("admin_reclutadores_estado");
+  if (error){ $("l-rec-estado").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const lista = data || [];
+  const chip = (ok, txt) => `<span class="pill ${ok ? "on" : "gold"}">${ok ? "✅" : "⏳"} ${esc(txt)}</span>`;
+  $("l-rec-estado").innerHTML = lista.length ? lista.map(r => {
+    const fiscal = !!(r.nif && r.nombre_fiscal);
+    const listo = !!r.contrato && fiscal && r.cuenta;
+    return `<div class="item"><b>${esc(r.codigo)}</b> · ${esc(r.nombre || "")}${r.activo ? "" : ' <span class="pill off">inactivo</span>'}
+      ${listo ? ' <span class="pill on">listo para cobrar</span>' : ""}
+      <div class="actions">${chip(!!r.contrato, "Contrato" + (r.version ? " v" + r.version : ""))}
+      ${chip(fiscal, fiscal ? `Datos fiscales · ${r.nif}` : "Datos fiscales")}
+      ${chip(!!r.cuenta, "Cuenta bancaria en Stripe")}</div></div>`;
+  }).join("") : '<p class="muted">Aún no hay reclutadores.</p>';
 }
 
 /* ---------- solicitudes de reclutadores ---------- */
@@ -585,6 +664,45 @@ async function cargarSolicitudes(){
     if (e2){ msg("m-solicitudes", "No se pudo guardar: " + e2.message); return; }
     cargarSolicitudes();
   }));
+}
+
+/* ---------- estadísticas con gráficos ---------- */
+const MOTIVO_TXT = { baja_caro: "Es caro", baja_visitas: "Pocas visitas", baja_cierre: "Cierra o cambia el local", baja_app: "No entiende la app", baja_otro: "Otro motivo" };
+const ZONA_TXT = { pie: "🚶 A pie (hasta 10 min)", trans: "🚇 Metro o bus (≈10 min)", lejos: "🗺️ Más lejos" };
+const MOTIVO_WA = {
+  baja_caro: "vi que te diste de baja porque te resultaba caro. ¿Lo hablamos? Me gustaría ver cómo ayudarte.",
+  baja_visitas: "vi que te diste de baja porque tenías pocas visitas. ¿Te ayudo a mejorar tu ficha para que más turistas te encuentren?",
+  baja_cierre: "vi que te diste de baja porque cierras o cambias el local. ¿Quieres que te ayude a darte de alta en la nueva dirección?",
+  baja_app: "vi que te diste de baja porque no entendías cómo funciona. ¿Te lo explico en 5 minutos?",
+  baja_otro: "vi que te diste de baja. ¿Me cuentas qué pasó? Tu opinión nos ayuda a mejorar."
+};
+function grafico(titulo, filas, vacio){
+  if (!filas.length) return `<div class="graf"><h3>${esc(titulo)}</h3><p class="muted">${esc(vacio)}</p></div>`;
+  const total = filas.reduce((x, f) => x + Number(f.n || 0), 0) || 1;
+  const max = Math.max(...filas.map(f => Number(f.n || 0)), 1);
+  return `<div class="graf"><h3>${esc(titulo)}</h3>` + filas.map(f => `
+    <div class="graf-fila"><span>${esc(f.label)}</span>
+      <div class="graf-barra"><span style="width:${Math.round(100 * Number(f.n) / max)}%"></span></div>
+      <span class="graf-n">${f.n} · ${Math.round(100 * Number(f.n) / total)}%${f.extra ? " · " + esc(f.extra) : ""}</span></div>`).join("") + `</div>`;
+}
+async function cargarEstadisticas(){
+  const { data, error } = await sb.rpc("admin_estadisticas");
+  if (error){ $("l-estadisticas").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const d = data || {};
+  const bajas = (d.ultimas_bajas || []).map(b => {
+    const tel = String(b.telefono || "").replace(/\D/g, "");
+    const texto = `Hola${b.contacto ? " " + b.contacto : ""}, soy Anita de isHere 👋 ${MOTIVO_WA[b.motivo] || MOTIVO_WA.baja_otro}`;
+    return `<div class="item"><b>${esc(b.name)}</b> <span class="muted">· ${fecha(b.fecha)}</span>
+      <div class="muted">${esc(MOTIVO_TXT[b.motivo] || b.motivo)}${b.detalle ? " — «" + esc(b.detalle) + "»" : ""}</div>
+      ${tel.length >= 8 ? `<div class="actions"><a class="btn-sec" href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">WhatsApp</a></div>` : ""}</div>`;
+  }).join("");
+  $("l-estadisticas").innerHTML =
+    grafico("Por qué se van los comercios", (d.motivos || []).map(m => ({ label: MOTIVO_TXT[m.motivo] || m.motivo, n: m.n })), "Aún nadie pidió la baja.") +
+    (bajas ? `<details style="margin-bottom:12px"><summary>Últimas bajas y su motivo</summary>${bajas}</details>` : "") +
+    grafico("Cómo eligen los turistas (al tocar «¡Vamos!»)", (d.zonas || []).map(z => ({ label: ZONA_TXT[z.zona] || z.zona, n: z.n })), "Aún no hay rutas registradas.") +
+    grafico("Lo más buscado", (d.buscado || []).map(b => ({ label: b.texto, n: b.n, extra: b.encontrado + "% encontrado" })), "Aún no hay búsquedas.") +
+    grafico("Lo que buscan y no hay", (d.no_encontrado || []).map(b => ({ label: b.texto, n: b.n })), "Todo lo que buscaron se encontró. 🎉") +
+    grafico("Comercios que más aparecen", (d.visitas || []).map(v => ({ label: v.name, n: v.n })), "Aún no hay datos de apariciones.");
 }
 
 /* ---------- lo que buscan y no hay ---------- */
