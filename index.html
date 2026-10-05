@@ -447,6 +447,15 @@
          color: var(--cream); font: inherit; cursor: pointer; margin-bottom: 8px; }
   .otra .o-n{ font-size: 0.92rem; font-weight: 600; }
   .otra .o-s{ font-size: 0.78rem; color: var(--cream-dim); margin-top: 2px; }
+  .tabs-o{ display: flex; gap: 6px; margin: 8px 0 4px; }
+  .tab-o{ flex: 1; padding: 9px 4px; border-radius: 999px; border: 1px solid rgba(242,233,216,.22); background: transparent;
+    color: var(--cream, #F2E9D8); font-weight: 600; font-size: .8rem; font-family: inherit; cursor: pointer; }
+  .tab-o.on{ background: #1F8BFF; border-color: #1F8BFF; color: #fff; }
+  .nota-precio{ font-size: .75rem; color: var(--cream-dim, #B9C7CE); margin: 6px 0 2px; }
+  .chips{ display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; }
+  .chip{ flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(242,233,216,.2); background: transparent; color: var(--cream, #F2E9D8); font-family: inherit; font-size: .8rem; cursor: pointer; white-space: nowrap; }
+  .chip.on{ background: #1F8BFF; border-color: #1F8BFF; color: #fff; font-weight: 700; }
+  .chip:disabled{ opacity: .35; cursor: default; }
   .zona-t{ font-size: 0.8rem; color: var(--gold); font-weight: 600; margin: 14px 0 6px; }
   .otra.activa{ border-color: #1F8BFF; background: rgba(31,139,255,0.12); }
   .con-resultado .listen-stage{ padding: 8px 0 4px; gap: 8px; }
@@ -1137,6 +1146,8 @@ function normalize(str){
 /* ---------- idiomas: català, español, english ---------- */
 const I18N = {
   es: {
+    f_pie: "🚶 10 min a pie", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Mejor precio", f_nota_precio: "Ordenado por el precio que indica cada comercio, a menos de 20 min.", f_lejos: "Lo más cerca está a unos {min} min:",
+    tab_pie: "🚶 A pie", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Mejor precio", nota_precio: "Ordenado por el precio que indica cada comercio.",
     wa_nota: "El mensaje le llegará en castellano.", lf_q: "¿Lo encontraste en «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "¡Gracias! Nos ayuda a mejorar.",
     intro_t: "Hola, soy isHere 👋", intro_p: "Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.", intro_1: "🎙️ Dime o escribe qué buscas", intro_2: "🏪 Te muestro las tiendas que lo tienen, con su precio", intro_3: "🚶 Te llevo hasta la puerta", intro_free: "Gratis y sin registro.", intro_btn: "¡Empezar!", intro_link: "¿Qué es isHere?",
     z_pie: "🚶 A pie · hasta 10 min", z_trans: "🚇 En metro o bus · unos 10 min (aprox.)", z_lejos: "🗺️ Más lejos",
@@ -1323,6 +1334,8 @@ const I18N = {
     rot_delivery: "🛵 ¿Sin ganas de salir del hotel? Comida a domicilio."
   },
   ca: {
+    f_pie: "🚶 10 min a peu", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Millor preu", f_nota_precio: "Ordenat pel preu que indica cada comerç, a menys de 20 min.", f_lejos: "El més a prop és a uns {min} min:",
+    tab_pie: "🚶 A peu", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Millor preu", nota_precio: "Ordenat pel preu que indica cada comerç.",
     wa_nota: "El missatge li arribarà en castellà.", lf_q: "Ho has trobat a «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "Gràcies! Ens ajuda a millorar.",
     intro_t: "Hola, sóc isHere 👋", intro_p: "Et dic on comprar el que necessites en botigues de barri de Barcelona, a prop teu.", intro_1: "🎙️ Digues-me o escriu què busques", intro_2: "🏪 T'ensenyo les botigues que ho tenen, amb el preu", intro_3: "🚶 T'hi porto fins a la porta", intro_free: "Gratis i sense registre.", intro_btn: "Comencem!", intro_link: "Què és isHere?",
     z_pie: "🚶 A peu · fins a 10 min", z_trans: "🚇 En metro o bus · uns 10 min (aprox.)", z_lejos: "🗺️ Més lluny",
@@ -1509,6 +1522,8 @@ const I18N = {
     rot_delivery: "🛵 Sense ganes de sortir de l'hotel? Menjar a domicili."
   },
   en: {
+    f_pie: "🚶 10 min on foot", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Best price", f_nota_precio: "Sorted by the price each shop lists, under 20 min away.", f_lejos: "The closest is about {min} min away:",
+    tab_pie: "🚶 On foot", tab_trans: "🚇 Metro or bus", tab_precio: "💶 Best price", nota_precio: "Sorted by the price each shop lists.",
     wa_nota: "The message will reach the shop in Spanish.", lf_q: "Did you find it at “{n}”?", lf_si: "Yes", lf_no: "No", lf_gracias: "Thanks! It helps us improve.",
     intro_t: "Hi, I'm isHere 👋", intro_p: "I tell you where to buy what you need in local shops in Barcelona, close to you.", intro_1: "🎙️ Say or type what you're looking for", intro_2: "🏪 I show you the shops that have it, with prices", intro_3: "🚶 I take you to the door", intro_free: "Free, no sign-up.", intro_btn: "Start", intro_link: "What is isHere?",
     z_pie: "🚶 On foot · up to 10 min", z_trans: "🚇 By metro or bus · about 10 min (approx.)", z_lejos: "🗺️ Further away",
@@ -1695,6 +1710,8 @@ const I18N = {
     rot_delivery: "🛵 Don't feel like leaving the hotel? Food delivered."
   },
   it: {
+    f_pie: "🚶 10 min a piedi", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Miglior prezzo", f_nota_precio: "Ordinati per il prezzo indicato da ogni negozio, entro 20 min.", f_lejos: "Il più vicino è a circa {min} min:",
+    tab_pie: "🚶 A piedi", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Miglior prezzo", nota_precio: "Ordinato in base al prezzo indicato da ogni negozio.",
     wa_nota: "Il messaggio arriverà al negozio in spagnolo.", lf_q: "L’hai trovato da «{n}»?", lf_si: "Sì", lf_no: "No", lf_gracias: "Grazie! Ci aiuta a migliorare.",
     intro_t: "Ciao, sono isHere 👋", intro_p: "Ti dico dove comprare ciò che ti serve nei negozi di quartiere di Barcellona, vicino a te.", intro_1: "🎙️ Dimmi o scrivi cosa cerchi", intro_2: "🏪 Ti mostro i negozi che ce l'hanno, con il prezzo", intro_3: "🚶 Ti porto fino alla porta", intro_free: "Gratis e senza registrazione.", intro_btn: "Iniziamo!", intro_link: "Cos'è isHere?",
     z_pie: "🚶 A piedi · fino a 10 min", z_trans: "🚇 In metro o bus · circa 10 min (stima)", z_lejos: "🗺️ Più lontano",
@@ -1881,6 +1898,8 @@ const I18N = {
     rot_delivery: "🛵 Non hai voglia di uscire dall'hotel? Cibo a domicilio."
   },
   fr: {
+    f_pie: "🚶 10 min à pied", f_t10: "🚇 10 min métro/bus", f_t20: "🚇 20 min métro/bus", f_precio: "💶 Meilleur prix", f_nota_precio: "Trié selon le prix indiqué par chaque commerce, à moins de 20 min.", f_lejos: "Le plus proche est à environ {min} min :",
+    tab_pie: "🚶 À pied", tab_trans: "🚇 Métro ou bus", tab_precio: "💶 Meilleur prix", nota_precio: "Trié selon le prix indiqué par chaque commerce.",
     wa_nota: "Le message arrivera au commerce en espagnol.", lf_q: "L’as-tu trouvé chez « {n} » ?", lf_si: "Oui", lf_no: "Non", lf_gracias: "Merci ! Ça nous aide à nous améliorer.",
     intro_t: "Bonjour, je suis isHere 👋", intro_p: "Je te dis où acheter ce dont tu as besoin dans les commerces de quartier de Barcelone, près de toi.", intro_1: "🎙️ Dis-moi ou écris ce que tu cherches", intro_2: "🏪 Je te montre les boutiques qui l’ont, avec le prix", intro_3: "🚶 Je t'emmène jusqu'à la porte", intro_free: "Gratuit et sans inscription.", intro_btn: "C'est parti !", intro_link: "Qu'est-ce que isHere ?",
     z_pie: "🚶 À pied · jusqu'à 10 min", z_trans: "🚇 En métro ou bus · environ 10 min (approx.)", z_lejos: "🗺️ Plus loin",
@@ -2462,8 +2481,9 @@ function textosTraducidos(p){
 // a pie ≈ 10 min (80 m/min, calles un 30 % más largas); en transporte ≈ 10 min de viaje.
 function zonaDe(km){
   if (km == null || km >= 900) return "lejos";
-  if (km <= 0.62) return "pie";
-  if (km <= 4) return "trans";
+  if (km <= 0.62) return "pie";   // ≈10 min a pie
+  if (km <= 4) return "t10";      // ≈10 min en metro o bus
+  if (km <= 8) return "t20";      // ≈20 min en metro o bus
   return "lejos";
 }
 
@@ -2798,6 +2818,7 @@ async function handleSpeechResult(speech){
   registrarEvento("busqueda", res.match ? res.match.id : null, speech, zone, !!res.match);
 
   if (res.match){
+    filtroLista = null;
     guardarUltima(res, zone, speech);
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
@@ -2817,6 +2838,7 @@ let zonaActual = null;
 function mostrarResultado(res, zone, conVoz){
   const match = res.match;
   zonaActual = res.zona || zonaDe(res.km);
+  if (zonaActual === "t10" || zonaActual === "t20") zonaActual = "trans";
   document.body.classList.add("con-resultado");
   pymeActualId = match.id;
   {
@@ -2878,36 +2900,74 @@ function mostrarResultado(res, zone, conVoz){
 }
 
 // Lista compacta con las demás opciones; al tocar una, pasa a ser la principal.
-function pintarOtras(candidatos, actual, zone){
+// Precio en número a partir del texto del comercio («3,50 €», «desde 2€»…). Si no se puede leer: Infinity (va al final).
+function precioNum(txt){
+  const m = String(txt || "").replace(/\s/g, "").match(/(\d+(?:[.,]\d{1,2})?)/);
+  return m ? parseFloat(m[1].replace(",", ".")) : Infinity;
+}
+function precioDe(c){ return (c.cartaHit && c.cartaHit.precio) || (c.producto && c.producto.precio) || c.match.star_product_price || ""; }
+// Cuatro opciones: 10 min a pie · 10 min metro/bus · 20 min metro/bus · mejor precio (todo lo que está a menos de 20 min).
+let filtroLista = null;
+function pintarOtras(candidatos, actual, zone, filtro){
   const box = document.getElementById("otras");
   const lista = document.getElementById("otras-lista");
   const todos = candidatos || [];
-  box.classList.toggle("hay", todos.length > 1);
+  const zonaDeC = (c) => { const z = c.zona || zonaDe(c.km); return z === "trans" ? "t10" : z; };
+  const cerca = todos.filter(c => zonaDeC(c) !== "lejos");
+  const grupos = {
+    pie: todos.filter(c => zonaDeC(c) === "pie"),
+    t10: todos.filter(c => zonaDeC(c) === "t10"),
+    t20: todos.filter(c => zonaDeC(c) === "t20"),
+    precio: cerca.slice().sort((x, y) => (precioNum(precioDe(x)) - precioNum(precioDe(y))) || ((x.km ?? 999) - (y.km ?? 999)))
+  };
+  const lejos = todos.filter(c => zonaDeC(c) === "lejos");
+  box.classList.toggle("hay", todos.length > 1 || (todos.length === 1 && !cerca.length));
   lista.innerHTML = "";
-  [["pie", "z_pie"], ["trans", "z_trans"], ["lejos", "z_lejos"]].forEach(([g, clave]) => {
-    const grupo = todos.filter(c => (c.zona || "lejos") === g);
-    if (!grupo.length) return;
-    const h = document.createElement("h5");
-    h.className = "zona-t";
-    h.textContent = `${t(clave)} (${grupo.length})`;
-    lista.appendChild(h);
-    grupo.forEach(c => {
-      const p = c.match;
-      const e = estadoHorario(p.horario);
-      const prod = c.cartaHit ? [c.cartaHit.nombre, c.cartaHit.precio].filter(Boolean).join(" · ")
-        : [trStar(p), p.star_product_price].filter(Boolean).join(" · ");
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "otra" + (p.id === actual.id ? " activa" : "");
-      b.innerHTML = `<span><div class="o-n">${esc(p.name)}</div><div class="o-s">${esc(prod)}${e.conocido ? " · " + esc(e.texto) : ""}</div></span>
-        <span class="o-d">${esc(p.lat != null && c.km != null && c.km < 900 ? formatoDistancia(c.km) : p.zone)}</span>`;
-      b.addEventListener("click", () => {
-        if (p.id !== actual.id){ mostrarResultado(c, zone, false); pintarOtras(candidatos, p, zone); }
-        document.getElementById("result-card").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "start" });
-      });
-      lista.appendChild(b);
-    });
+  // Sin nada a menos de 20 min: se ofrece lo que existe (por ejemplo, un producto especial).
+  if (!cerca.length){
+    if (lejos.length){
+      const km = lejos[0].km;
+      const min = (km != null && km < 900) ? Math.round(km * 2.4 + 5) : null;
+      const h = document.createElement("p"); h.className = "zona-t";
+      h.textContent = min ? t("f_lejos", { min }) : t("z_lejos");
+      lista.appendChild(h);
+      lejos.forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, null)));
+    }
+    return;
+  }
+  const orden = ["pie", "t10", "t20", "precio"];
+  let f = filtro || (filtroLista && grupos[filtroLista] && grupos[filtroLista].length ? filtroLista : null);
+  if (!f) f = orden.find(k => k !== "precio" && grupos[k].length) || "precio";
+  filtroLista = f;
+  const chips = document.createElement("div"); chips.className = "chips";
+  orden.forEach(k => {
+    const ch = document.createElement("button"); ch.type = "button";
+    ch.className = "chip" + (k === f ? " on" : "");
+    ch.textContent = `${t("f_" + k)} (${grupos[k].length})`;
+    ch.disabled = !grupos[k].length;
+    ch.addEventListener("click", () => pintarOtras(candidatos, actual, zone, k));
+    chips.appendChild(ch);
   });
+  lista.appendChild(chips);
+  if (f === "precio"){ const n = document.createElement("p"); n.className = "zona-t"; n.textContent = t("f_nota_precio"); lista.appendChild(n); }
+  grupos[f].forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, f)));
+}
+function filaOpcion(c, actual, candidatos, zone, f){
+  const p = c.match;
+  const e = estadoHorario(p.horario);
+  const nombreProd = c.cartaHit ? c.cartaHit.nombre : trStar(p);
+  const precio = precioDe(c);
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "otra" + (p.id === actual.id ? " activa" : "");
+  const linea = f === "precio" && precio ? "<b>" + esc(precio) + "</b> · " + esc(nombreProd) : esc([nombreProd, precio].filter(Boolean).join(" · "));
+  b.innerHTML = `<span><div class="o-n">${esc(p.name)}</div><div class="o-s">${linea}${e.conocido ? " · " + esc(e.texto) : ""}</div></span>
+    <span class="o-d">${esc(p.lat != null && c.km != null && c.km < 900 ? formatoDistancia(c.km) : p.zone)}</span>`;
+  b.addEventListener("click", () => {
+    if (p.id !== actual.id){ mostrarResultado(c, zone, false); pintarOtras(candidatos, p, zone, f); }
+    document.getElementById("result-card").scrollIntoView({ behavior: sinMovimiento ? "auto" : "smooth", block: "start" });
+  });
+  return b;
 }
 
 voiceGuideBtn.addEventListener("click", () => {
@@ -3182,7 +3242,7 @@ async function geocodificar(direccion){
   } catch (e) { return null; }
 }
 
-const CONDICIONES_VERSION = "1.3";
+const CONDICIONES_VERSION = "1.4";
 // Valida DNI, NIE (con su letra de control) y el formato de CIF.
 function nifValido(v){
   const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
