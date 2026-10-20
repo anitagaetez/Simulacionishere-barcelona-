@@ -439,8 +439,10 @@
   .otras{ display: none; margin-top: 14px; }
   .ruta-aviso{ display: none; font-size: 0.72rem; color: var(--cream-dim); opacity: 0.75; text-align: center; margin-top: 6px; }
   .voice-guide-btn.show + .ruta-aviso{ display: block; }
-  .ruta-aviso + .otras.hay{ display: none; }
-  .voice-guide-btn.show + .ruta-aviso + .otras.hay{ display: block; }
+  .otras.hay{ display: block; }
+  .tabs-g{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 4px 0 10px; }
+  .tabs-g .tab-o{ padding: 10px 6px; font-size: .82rem; }
+  .tabs-g .tab-o:disabled{ opacity: .35; cursor: default; }
   .otras h4{ font-size: 0.8rem; color: var(--cream-dim); font-weight: 500; margin-bottom: 8px; text-align: center; }
   .otra{ display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left;
          background: var(--bg-panel); border: 1px solid rgba(242,233,216,0.1); border-radius: 12px; padding: 11px 14px;
@@ -1172,6 +1174,7 @@ const I18N = {
   es: {
     pu_abrir: "🌍 Escribir con mis palabras o traducir su respuesta", pu_preg: "Tu pregunta, en tu idioma", pu_enviar: "Traducir y abrir WhatsApp", pu_resp: "¿Te respondieron? Pega aquí su mensaje", pu_traducir: "Traducir a mi idioma", pu_nota: "Traducción automática con IA. Tus mensajes no se guardan.", pu_error: "No se pudo traducir ahora. Inténtalo de nuevo.", pu_cargando: "Traduciendo…",
     f_pie: "🚶 10 min a pie", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Mejor precio", f_nota_precio: "Ordenado por el precio que indica cada comercio, a menos de 20 min.", f_lejos: "Lo más cerca está a unos {min} min:",
+    g_comida: "🍽️ Comida", g_aloj: "🛏️ Alojamiento", g_turismo: "🏛️ Turismo", g_productos: "🛍️ Productos",
     tab_pie: "🚶 A pie", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Mejor precio", nota_precio: "Ordenado por el precio que indica cada comercio.",
     wa_nota: "El mensaje le llegará en castellano.", lf_q: "¿Lo encontraste en «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "¡Gracias! Nos ayuda a mejorar.",
     intro_t: "Hola, soy isHere 👋", intro_p: "Te digo dónde comprar lo que necesitas en tiendas de barrio de Barcelona, cerca de ti.", intro_1: "🎙️ Dime o escribe qué buscas", intro_2: "🏪 Te muestro las tiendas que lo tienen, con su precio", intro_3: "🚶 Te llevo hasta la puerta", intro_free: "Gratis y sin registro.", intro_btn: "¡Empezar!", intro_link: "¿Qué es isHere?",
@@ -1363,6 +1366,7 @@ const I18N = {
   ca: {
     pu_abrir: "🌍 Escriure amb les meves paraules o traduir la resposta", pu_preg: "La teva pregunta, en el teu idioma", pu_enviar: "Traduir i obrir WhatsApp", pu_resp: "T'han respost? Enganxa aquí el missatge", pu_traducir: "Traduir al meu idioma", pu_nota: "Traducció automàtica amb IA. Els teus missatges no es guarden.", pu_error: "Ara no s'ha pogut traduir. Torna-ho a provar.", pu_cargando: "Traduint…",
     f_pie: "🚶 10 min a peu", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Millor preu", f_nota_precio: "Ordenat pel preu que indica cada comerç, a menys de 20 min.", f_lejos: "El més a prop és a uns {min} min:",
+    g_comida: "🍽️ Menjar", g_aloj: "🛏️ Allotjament", g_turismo: "🏛️ Turisme", g_productos: "🛍️ Productes",
     tab_pie: "🚶 A peu", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Millor preu", nota_precio: "Ordenat pel preu que indica cada comerç.",
     wa_nota: "El missatge li arribarà en castellà.", lf_q: "Ho has trobat a «{n}»?", lf_si: "Sí", lf_no: "No", lf_gracias: "Gràcies! Ens ajuda a millorar.",
     intro_t: "Hola, sóc isHere 👋", intro_p: "Et dic on comprar el que necessites en botigues de barri de Barcelona, a prop teu.", intro_1: "🎙️ Digues-me o escriu què busques", intro_2: "🏪 T'ensenyo les botigues que ho tenen, amb el preu", intro_3: "🚶 T'hi porto fins a la porta", intro_free: "Gratis i sense registre.", intro_btn: "Comencem!", intro_link: "Què és isHere?",
@@ -1554,6 +1558,7 @@ const I18N = {
   en: {
     pu_abrir: "🌍 Write in my own words or translate their reply", pu_preg: "Your question, in your language", pu_enviar: "Translate and open WhatsApp", pu_resp: "Did they reply? Paste their message here", pu_traducir: "Translate into my language", pu_nota: "Automatic AI translation. Your messages are not stored.", pu_error: "Could not translate right now. Please try again.", pu_cargando: "Translating…",
     f_pie: "🚶 10 min on foot", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Best price", f_nota_precio: "Sorted by the price each shop lists, under 20 min away.", f_lejos: "The closest is about {min} min away:",
+    g_comida: "🍽️ Food", g_aloj: "🛏️ Places to stay", g_turismo: "🏛️ Sightseeing", g_productos: "🛍️ Shopping",
     tab_pie: "🚶 On foot", tab_trans: "🚇 Metro or bus", tab_precio: "💶 Best price", nota_precio: "Sorted by the price each shop lists.",
     wa_nota: "The message will reach the shop in Spanish.", lf_q: "Did you find it at “{n}”?", lf_si: "Yes", lf_no: "No", lf_gracias: "Thanks! It helps us improve.",
     intro_t: "Hi, I'm isHere 👋", intro_p: "I tell you where to buy what you need in local shops in Barcelona, close to you.", intro_1: "🎙️ Say or type what you're looking for", intro_2: "🏪 I show you the shops that have it, with prices", intro_3: "🚶 I take you to the door", intro_free: "Free, no sign-up.", intro_btn: "Start", intro_link: "What is isHere?",
@@ -1745,6 +1750,7 @@ const I18N = {
   it: {
     pu_abrir: "🌍 Scrivere con parole mie o tradurre la risposta", pu_preg: "La tua domanda, nella tua lingua", pu_enviar: "Traduci e apri WhatsApp", pu_resp: "Ti hanno risposto? Incolla qui il messaggio", pu_traducir: "Traduci nella mia lingua", pu_nota: "Traduzione automatica con IA. I tuoi messaggi non vengono salvati.", pu_error: "Impossibile tradurre ora. Riprova.", pu_cargando: "Traduzione in corso…",
     f_pie: "🚶 10 min a piedi", f_t10: "🚇 10 min metro/bus", f_t20: "🚇 20 min metro/bus", f_precio: "💶 Miglior prezzo", f_nota_precio: "Ordinati per il prezzo indicato da ogni negozio, entro 20 min.", f_lejos: "Il più vicino è a circa {min} min:",
+    g_comida: "🍽️ Cibo", g_aloj: "🛏️ Alloggio", g_turismo: "🏛️ Turismo", g_productos: "🛍️ Prodotti",
     tab_pie: "🚶 A piedi", tab_trans: "🚇 Metro o bus", tab_precio: "💶 Miglior prezzo", nota_precio: "Ordinato in base al prezzo indicato da ogni negozio.",
     wa_nota: "Il messaggio arriverà al negozio in spagnolo.", lf_q: "L’hai trovato da «{n}»?", lf_si: "Sì", lf_no: "No", lf_gracias: "Grazie! Ci aiuta a migliorare.",
     intro_t: "Ciao, sono isHere 👋", intro_p: "Ti dico dove comprare ciò che ti serve nei negozi di quartiere di Barcellona, vicino a te.", intro_1: "🎙️ Dimmi o scrivi cosa cerchi", intro_2: "🏪 Ti mostro i negozi che ce l'hanno, con il prezzo", intro_3: "🚶 Ti porto fino alla porta", intro_free: "Gratis e senza registrazione.", intro_btn: "Iniziamo!", intro_link: "Cos'è isHere?",
@@ -1936,6 +1942,7 @@ const I18N = {
   fr: {
     pu_abrir: "🌍 Écrire avec mes mots ou traduire sa réponse", pu_preg: "Ta question, dans ta langue", pu_enviar: "Traduire et ouvrir WhatsApp", pu_resp: "On t'a répondu ? Colle ici son message", pu_traducir: "Traduire dans ma langue", pu_nota: "Traduction automatique par IA. Tes messages ne sont pas conservés.", pu_error: "Impossible de traduire pour le moment. Réessaie.", pu_cargando: "Traduction…",
     f_pie: "🚶 10 min à pied", f_t10: "🚇 10 min métro/bus", f_t20: "🚇 20 min métro/bus", f_precio: "💶 Meilleur prix", f_nota_precio: "Trié selon le prix indiqué par chaque commerce, à moins de 20 min.", f_lejos: "Le plus proche est à environ {min} min :",
+    g_comida: "🍽️ Repas", g_aloj: "🛏️ Hébergement", g_turismo: "🏛️ Tourisme", g_productos: "🛍️ Produits",
     tab_pie: "🚶 À pied", tab_trans: "🚇 Métro ou bus", tab_precio: "💶 Meilleur prix", nota_precio: "Trié selon le prix indiqué par chaque commerce.",
     wa_nota: "Le message arrivera au commerce en espagnol.", lf_q: "L’as-tu trouvé chez « {n} » ?", lf_si: "Oui", lf_no: "Non", lf_gracias: "Merci ! Ça nous aide à nous améliorer.",
     intro_t: "Bonjour, je suis isHere 👋", intro_p: "Je te dis où acheter ce dont tu as besoin dans les commerces de quartier de Barcelone, près de toi.", intro_1: "🎙️ Dis-moi ou écris ce que tu cherches", intro_2: "🏪 Je te montre les boutiques qui l’ont, avec le prix", intro_3: "🚶 Je t'emmène jusqu'à la porte", intro_free: "Gratuit et sans inscription.", intro_btn: "C'est parti !", intro_link: "Qu'est-ce que isHere ?",
@@ -2974,6 +2981,7 @@ async function handleSpeechResult(speech){
 
   if (res.match){
     filtroLista = null;
+    grupoLista = null;
     guardarUltima(res, zone, speech);
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
@@ -3083,10 +3091,57 @@ function precioNum(txt){
 function precioDe(c){ return (c.cartaHit && c.cartaHit.precio) || (c.producto && c.producto.precio) || c.match.star_product_price || ""; }
 // Cuatro opciones: 10 min a pie · 10 min metro/bus · 20 min metro/bus · mejor precio (todo lo que está a menos de 20 min).
 let filtroLista = null;
-function pintarOtras(candidatos, actual, zone, filtro){
+// Cuatro grupos: comida, alojamiento, turismo y productos. Cada resultado cae en uno.
+const GRUPOS = ["comida", "aloj", "turismo", "productos"];
+const TIPOS_COMIDA = new Set(["Restaurante", "Bar", "Bar musical", "Comida para llevar", "Comida preparada", "Heladería y chocolatería",
+  "Panadería y pastelería", "Comida y bebida", "Restauración"]);
+const TIPOS_TURISMO = new Set(["Lugar turístico", "Ocio", "Deporte"]);
+function grupoDe(p){
+  if (p.censo){
+    const t0 = p.star_product_name;
+    if (TIPOS_COMIDA.has(t0)) return "comida";
+    if (t0 === "Alojamiento") return "aloj";
+    if (TIPOS_TURISMO.has(t0)) return "turismo";
+    return "productos";
+  }
+  const txt = normalize([p.name, p.tags, p.star_product_name].join(" "));
+  if (/(restaur|\bbar\b|cafe|comida|empanad|pizz|burger|hamburg|sushi|tapas|menu|food|panader|pasteler|\bforn\b|bakery|helad|kebab|cocina|cuina)/.test(txt)) return "comida";
+  if (/(hotel|hostal|hostel|apartament|alojam|allotjam)/.test(txt)) return "aloj";
+  if (/(museo|museu|museum|galeri|teatr|tour)/.test(txt)) return "turismo";
+  return "productos";
+}
+let grupoLista = null;
+const MAX_LISTA = 20;
+function pintarOtras(candidatos, actual, zone, filtro, grupo){
   const box = document.getElementById("otras");
   const lista = document.getElementById("otras-lista");
-  const todos = candidatos || [];
+  const todosG = candidatos || [];
+  const porGrupo = {};
+  GRUPOS.forEach(g => { porGrupo[g] = todosG.filter(c => grupoDe(c.match) === g); });
+  let g = grupo || grupoLista || grupoDe(actual);
+  if (!porGrupo[g] || !porGrupo[g].length) g = GRUPOS.find(x => porGrupo[x].length) || g;
+  grupoLista = g;
+  const todos = porGrupo[g] || [];
+  box.classList.toggle("hay", todosG.length > 1);
+  lista.innerHTML = "";
+  // Botones de grupo (solo si hay resultados en más de un grupo).
+  if (GRUPOS.filter(x => porGrupo[x].length).length > 1){
+    const tabs = document.createElement("div"); tabs.className = "tabs-g";
+    GRUPOS.forEach(x => {
+      const b = document.createElement("button"); b.type = "button";
+      b.className = "tab-o" + (x === g ? " on" : "");
+      b.textContent = `${t("g_" + x)} (${porGrupo[x].length})`;
+      b.disabled = !porGrupo[x].length;
+      b.addEventListener("click", () => {
+        filtroLista = null;
+        const primero = porGrupo[x][0];
+        if (primero && primero.match.id !== actual.id) mostrarResultado(primero, zone, false);
+        pintarOtras(candidatos, primero ? primero.match : actual, zone, null, x);
+      });
+      tabs.appendChild(b);
+    });
+    lista.appendChild(tabs);
+  }
   const zonaDeC = (c) => { const z = c.zona || zonaDe(c.km); return z === "trans" ? "t10" : z; };
   const cerca = todos.filter(c => zonaDeC(c) !== "lejos");
   const grupos = {
@@ -3096,8 +3151,6 @@ function pintarOtras(candidatos, actual, zone, filtro){
     precio: cerca.slice().sort((x, y) => (precioNum(precioDe(x)) - precioNum(precioDe(y))) || ((x.km ?? 999) - (y.km ?? 999)))
   };
   const lejos = todos.filter(c => zonaDeC(c) === "lejos");
-  box.classList.toggle("hay", todos.length > 1 || (todos.length === 1 && !cerca.length));
-  lista.innerHTML = "";
   // Sin nada a menos de 20 min: se ofrece lo que existe (por ejemplo, un producto especial).
   if (!cerca.length){
     if (lejos.length){
@@ -3106,7 +3159,7 @@ function pintarOtras(candidatos, actual, zone, filtro){
       const h = document.createElement("p"); h.className = "zona-t";
       h.textContent = min ? t("f_lejos", { min }) : t("z_lejos");
       lista.appendChild(h);
-      lejos.forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, null)));
+      lejos.slice(0, MAX_LISTA).forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, null)));
     }
     return;
   }
@@ -3120,12 +3173,12 @@ function pintarOtras(candidatos, actual, zone, filtro){
     ch.className = "chip" + (k === f ? " on" : "");
     ch.textContent = `${t("f_" + k)} (${grupos[k].length})`;
     ch.disabled = !grupos[k].length;
-    ch.addEventListener("click", () => pintarOtras(candidatos, actual, zone, k));
+    ch.addEventListener("click", () => pintarOtras(candidatos, actual, zone, k, g));
     chips.appendChild(ch);
   });
   lista.appendChild(chips);
   if (f === "precio"){ const n = document.createElement("p"); n.className = "zona-t"; n.textContent = t("f_nota_precio"); lista.appendChild(n); }
-  grupos[f].forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, f)));
+  grupos[f].slice(0, MAX_LISTA).forEach(c => lista.appendChild(filaOpcion(c, actual, candidatos, zone, f)));
 }
 function filaOpcion(c, actual, candidatos, zone, f){
   const p = c.match;
