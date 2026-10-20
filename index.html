@@ -2269,7 +2269,13 @@ const STOP = new Set(["para","per","del","les","con","sin","the","and","for","lo
   "with","from","por","tipo","tipus","busco","necesito","quiero","need","want","looking","necessito","vull","some","algo",
   "alguna","cosa","any","hay","donde","dónde","where","buy","comprar","vender"]);
 function tokensDe(texto){ return normalize(texto).split(/[^a-z0-9]+/).filter(w => w.length >= 3 && !STOP.has(w)); }
-function coincide(w, nt){ return nt.includes(w) || w.includes(nt) || (w.length >= 5 && nt.length >= 5 && w.slice(0, 5) === nt.slice(0, 5)); }
+// Ya no vale «una palabra dentro de otra» (batería ≠ sabatería, parche ≠ parc).
+function coincide(w, nt){
+  if (w === nt) return true;
+  const [c, l] = w.length <= nt.length ? [w, nt] : [nt, w];
+  if (c.length >= 4 && l.length - c.length <= 3 && l.startsWith(c)) return true;          // tirita / tiritas
+  return w.length >= 6 && nt.length >= 6 && w.slice(0, 5) === nt.slice(0, 5);              // empanadas / empanades
+}
 function nombreProducto(p, L = lang){ return p ? (p[L] || p.es) : ""; }
 
 // Productos del catálogo que mejor encajan con lo que se busca (los que coinciden con más palabras).
@@ -2608,28 +2614,31 @@ async function searchNearestProduct(userSpeech, userZone){
 
   // Margen de 3 días tras el vencimiento, por si el cobro de renovación tarda en confirmarse.
   const limite = Date.now() - 3 * 24 * 60 * 60 * 1000;
-  const candidates = (data || []).concat(censo || [])
+  const candidatos0 = (data || []).concat(censo || [])
     .filter(p => !p.expires_at || new Date(p.expires_at).getTime() >= limite)
     .map(p => {
       // Busca en etiquetas, nombre del negocio y producto estrella.
       const carta = Array.isArray(p.carta) ? p.carta : [];
-      const tags = [p.tags, p.name, p.star_product_name, carta.map(x => x.nombre).join(","), textosTraducidos(p)].join(",").split(/[,\s]+/).map(t => t.trim()).filter(t => t.length >= 3);
+      const tokProd = tokensDe([p.tags, p.star_product_name, carta.map(x => x.nombre).join(" "), textosTraducidos(p)].join(" "));
+      const tokNombre = tokensDe(p.name || "");
       // Producto de la carta propia que coincide con la búsqueda (para mostrarlo con su precio).
       const cartaHit = carta.find(x => tokensDe(x.nombre || "").some(nt => words.some(w => coincide(w, nt)))) || null;
-      // Coincide si una palabra contiene a la otra o comparten raíz (empanadas / empanades).
-      const hits = tags.filter(tag => {
-        const nt = normalize(tag);
-        return words.some(w => nt.includes(w) || w.includes(nt) || (w.length >= 5 && nt.length >= 5 && w.slice(0, 5) === nt.slice(0, 5)));
-      });
+      // Palabras buscadas que aparecen en lo que vende y en el nombre del local.
+      const hitsProd = words.filter(w => tokProd.some(nt => coincide(w, nt))).length;
+      const hitsNombre = words.filter(w => tokNombre.some(nt => coincide(w, nt))).length;
       // Productos del catálogo que la pyme marcó y que coinciden con la búsqueda (valen doble).
       const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
       // Solo se muestran comercios con precio publicado (estipulación 11 de las condiciones).
       const conPrecio = !!((cartaHit && String(cartaHit.precio || "").trim()) || suyos.some(r => String(r.precio || "").trim())
         || String(p.star_product_price || "").trim()) || !!p.censo;
-      return { pyme: p, score: hits.length + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
+      const fuerte = hitsProd > 0 || suyos.length > 0 || !!cartaHit;
+      return { pyme: p, fuerte, score: hitsProd * 2 + hitsNombre + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
                productos: mapaProductos.get(p.id) || [], conPrecio };
     })
-    .filter(c => c.score > 0 && c.conPrecio)
+    .filter(c => c.score > 0 && c.conPrecio);
+  // Si algún comercio VENDE lo buscado, se descartan los que solo coinciden por el nombre (Bar el Parc ≠ parche).
+  const hayFuerte = candidatos0.some(c => c.fuerte);
+  const candidates = candidatos0.filter(c => c.fuerte || !hayFuerte)
     .map(c => {
       const e = estadoHorario(c.pyme.horario);
       // 0 = abierto ahora, 1 = sin horario indicado, 2 = cerrado ahora
@@ -2642,13 +2651,14 @@ async function searchNearestProduct(userSpeech, userZone){
       // A la misma distancia (10 min a pie, 10 o 20 min en transporte), primero los comercios verificados.
       RANGO_ZONA[zonaDe(a.km)] - RANGO_ZONA[zonaDe(b.km)] ||
       (a.pyme.censo ? 1 : 0) - (b.pyme.censo ? 1 : 0) ||
+      // Dentro de la misma distancia, el que mejor encaja con lo buscado.
+      b.score - a.score ||
       (posicionUsuario ? 0 : (a.pyme.zone === userZone ? 0 : 1) - (b.pyme.zone === userZone ? 0 : 1)) ||
       a.km - b.km ||
-      b.score - a.score ||
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
   const mejor = candidates[0];
-  const aRes = (c) => ({ match: c.pyme, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos, zona: zonaDe(c.km) });
+  const aRes = (c) => ({ match: c.pyme, fuerte: c.fuerte, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos, zona: zonaDe(c.km) });
   return { ...(mejor ? aRes(mejor) : { match: null, km: null, producto: null, cartaHit: null, productos: [] }),
            candidatos: candidates.map(aRes) };
 }
@@ -2920,12 +2930,12 @@ async function handleSpeechResult(speech){
   const pIsa = navigator.onLine ? entenderNecesidad(speech) : Promise.resolve(null);
   let res = await searchNearestProduct(speech, zone);
   let entendido = null;
-  if (!res.error && !res.match && navigator.onLine){
-    const alt = await pIsa;
+  if (!res.error && (!res.match || !res.fuerte) && navigator.onLine){
+    const alt = await Promise.race([pIsa, new Promise(r => setTimeout(() => r(null), 6000))]);
     if (miN !== busquedaN) return;
     if (alt && alt.terminos){
       const res2 = await searchNearestProduct(speech + " " + alt.terminos, zone);
-      if (res2 && !res2.error && res2.match){ res = res2; entendido = alt; }
+      if (res2 && !res2.error && res2.match && (res2.fuerte || !res.match)){ res = res2; entendido = alt; }
     }
   }
 
