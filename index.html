@@ -2228,6 +2228,7 @@ function mostrarAviso(texto, tipo){
 
 /* ---------- vistas ---------- */
 function mostrarVista(vista){
+  if (vista === "comercio") registrarIntentoAlta("abrio");
   document.getElementById("view-turista").style.display = vista === "turista" ? "flex" : "none";
   document.getElementById("view-comercio").style.display = vista === "comercio" ? "flex" : "none";
   document.body.classList.toggle("en-comercio", vista === "comercio");
@@ -2308,7 +2309,17 @@ async function registrarSinResultado(texto, zona){
 // Registro anónimo de búsquedas y clics (sin datos del turista). Nunca bloquea la app si falla.
 let pymeActualId = null;
 let volvioDeRuta = false;
+function registrarIntentoAlta(paso){
+  if (!supabaseClient) return;
+  try { supabaseClient.rpc("registrar_intento_alta", { p_paso: paso, p_idioma: lang }).then(() => {}, () => {}); } catch (e) {}
+}
+// Visitas a fichas del censo: aparición en la búsqueda, ruta, Google Maps y «¿Lo encontraste?».
+function visitaCenso(id, tipo){
+  if (!supabaseClient || !id) return;
+  try { supabaseClient.rpc("registrar_visita_censo", { p_censo: id, p_tipo: tipo, p_zona: zonaActual || null, p_idioma: lang }).then(() => {}, () => {}); } catch (e) {}
+}
 function registrarEvento(tipo, pymeId, texto, zona, conResultado){
+  if (tipo === "ruta" && pymeId && idsCenso.has(pymeId)) visitaCenso(pymeId, "ruta");
   if (!supabaseClient) return;
   try {
     supabaseClient.rpc("registrar_evento", {
@@ -2548,7 +2559,11 @@ const TIPO_TR = {
   "Alojamiento":["Allotjament","Accommodation","Alloggio","Hébergement"],"Comida y bebida":["Menjar i beguda","Food and drink","Cibo e bevande","Restauration"],
   "Restauración":["Restauració","Food and drink","Ristorazione","Restauration"],"Zapatería y piel":["Sabateria i pell","Shoes and leather","Scarpe e pelletteria","Chaussures et maroquinerie"],
   "Joyería y relojería":["Joieria i rellotgeria","Jewellery and watches","Gioielleria e orologeria","Bijouterie-horlogerie"],"Mercería":["Merceria","Haberdashery","Merceria","Mercerie"],
-  "Ropa":["Roba","Clothing","Abbigliamento","Vêtements"],"Souvenirs":["Records","Souvenirs","Souvenir","Souvenirs"]
+  "Ropa":["Roba","Clothing","Abbigliamento","Vêtements"],
+  "Óptica":["Òptica","Optician","Ottica","Opticien"],"Locutorio":["Locutori","Call shop","Phone center","Taxiphone"],
+  "Grandes almacenes":["Grans magatzems","Department store","Grandi magazzini","Grand magasin"],
+  "Lugar turístico":["Lloc turístic","Sightseeing","Luogo turistico","Lieu touristique"],"Ocio":["Oci","Leisure","Svago","Loisirs"],
+  "Deporte":["Esport","Sport","Sport","Sport"],"Souvenirs":["Records","Souvenirs","Souvenir","Souvenirs"]
 };
 const idsCenso = new Set();
 let censoCache = null;
@@ -2557,7 +2572,7 @@ async function cargarCenso(){
   const filas = [];
   for (let desde = 0; desde < 20000; desde += 1000){
     const { data, error } = await supabaseClient.from("censo_locales")
-      .select("id_censo, nombre, direccion, tipo, productos, lat, lng, google_url")
+      .select("id_censo, nombre, direccion, tipo, productos, lat, lng, google_url, barrio")
       .eq("estado", "sin_reclamar").range(desde, desde + 999);
     if (error || !data) return [];   // sin tabla o sin red: se busca solo entre los comercios verificados
     filas.push(...data);
@@ -2566,7 +2581,7 @@ async function cargarCenso(){
   censoCache = filas.map(r => {
     const tr4 = TIPO_TR[r.tipo] || [];
     idsCenso.add(r.id_censo);
-    return { id: r.id_censo, censo: true, name: r.nombre, address: r.direccion, zone: "Sant Antoni",
+    return { id: r.id_censo, censo: true, name: r.nombre, address: r.direccion, zone: r.barrio || "Barcelona",
       lat: r.lat, lng: r.lng, tags: [r.tipo, r.productos].concat(tr4).join(", "), star_product_name: r.tipo, star_product_price: "",
       traducciones: { ca: { star: tr4[0] }, en: { star: tr4[1] }, it: { star: tr4[2] }, fr: { star: tr4[3] } },
       google_url: r.google_url, verif_nivel: 0, carta: [], horario: null, descripcion: "" };
@@ -2800,6 +2815,7 @@ const listenStatus = document.getElementById("listen-status");
 const transcriptEl = document.getElementById("transcript");
 const resultCard = document.getElementById("result-card");
 const voiceGuideBtn = document.getElementById("voice-guide-btn");
+document.getElementById("ft-google").addEventListener("click", () => { if (idsCenso.has(pymeActualId)) visitaCenso(pymeActualId, "google"); });
 const zoneSelect = document.getElementById("zone-select");
 const btnLocate = document.getElementById("btn-locate");
 const locateStatus = document.getElementById("locate-status");
@@ -3016,7 +3032,8 @@ function mostrarResultado(res, zone, conVoz){
 
     resultCard.classList.add("show");
     // Cuenta la aparición para las estadísticas de la pyme (no bloquea nada si falla).
-    if (supabaseClient && !match.censo) supabaseClient.rpc("registrar_aparicion", { p: match.id }).then(() => {}, () => {});
+    if (match.censo) visitaCenso(match.id, "aparicion");
+    else if (supabaseClient) supabaseClient.rpc("registrar_aparicion", { p: match.id }).then(() => {}, () => {});
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
     listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. ` + esc(t("tap_hint", { btn: textoBoton }));
@@ -3495,6 +3512,7 @@ async function enviarAlta(){
     }
 
     localStorage.setItem("ishere_ultima_pyme", JSON.stringify({ id, name: datos.name }));
+    registrarIntentoAlta("enviado");
 
     const { data, error: errPago } = await supabaseClient.functions.invoke("crear-pago", { body: { pyme_id: id, idioma: lang } });
     if (errPago || !data || !data.url) throw new Error((data && data.error) || (errPago && errPago.message) || t("err_no_link"));
@@ -3609,6 +3627,7 @@ function preguntarSiLoEncontro(){
   box.hidden = false;
   const responder = (si) => {
     try { localStorage.removeItem("ishere_ruta"); } catch (e) {}
+    if (si !== null && r.c) visitaCenso(r.id, si ? "si" : "no");
     if (si !== null && supabaseClient && !r.c) supabaseClient.rpc("registrar_resultado_ruta", { p_pyme: r.id, p_encontrado: si, p_idioma: lang }).then(() => {}, () => {});
     if (si === null){ box.hidden = true; return; }
     document.getElementById("lf-q").textContent = t("lf_gracias");

@@ -184,6 +184,18 @@
       <div class="msg" id="m-solicitudes"></div>
     </section>
 
+    <section class="card" id="sec-censo">
+      <h2>🏪 Visitas a los comercios cargados</h2>
+      <p class="muted">Los 4.000 comercios de la tómbola (cargados del censo, aún sin reclamar). Últimos 30 días.</p>
+      <div id="l-censo"><p class="muted">Cargando…</p></div>
+    </section>
+
+    <section class="card" id="sec-intentos">
+      <h2>✍️ Comercios que quisieron sumarse</h2>
+      <p class="muted">«Abrieron»: veces que se abrió el formulario de alta. «Enviaron»: comercios que completaron el formulario y llegaron al pago.</p>
+      <div id="l-intentos"><p class="muted">Cargando…</p></div>
+    </section>
+
     <section class="card" id="sec-estadisticas">
       <h2>📊 Estadísticas</h2>
       <p class="muted">Últimos 30 días, salvo los motivos de baja (desde el inicio).</p>
@@ -412,6 +424,8 @@ async function cargarPanel(){
   cargarRevision();
   cargarAlertas();
   cargarEstadisticas();
+  cargarCenso();
+  cargarIntentos();
   cargarRecEstado();
   cargarVerificaciones();
   cargarSolicitudes();
@@ -857,6 +871,30 @@ function grafico(titulo, filas, vacio){
     <div class="graf-fila"><span>${esc(f.label)}</span>
       <div class="graf-barra"><span style="width:${Math.round(100 * Number(f.n) / max)}%"></span></div>
       <span class="graf-n">${f.n} · ${Math.round(100 * Number(f.n) / total)}%${f.extra ? " · " + esc(f.extra) : ""}</span></div>`).join("") + `</div>`;
+}
+const VISITA_TXT = { aparicion: "Aparecieron en una búsqueda", ruta: "Turistas que fueron (¡Vamos!)", google: "Abrieron Google Maps", si: "«Sí, lo encontré»", no: "«No lo encontré»" };
+async function cargarCenso(){
+  const { data, error } = await sb.rpc("admin_visitas_censo", { p_dias: 30 });
+  if (error){ $("l-censo").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const d = data || {}, tot = d.totales || {};
+  const cifras = ["aparicion", "ruta", "google", "si", "no"].map(k =>
+    `<div class="busq"><span>${VISITA_TXT[k]}</span><span class="veces">${Number(tot[k] || 0)}${k === "ruta" ? " · hoy " + Number(tot.ruta_hoy || 0) : ""}</span></div>`).join("");
+  const top = (d.top || []).map(x => `<div class="item"><b>${esc(x.nombre)}</b> <span class="muted">· ${esc(x.tipo || "")} · ${esc(x.direccion || "")}</span>
+      <div class="muted">${x.rutas} rutas · ${x.apariciones} apariciones · ${x.google} Google Maps${(x.si || x.no) ? ` · ✅ ${x.si} ❌ ${x.no}` : ""}</div></div>`).join("");
+  $("l-censo").innerHTML = `<p class="muted">Comercios cargados: <b>${Number(d.cargados || 0)}</b> · con alguna visita: <b>${Number(d.con_visitas || 0)}</b></p>` + cifras +
+    grafico("Rutas por día", (d.por_dia || []).map(x => ({ label: String(x.dia).slice(5), n: x.rutas })), "Aún no hay rutas a estos comercios.") +
+    (top ? `<details open style="margin-top:12px"><summary>Los más visitados</summary>${top}</details>` : "");
+}
+async function cargarIntentos(){
+  const { data, error } = await sb.rpc("admin_intentos_alta", { p_dias: 30 });
+  if (error){ $("l-intentos").innerHTML = '<p class="muted">No se pudo cargar: ' + esc(error.message) + '</p>'; return; }
+  const d = data || {};
+  $("l-intentos").innerHTML =
+    `<div class="busq"><span>Abrieron el formulario (30 días)</span><span class="veces">${Number(d.abrio || 0)}</span></div>
+     <div class="busq"><span>Enviaron su ficha (30 días)</span><span class="veces">${Number(d.enviado || 0)}</span></div>
+     <div class="busq"><span>Enviaron su ficha (desde el inicio)</span><span class="veces">${Number(d.enviado_total || 0)}</span></div>` +
+    grafico("Por idioma", (d.idiomas || []).map(x => ({ label: x.idioma || "?", n: x.n })), "Aún nadie abrió el formulario.") +
+    '<p class="muted">Los que enviaron y no pagaron aparecen abajo, en «Altas sin terminar», con su WhatsApp y email.</p>';
 }
 async function cargarEstadisticas(){
   const { data, error } = await sb.rpc("admin_estadisticas");
