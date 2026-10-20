@@ -795,6 +795,7 @@
           <option value="Gràcia">Gràcia</option>
           <option value="Gòtic">Gòtic</option>
           <option value="Eixample">Eixample</option>
+          <option value="Sant Antoni">Sant Antoni</option>
           <option value="El Raval">El Raval</option>
           <option value="Sagrada Familia">Sagrada Familia</option>
           <option value="Les Corts">Les Corts</option>
@@ -1181,6 +1182,8 @@ const I18N = {
     search_btn: "Buscar",
     listen_idle: 'Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.',
     badge: "producto estrella",
+    badge_censo: "ficha sin confirmar",
+    censo_nota: "Comercio del censo municipal: aún no ha confirmado precios ni horario. Mira fotos y horario en Google Maps antes de ir. Fuente: Open Data BCN.",
     map: "MAPA",
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
@@ -1370,6 +1373,8 @@ const I18N = {
     search_btn: "Cercar",
     listen_idle: 'Toca el cercle i digues què necessites. Per exemple: <b>"busco agulla i fil"</b>.',
     badge: "producte estrella",
+    badge_censo: "fitxa sense confirmar",
+    censo_nota: "Comerç del cens municipal: encara no ha confirmat preus ni horari. Mira fotos i horari a Google Maps abans d'anar-hi. Font: Open Data BCN.",
     map: "MAPA",
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
@@ -1559,6 +1564,8 @@ const I18N = {
     search_btn: "Search",
     listen_idle: 'Tap the circle and say what you need. For example: <b>"I need a needle and thread"</b>.',
     badge: "star product",
+    badge_censo: "unconfirmed listing",
+    censo_nota: "Shop from the city business census: prices and opening hours not yet confirmed. Check photos and hours on Google Maps before you go. Source: Open Data BCN.",
     map: "MAP",
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
@@ -1748,6 +1755,8 @@ const I18N = {
     search_btn: "Cerca",
     listen_idle: "Tocca il cerchio e di' cosa ti serve. Per esempio: <b>«Mi serve ago e filo»</b>.",
     badge: "prodotto stella",
+    badge_censo: "scheda non confermata",
+    censo_nota: "Negozio del censimento comunale: prezzi e orari non ancora confermati. Guarda foto e orari su Google Maps prima di andare. Fonte: Open Data BCN.",
     map: "MAPPA",
     hint: "Google Maps ti guida a voce fino alla porta.",
     biz_link: "Hai un negozio? Entra in isHere",
@@ -1937,6 +1946,8 @@ const I18N = {
     search_btn: "Chercher",
     listen_idle: "Touche le cercle et dis ce qu'il te faut. Par exemple : <b>« J'ai besoin de fil et d'une aiguille »</b>.",
     badge: "produit phare",
+    badge_censo: "fiche non confirmée",
+    censo_nota: "Commerce du recensement municipal : prix et horaires pas encore confirmés. Regardez photos et horaires sur Google Maps avant d'y aller. Source : Open Data BCN.",
     map: "CARTE",
     hint: "Google Maps te guide à la voix jusqu'à la porte.",
     biz_link: "Tu as un commerce ? Rejoins isHere",
@@ -2301,7 +2312,7 @@ function registrarEvento(tipo, pymeId, texto, zona, conResultado){
   if (!supabaseClient) return;
   try {
     supabaseClient.rpc("registrar_evento", {
-      p_tipo: tipo, p_pyme: pymeId || null, p_texto: texto ? String(texto).slice(0, 120) : null,
+      p_tipo: tipo, p_pyme: (pymeId && !idsCenso.has(pymeId)) ? pymeId : null, p_texto: texto ? String(texto).slice(0, 120) : null,
       p_zona: zona || null, p_idioma: lang, p_resultado: conResultado == null ? null : !!conResultado
     }).then(() => {}, () => {});
   } catch (e) {}
@@ -2515,13 +2526,63 @@ function zonaDe(km){
   return "lejos";
 }
 
+// Censo municipal de locales (Open Data BCN, licencia CC BY 4.0): fichas sin reclamar, sin precio ni WhatsApp.
+// Se cargan una vez por visita y van detrás de los comercios verificados que están a la misma distancia.
+const TIPO_TR = {
+  "Supermercado":["Supermercat","Supermarket","Supermercato","Supermarché"],"Bebidas":["Begudes","Drinks","Bevande","Boissons"],
+  "Carnicería":["Carnisseria","Butcher","Macelleria","Boucherie"],"Frutería":["Fruiteria","Fruit and veg","Frutta e verdura","Primeur"],
+  "Huevos y aves":["Ous i aviram","Eggs and poultry","Uova e pollame","Œufs et volaille"],"Panadería y pastelería":["Forn i pastisseria","Bakery","Panetteria e pasticceria","Boulangerie-pâtisserie"],
+  "Pescadería":["Peixateria","Fishmonger","Pescheria","Poissonnerie"],"Comida preparada":["Menjar preparat","Ready meals","Piatti pronti","Plats cuisinés"],
+  "Alimentación":["Alimentació","Grocery","Alimentari","Épicerie"],"Bazar":["Basar","Variety store","Bazar","Bazar"],
+  "Combustibles":["Combustibles","Fuel","Carburanti","Carburants"],"Droguería y perfumería":["Drogueria i perfumeria","Toiletries and perfume","Drogheria e profumeria","Droguerie-parfumerie"],
+  "Farmacia":["Farmàcia","Pharmacy","Farmacia","Pharmacie"],"Herbolario":["Herbolari","Health food shop","Erboristeria","Herboristerie"],
+  "Estanco":["Estanc","Tobacconist","Tabaccheria","Bureau de tabac"],"Fotografía":["Fotografia","Photography","Fotografia","Photographie"],
+  "Electrodomésticos":["Electrodomèstics","Home appliances","Elettrodomestici","Électroménager"],"Floristería":["Floristeria","Florist","Fioraio","Fleuriste"],
+  "Hogar":["Llar","Homeware","Casa","Maison"],"Muebles":["Mobles","Furniture","Mobili","Meubles"],"Ferretería":["Ferreteria","Hardware store","Ferramenta","Quincaillerie"],
+  "Antigüedades":["Antiguitats","Antiques","Antiquariato","Antiquités"],"Mascotas":["Mascotes","Pet shop","Animali","Animalerie"],
+  "Informática y móviles":["Informàtica i mòbils","Computers and phones","Informatica e telefoni","Informatique et téléphones"],
+  "Juguetes y deportes":["Joguines i esports","Toys and sports","Giocattoli e sport","Jouets et sport"],"Librería y prensa":["Llibreria i premsa","Books and newspapers","Libreria e giornali","Librairie-presse"],
+  "Música":["Música","Music","Musica","Musique"],"Bar":["Bar","Bar","Bar","Bar"],"Bar musical":["Bar musical","Music bar","Locale con musica","Bar musical"],
+  "Restaurante":["Restaurant","Restaurant","Ristorante","Restaurant"],"Comida para llevar":["Menjar per emportar","Takeaway","Da asporto","À emporter"],
+  "Heladería y chocolatería":["Gelateria i xocolateria","Ice cream and chocolate","Gelateria e cioccolateria","Glacier-chocolaterie"],
+  "Alojamiento":["Allotjament","Accommodation","Alloggio","Hébergement"],"Comida y bebida":["Menjar i beguda","Food and drink","Cibo e bevande","Restauration"],
+  "Restauración":["Restauració","Food and drink","Ristorazione","Restauration"],"Zapatería y piel":["Sabateria i pell","Shoes and leather","Scarpe e pelletteria","Chaussures et maroquinerie"],
+  "Joyería y relojería":["Joieria i rellotgeria","Jewellery and watches","Gioielleria e orologeria","Bijouterie-horlogerie"],"Mercería":["Merceria","Haberdashery","Merceria","Mercerie"],
+  "Ropa":["Roba","Clothing","Abbigliamento","Vêtements"],"Souvenirs":["Records","Souvenirs","Souvenir","Souvenirs"]
+};
+const idsCenso = new Set();
+let censoCache = null;
+async function cargarCenso(){
+  if (censoCache) return censoCache;
+  const filas = [];
+  for (let desde = 0; desde < 20000; desde += 1000){
+    const { data, error } = await supabaseClient.from("censo_locales")
+      .select("id_censo, nombre, direccion, tipo, productos, lat, lng, google_url")
+      .eq("estado", "sin_reclamar").range(desde, desde + 999);
+    if (error || !data) return [];   // sin tabla o sin red: se busca solo entre los comercios verificados
+    filas.push(...data);
+    if (data.length < 1000) break;
+  }
+  censoCache = filas.map(r => {
+    const tr4 = TIPO_TR[r.tipo] || [];
+    idsCenso.add(r.id_censo);
+    return { id: r.id_censo, censo: true, name: r.nombre, address: r.direccion, zone: "Sant Antoni",
+      lat: r.lat, lng: r.lng, tags: [r.tipo, r.productos].concat(tr4).join(", "), star_product_name: r.tipo, star_product_price: "",
+      traducciones: { ca: { star: tr4[0] }, en: { star: tr4[1] }, it: { star: tr4[2] }, fr: { star: tr4[3] } },
+      google_url: r.google_url, verif_nivel: 0, carta: [], horario: null, descripcion: "" };
+  });
+  return censoCache;
+}
+const RANGO_ZONA = { pie: 0, t10: 1, t20: 2, lejos: 3 };
+
 async function searchNearestProduct(userSpeech, userZone){
   const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
 
-  const [{ data, error }, mapaProductos] = await Promise.all([
+  const [{ data, error }, mapaProductos, censo] = await Promise.all([
     supabaseClient.from("pymes").select(COLUMNAS_PUBLICAS).eq("status", "beta_active").gte("verif_nivel", 1),
-    productosDePymes()
+    productosDePymes(),
+    cargarCenso().catch(() => [])
   ]);
   const buscados = productosQueCoinciden(words);
 
@@ -2532,7 +2593,7 @@ async function searchNearestProduct(userSpeech, userZone){
 
   // Margen de 3 días tras el vencimiento, por si el cobro de renovación tarda en confirmarse.
   const limite = Date.now() - 3 * 24 * 60 * 60 * 1000;
-  const candidates = (data || [])
+  const candidates = (data || []).concat(censo || [])
     .filter(p => !p.expires_at || new Date(p.expires_at).getTime() >= limite)
     .map(p => {
       // Busca en etiquetas, nombre del negocio y producto estrella.
@@ -2549,7 +2610,7 @@ async function searchNearestProduct(userSpeech, userZone){
       const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
       // Solo se muestran comercios con precio publicado (estipulación 11 de las condiciones).
       const conPrecio = !!((cartaHit && String(cartaHit.precio || "").trim()) || suyos.some(r => String(r.precio || "").trim())
-        || String(p.star_product_price || "").trim());
+        || String(p.star_product_price || "").trim()) || !!p.censo;
       return { pyme: p, score: hits.length + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
                productos: mapaProductos.get(p.id) || [], conPrecio };
     })
@@ -2563,6 +2624,9 @@ async function searchNearestProduct(userSpeech, userZone){
     // A igualdad, más coincidencias y con foto.
     .sort((a, b) =>
       a.cerrado - b.cerrado ||
+      // A la misma distancia (10 min a pie, 10 o 20 min en transporte), primero los comercios verificados.
+      RANGO_ZONA[zonaDe(a.km)] - RANGO_ZONA[zonaDe(b.km)] ||
+      (a.pyme.censo ? 1 : 0) - (b.pyme.censo ? 1 : 0) ||
       (posicionUsuario ? 0 : (a.pyme.zone === userZone ? 0 : 1) - (b.pyme.zone === userZone ? 0 : 1)) ||
       a.km - b.km ||
       b.score - a.score ||
@@ -2652,7 +2716,7 @@ function pintarFicha(match, res){
 
   const desc = document.getElementById("ft-desc");
   const dTr = tr(match).desc;
-  const descTxt = (typeof dTr === "string" && dTr) || match.descripcion || "";
+  const descTxt = match.censo ? t("censo_nota") : ((typeof dTr === "string" && dTr) || match.descripcion || "");
   desc.hidden = !descTxt;
   desc.textContent = descTxt;
 
@@ -2686,7 +2750,8 @@ function pintarFicha(match, res){
     if (p) add(nombreProducto(p), r.precio, false);
   });
   const lista = document.getElementById("ft-lista");
-  lista.innerHTML = items.slice(0, 12).map(x =>
+  // Se muestra la carta completa: todo lo que el comercio cargó lo ve el turista.
+  lista.innerHTML = items.map(x =>
     `<li class="${x.destacado ? "destacado" : ""}"><span>${esc(x.nombre)}</span><span class="precio">${esc(x.precio || "")}</span></li>`).join("");
   document.getElementById("ft-vende-wrap").hidden = !items.length;
 
@@ -2747,6 +2812,7 @@ const zoneCoords = {
   "Gràcia": { lat: 41.4036, lng: 2.1527 },
   "Gòtic": { lat: 41.3833, lng: 2.1765 },
   "Eixample": { lat: 41.3888, lng: 2.1590 },
+  "Sant Antoni": { lat: 41.3786, lng: 2.1617 },
   "El Raval": { lat: 41.3801, lng: 2.1686 },
   "Sagrada Familia": { lat: 41.4036, lng: 2.1744 },
   "Les Corts": { lat: 41.3815, lng: 2.1255 },
@@ -2825,17 +2891,24 @@ async function entenderNecesidad(q){
   } catch (e) { return null; }
 }
 
+// Cada búsqueda lleva un número: si el turista busca otra cosa, la ampliación vieja se descarta.
+let busquedaN = 0;
 async function handleSpeechResult(speech){
+  const miN = ++busquedaN;
   transcriptEl.textContent = `"${speech}"`;
   listenStatus.classList.remove("pocket-mode");
   listenStatus.textContent = t("searching");
   const zone = zoneSelect.value;
+  // Isa amplía SIEMPRE la búsqueda (sinónimos, otros idiomas, otras formas de decirlo), en paralelo.
+  // Lo que ya aprendió responde al instante y sin gastar IA.
+  const pIsa = navigator.onLine ? entenderNecesidad(speech) : Promise.resolve(null);
   let res = await searchNearestProduct(speech, zone);
   let entendido = null;
   if (!res.error && !res.match && navigator.onLine){
-    const alt = await entenderNecesidad(speech);
+    const alt = await pIsa;
+    if (miN !== busquedaN) return;
     if (alt && alt.terminos){
-      const res2 = await searchNearestProduct(alt.terminos, zone);
+      const res2 = await searchNearestProduct(speech + " " + alt.terminos, zone);
       if (res2 && !res2.error && res2.match){ res = res2; entendido = alt; }
     }
   }
@@ -2856,6 +2929,7 @@ async function handleSpeechResult(speech){
     mostrarResultado(res, zone, true);
     pintarOtras(res.candidatos, res.match, zone);
     if (entendido) transcriptEl.textContent = `"${speech}" → ${entendido.terminos}`;
+    else ampliarConIsa(pIsa, speech, zone, res, miN);
   } else {
     resultCard.classList.remove("show");
     voiceGuideBtn.classList.remove("show");
@@ -2864,6 +2938,24 @@ async function handleSpeechResult(speech){
     listenStatus.innerHTML = t(clave, { s: esc(speech) });
     registrarSinResultado(speech, zone);
   }
+}
+
+// Ya hay resultados con las palabras tal cual: cuando Isa responde, se agregan las tiendas que
+// lo venden con otro nombre o en otro idioma (para que ninguna tienda que lo tiene quede invisible).
+async function ampliarConIsa(pIsa, speech, zone, res, miN){
+  const alt = await pIsa;
+  if (!alt || !alt.terminos || miN !== busquedaN) return;
+  const res2 = await searchNearestProduct(speech + " " + alt.terminos, zone);
+  if (miN !== busquedaN || !res2 || res2.error || !Array.isArray(res2.candidatos)) return;
+  const antes = new Set((res.candidatos || []).map(c => c.match.id));
+  const nuevos = res2.candidatos.filter(c => !antes.has(c.match.id));
+  if (!nuevos.length) return;
+  const enRes2 = new Set(res2.candidatos.map(c => c.match.id));
+  const todos = res2.candidatos.concat((res.candidatos || []).filter(c => !enRes2.has(c.match.id)));
+  res.candidatos = todos;
+  const vista = todos.find(c => c.match.id === pymeActualId);
+  pintarOtras(todos, vista ? vista.match : res.match, zone);
+  transcriptEl.textContent = `"${speech}" → ${alt.terminos}`;
 }
 
 // Muestra un resultado (el mejor o el que el turista elige entre las otras opciones).
@@ -2897,7 +2989,7 @@ function mostrarResultado(res, zone, conVoz){
     } else {
       document.getElementById("result-product").textContent =
         match.star_product_price ? `${trStar(match)} · ${match.star_product_price}` : trStar(match);
-      badge.textContent = t("badge");
+      badge.textContent = t(match.censo ? "badge_censo" : "badge");
     }
     document.getElementById("result-distance").textContent = textoDistancia(match, res.km);
     pintarEstado(document.getElementById("result-horario"), match.horario);
@@ -2924,7 +3016,7 @@ function mostrarResultado(res, zone, conVoz){
 
     resultCard.classList.add("show");
     // Cuenta la aparición para las estadísticas de la pyme (no bloquea nada si falla).
-    if (supabaseClient) supabaseClient.rpc("registrar_aparicion", { p: match.id }).then(() => {}, () => {});
+    if (supabaseClient && !match.censo) supabaseClient.rpc("registrar_aparicion", { p: match.id }).then(() => {}, () => {});
     voiceGuideBtn.classList.add("show");
     listenStatus.classList.add("pocket-mode");
     listenStatus.innerHTML = `${esc(aviso)}<b>${esc(match.name)}</b>. ` + esc(t("tap_hint", { btn: textoBoton }));
@@ -3503,7 +3595,7 @@ document.getElementById("pu-traducir").addEventListener("click", async (ev) => {
 
 /* ---------- «¿Lo encontraste?» al volver de la ruta ---------- */
 function recordarRuta(){
-  try { localStorage.setItem("ishere_ruta", JSON.stringify({ id: pymeActualId, n: document.getElementById("result-name").textContent, t: Date.now() })); } catch (e) {}
+  try { localStorage.setItem("ishere_ruta", JSON.stringify({ id: pymeActualId, c: idsCenso.has(pymeActualId), n: document.getElementById("result-name").textContent, t: Date.now() })); } catch (e) {}
 }
 function preguntarSiLoEncontro(){
   let r = null;
@@ -3517,7 +3609,7 @@ function preguntarSiLoEncontro(){
   box.hidden = false;
   const responder = (si) => {
     try { localStorage.removeItem("ishere_ruta"); } catch (e) {}
-    if (si !== null && supabaseClient) supabaseClient.rpc("registrar_resultado_ruta", { p_pyme: r.id, p_encontrado: si, p_idioma: lang }).then(() => {}, () => {});
+    if (si !== null && supabaseClient && !r.c) supabaseClient.rpc("registrar_resultado_ruta", { p_pyme: r.id, p_encontrado: si, p_idioma: lang }).then(() => {}, () => {});
     if (si === null){ box.hidden = true; return; }
     document.getElementById("lf-q").textContent = t("lf_gracias");
     document.getElementById("lf-btns").hidden = true;
