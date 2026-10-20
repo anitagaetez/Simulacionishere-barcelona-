@@ -2269,12 +2269,17 @@ const STOP = new Set(["para","per","del","les","con","sin","the","and","for","lo
   "with","from","por","tipo","tipus","busco","necesito","quiero","need","want","looking","necessito","vull","some","algo",
   "alguna","cosa","any","hay","donde","dónde","where","buy","comprar","vender"]);
 function tokensDe(texto){ return normalize(texto).split(/[^a-z0-9]+/).filter(w => w.length >= 3 && !STOP.has(w)); }
-// Ya no vale «una palabra dentro de otra» (batería ≠ sabatería, parche ≠ parc).
+// Coinciden: palabra igual, plural (vino/vinos, pan/panes), raíz larga (tirita/tiritas),
+// género (chino/china) o misma raíz de 5 letras (empanadas/empanades). Nunca «una palabra dentro de otra».
 function coincide(w, nt){
   if (w === nt) return true;
   const [c, l] = w.length <= nt.length ? [w, nt] : [nt, w];
-  if (c.length >= 4 && l.length - c.length <= 3 && l.startsWith(c)) return true;          // tirita / tiritas
-  return w.length >= 6 && nt.length >= 6 && w.slice(0, 5) === nt.slice(0, 5);              // empanadas / empanades
+  if (l.startsWith(c)){
+    if (c.length >= 3 && (l === c + "s" || l === c + "es")) return true;
+    if (c.length >= 5 && l.length - c.length <= 3) return true;
+  }
+  if (w.length >= 5 && w.length === nt.length && w.slice(0, -1) === nt.slice(0, -1)) return true;
+  return w.length >= 6 && nt.length >= 6 && w.slice(0, 5) === nt.slice(0, 5);
 }
 function nombreProducto(p, L = lang){ return p ? (p[L] || p.es) : ""; }
 
@@ -2596,7 +2601,7 @@ async function cargarCenso(){
 }
 const RANGO_ZONA = { pie: 0, t10: 1, t20: 2, lejos: 3 };
 
-async function searchNearestProduct(userSpeech, userZone){
+async function searchNearestProduct(userSpeech, userZone, base){
   const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
   if (!supabaseClient) return { error: true };
 
@@ -2624,21 +2629,34 @@ async function searchNearestProduct(userSpeech, userZone){
       // Producto de la carta propia que coincide con la búsqueda (para mostrarlo con su precio).
       const cartaHit = carta.find(x => tokensDe(x.nombre || "").some(nt => words.some(w => coincide(w, nt)))) || null;
       // Palabras buscadas que aparecen en lo que vende y en el nombre del local.
-      const hitsProd = words.filter(w => tokProd.some(nt => coincide(w, nt))).length;
-      const hitsNombre = words.filter(w => tokNombre.some(nt => coincide(w, nt))).length;
+      const mp = new Set(words.filter(w => tokProd.some(nt => coincide(w, nt))));
+      const mn = new Set(words.filter(w => tokNombre.some(nt => coincide(w, nt))));
       // Productos del catálogo que la pyme marcó y que coinciden con la búsqueda (valen doble).
       const suyos = (mapaProductos.get(p.id) || []).filter(r => buscados.has(r.producto_id));
       // Solo se muestran comercios con precio publicado (estipulación 11 de las condiciones).
       const conPrecio = !!((cartaHit && String(cartaHit.precio || "").trim()) || suyos.some(r => String(r.precio || "").trim())
         || String(p.star_product_price || "").trim()) || !!p.censo;
-      const fuerte = hitsProd > 0 || suyos.length > 0 || !!cartaHit;
-      return { pyme: p, fuerte, score: hitsProd * 2 + hitsNombre + suyos.length * 2 + (cartaHit ? 2 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
+      return { pyme: p, mp, mn, extra: suyos.length + (cartaHit ? 1 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
                productos: mapaProductos.get(p.id) || [], conPrecio };
     })
-    .filter(c => c.score > 0 && c.conPrecio);
-  // Si algún comercio VENDE lo buscado, se descartan los que solo coinciden por el nombre (Bar el Parc ≠ parche).
-  const hayFuerte = candidatos0.some(c => c.fuerte);
-  const candidates = candidatos0.filter(c => c.fuerte || !hayFuerte)
+    .filter(c => c.conPrecio);
+  // Cada palabra vale según lo rara que es: «comida» la tienen cientos de locales y vale poco;
+  // «china» la tienen pocos y manda. El nombre del local cuenta un poco menos que lo que vende.
+  const N = candidatos0.length || 1;
+  const idf = {};
+  [...new Set(words)].forEach(w => {
+    const df = candidatos0.filter(c => c.mp.has(w) || c.mn.has(w)).length;
+    idf[w] = Math.log(1 + N / (1 + df));
+  });
+  const maxIdf = Math.max(1, ...Object.values(idf));
+  candidatos0.forEach(c => {
+    let sc = c.extra * maxIdf;
+    Object.keys(idf).forEach(w => { if (c.mp.has(w)) sc += idf[w]; else if (c.mn.has(w)) sc += 0.8 * idf[w]; });
+    c.score = sc;
+  });
+  const maxScore = Math.max(0, ...candidatos0.map(c => c.score));
+  // Solo los que encajan de verdad: al menos la mitad del mejor puntaje.
+  const candidates = candidatos0.filter(c => c.score > 0 && c.score >= 0.5 * maxScore)
     .map(c => {
       const e = estadoHorario(c.pyme.horario);
       // 0 = abierto ahora, 1 = sin horario indicado, 2 = cerrado ahora
@@ -2658,9 +2676,13 @@ async function searchNearestProduct(userSpeech, userZone){
       (b.pyme.logo_url ? 1 : 0) - (a.pyme.logo_url ? 1 : 0));
 
   const mejor = candidates[0];
-  const aRes = (c) => ({ match: c.pyme, fuerte: c.fuerte, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos, zona: zonaDe(c.km) });
+  // Cobertura: cuánto de lo que escribió el turista explica el mejor resultado (1 = todo).
+  const baseW = [...new Set(tokensDe(base || userSpeech))].filter(w => idf[w] != null);
+  const totW = baseW.reduce((a, w) => a + idf[w], 0);
+  const cobertura = mejor && totW ? baseW.reduce((a, w) => a + ((mejor.mp.has(w) || mejor.mn.has(w)) ? idf[w] : 0), 0) / totW : 0;
+  const aRes = (c) => ({ match: c.pyme, km: c.km, producto: c.producto, cartaHit: c.cartaHit, productos: c.productos, zona: zonaDe(c.km) });
   return { ...(mejor ? aRes(mejor) : { match: null, km: null, producto: null, cartaHit: null, productos: [] }),
-           candidatos: candidates.map(aRes) };
+           cobertura, candidatos: candidates.map(aRes) };
 }
 
 /* ---------- horario (hora de Barcelona) ---------- */
@@ -2930,12 +2952,13 @@ async function handleSpeechResult(speech){
   const pIsa = navigator.onLine ? entenderNecesidad(speech) : Promise.resolve(null);
   let res = await searchNearestProduct(speech, zone);
   let entendido = null;
-  if (!res.error && (!res.match || !res.fuerte) && navigator.onLine){
+  // Si no encontró todo lo que pidió (o nada), se espera a Isa y se busca con sus palabras.
+  if (!res.error && (!res.match || res.cobertura < 0.99) && navigator.onLine){
     const alt = await Promise.race([pIsa, new Promise(r => setTimeout(() => r(null), 6000))]);
     if (miN !== busquedaN) return;
     if (alt && alt.terminos){
-      const res2 = await searchNearestProduct(speech + " " + alt.terminos, zone);
-      if (res2 && !res2.error && res2.match && (res2.fuerte || !res.match)){ res = res2; entendido = alt; }
+      const res2 = await searchNearestProduct(speech + " " + alt.terminos, zone, speech);
+      if (res2 && !res2.error && res2.match){ res = res2; entendido = alt; }
     }
   }
 
