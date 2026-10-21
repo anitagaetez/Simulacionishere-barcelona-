@@ -1187,6 +1187,7 @@ const I18N = {
     badge: "producto estrella",
     badge_censo: "ficha sin confirmar",
     censo_nota: "Comercio del censo municipal: aún no ha confirmado precios ni horario. Mira fotos y horario en Google Maps antes de ir. Fuente: Open Data BCN.",
+    emb_nota: "Lugar emblemático de Barcelona. Mira horarios, entradas y fotos en Google Maps antes de ir.",
     map: "MAPA",
     hint: "Google Maps te guía por voz hasta la puerta.",
     biz_link: "¿Tienes un comercio? Aparece en isHere",
@@ -1379,6 +1380,7 @@ const I18N = {
     badge: "producte estrella",
     badge_censo: "fitxa sense confirmar",
     censo_nota: "Comerç del cens municipal: encara no ha confirmat preus ni horari. Mira fotos i horari a Google Maps abans d'anar-hi. Font: Open Data BCN.",
+    emb_nota: "Lloc emblemàtic de Barcelona. Mira horaris, entrades i fotos a Google Maps abans d'anar-hi.",
     map: "MAPA",
     hint: "Google Maps et guia per veu fins a la porta.",
     biz_link: "Tens un comerç? Apareix a isHere",
@@ -1571,6 +1573,7 @@ const I18N = {
     badge: "star product",
     badge_censo: "unconfirmed listing",
     censo_nota: "Shop from the city business census: prices and opening hours not yet confirmed. Check photos and hours on Google Maps before you go. Source: Open Data BCN.",
+    emb_nota: "Barcelona landmark. Check opening hours, tickets and photos on Google Maps before you go.",
     map: "MAP",
     hint: "Google Maps guides you by voice to the door.",
     biz_link: "Own a shop? Get listed on isHere",
@@ -1763,6 +1766,7 @@ const I18N = {
     badge: "prodotto stella",
     badge_censo: "scheda non confermata",
     censo_nota: "Negozio del censimento comunale: prezzi e orari non ancora confermati. Guarda foto e orari su Google Maps prima di andare. Fonte: Open Data BCN.",
+    emb_nota: "Luogo simbolo di Barcellona. Guarda orari, biglietti e foto su Google Maps prima di andare.",
     map: "MAPPA",
     hint: "Google Maps ti guida a voce fino alla porta.",
     biz_link: "Hai un negozio? Entra in isHere",
@@ -1955,6 +1959,7 @@ const I18N = {
     badge: "produit phare",
     badge_censo: "fiche non confirmée",
     censo_nota: "Commerce du recensement municipal : prix et horaires pas encore confirmés. Regardez photos et horaires sur Google Maps avant d'y aller. Source : Open Data BCN.",
+    emb_nota: "Lieu emblématique de Barcelone. Consultez horaires, billets et photos sur Google Maps avant d'y aller.",
     map: "CARTE",
     hint: "Google Maps te guide à la voix jusqu'à la porte.",
     biz_link: "Tu as un commerce ? Rejoins isHere",
@@ -2590,7 +2595,7 @@ async function cargarCenso(){
   const filas = [];
   for (let desde = 0; desde < 20000; desde += 1000){
     const { data, error } = await supabaseClient.from("censo_locales")
-      .select("id_censo, nombre, direccion, tipo, productos, lat, lng, google_url, barrio")
+      .select("id_censo, nombre, direccion, tipo, actividad, productos, lat, lng, google_url, barrio")
       .eq("estado", "sin_reclamar").range(desde, desde + 999);
     if (error || !data) return [];   // sin tabla o sin red: se busca solo entre los comercios verificados
     filas.push(...data);
@@ -2599,7 +2604,7 @@ async function cargarCenso(){
   censoCache = filas.map(r => {
     const tr4 = TIPO_TR[r.tipo] || [];
     idsCenso.add(r.id_censo);
-    return { id: r.id_censo, censo: true, name: r.nombre, address: r.direccion, zone: r.barrio || "Barcelona",
+    return { id: r.id_censo, censo: true, emblematico: r.actividad === "Lugar emblemático", name: r.nombre, address: r.direccion, zone: r.barrio || "Barcelona",
       lat: r.lat, lng: r.lng, tags: [r.tipo, r.productos].concat(tr4).join(", "), star_product_name: r.tipo, star_product_price: "",
       traducciones: { ca: { star: tr4[0] }, en: { star: tr4[1] }, it: { star: tr4[2] }, fr: { star: tr4[3] } },
       google_url: r.google_url, verif_nivel: 0, carta: [], horario: null, descripcion: "" };
@@ -2656,9 +2661,15 @@ async function searchNearestProduct(userSpeech, userZone, base){
     idf[w] = Math.log(1 + N / (1 + df));
   });
   const maxIdf = Math.max(1, ...Object.values(idf));
+  // Manda lo que el local VENDE. El nombre solo cuenta si nadie vende lo buscado
+  // (así «Farmacia … Pie» no gana a la farmacia de al lado por llamarse «Pie»).
+  const hayVenta = candidatos0.some(c => c.extra > 0 || [...c.mp].length > 0);
   candidatos0.forEach(c => {
     let sc = c.extra * maxIdf;
-    Object.keys(idf).forEach(w => { if (c.mp.has(w)) sc += idf[w]; else if (c.mn.has(w)) sc += 0.8 * idf[w]; });
+    Object.keys(idf).forEach(w => {
+      if (c.mp.has(w)) sc += idf[w];
+      else if (c.mn.has(w)) sc += hayVenta ? 0 : 0.8 * idf[w];
+    });
     c.score = sc;
   });
   const maxScore = Math.max(0, ...candidatos0.map(c => c.score));
@@ -2770,7 +2781,7 @@ function pintarFicha(match, res){
 
   const desc = document.getElementById("ft-desc");
   const dTr = tr(match).desc;
-  const descTxt = match.censo ? t("censo_nota") : ((typeof dTr === "string" && dTr) || match.descripcion || "");
+  const descTxt = match.censo ? t(match.emblematico ? "emb_nota" : "censo_nota") : ((typeof dTr === "string" && dTr) || match.descripcion || "");
   desc.hidden = !descTxt;
   desc.textContent = descTxt;
 
