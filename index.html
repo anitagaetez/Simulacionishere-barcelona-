@@ -1292,6 +1292,7 @@ const I18N = {
     pay_btn: "Pagar 12,10 € y activar mi ficha",
     pay_methods: "Pago seguro con tarjeta a través de Stripe",
     searching: "Buscando cerca de ti…",
+    isa_piensa: "Isa está pensando…",
     search_error: "No se pudo buscar ahora. Revisa tu conexión e inténtalo de nuevo.",
     found: "Encontré ",
     found_other: "En {zone} no hay, pero lo más cerca está en {other}: ",
@@ -1485,6 +1486,7 @@ const I18N = {
     pay_btn: "Paga 12,10 € i activa la meva fitxa",
     pay_methods: "Pagament segur amb targeta a través de Stripe",
     searching: "Cercant a prop teu…",
+    isa_piensa: "La Isa està pensant…",
     search_error: "Ara no s'ha pogut cercar. Revisa la connexió i torna-ho a provar.",
     found: "He trobat ",
     found_other: "A {zone} no n'hi ha, però el més a prop és a {other}: ",
@@ -1678,6 +1680,7 @@ const I18N = {
     pay_btn: "Pay €12.10 and activate my listing",
     pay_methods: "Secure card payment via Stripe",
     searching: "Searching near you…",
+    isa_piensa: "Isa is thinking…",
     search_error: "Couldn't search right now. Check your connection and try again.",
     found: "I found ",
     found_other: "Nothing in {zone}, but the closest is in {other}: ",
@@ -1871,6 +1874,7 @@ const I18N = {
     pay_btn: "Paga 12,10 € e attiva la mia scheda",
     pay_methods: "Pagamento sicuro con carta tramite Stripe",
     searching: "Cerco vicino a te…",
+    isa_piensa: "Isa sta pensando…",
     search_error: "Non è stato possibile cercare adesso. Controlla la connessione e riprova.",
     found: "Ho trovato ",
     found_other: "A {zone} non c'è, ma il più vicino è a {other}: ",
@@ -2064,6 +2068,7 @@ const I18N = {
     pay_btn: "Payer 12,10 € et activer ma fiche",
     pay_methods: "Paiement sécurisé par carte via Stripe",
     searching: "Je cherche près de toi…",
+    isa_piensa: "Isa réfléchit…",
     search_error: "Impossible de chercher pour le moment. Vérifie ta connexion et réessaie.",
     found: "J'ai trouvé ",
     found_other: "Rien à {zone}, mais le plus proche est à {other} : ",
@@ -2982,7 +2987,7 @@ async function entenderNecesidad(q){
 async function preguntarIsa(q){
   if (!navigator.onLine) return null;
   try {
-    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 6000);
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 12000);
     const r = await fetch(`${SUPABASE_URL}/functions/v1/isa-busca`, { method: "POST", signal: ctl.signal,
       headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY },
       body: JSON.stringify({ q: String(q).slice(0, 120), idioma: lang }) });
@@ -3026,7 +3031,9 @@ async function handleSpeechResult(speech){
   // Lo que ya aprendió responde al instante y sin gastar IA.
   // Primero pregunta a Isa (IA): qué es y qué tipo de local lo vende.
   document.getElementById("isa-msg").hidden = true;
+  const avisoIsa = setTimeout(() => { if (miN === busquedaN) listenStatus.textContent = t("isa_piensa"); }, 1500);
   const ia = await preguntarIsa(speech);
+  clearTimeout(avisoIsa);
   if (miN !== busquedaN) return;
   mostrarIsa(ia, speech);
   let res = ia ? await searchNearestProduct(speech, zone, speech, ia) : { match: null };
