@@ -375,6 +375,15 @@
   }
 
   .transcript{ font-size: 0.82rem; color: var(--teal-light); text-align: center; min-height: 18px; }
+  .isa-msg{ background: var(--bg-panel, #123449); border: 1px solid rgba(127,211,200,.35); border-radius: 16px 16px 16px 4px;
+    padding: 10px 14px; margin: 6px auto 0; max-width: 520px; text-align: left; }
+  .isa-msg[hidden]{ display: none; }
+  .isa-quien{ font-size: .72rem; font-weight: 700; color: var(--teal-light, #7FD3C8); letter-spacing: .04em; }
+  #isa-txt{ margin: 2px 0 0; font-size: .95rem; line-height: 1.4; color: var(--cream, #F2E9D8); }
+  .isa-ops{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .isa-ops:empty{ display: none; }
+  .isa-ops button{ padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(127,211,200,.5); background: transparent;
+    color: var(--cream, #F2E9D8); font: inherit; font-size: .82rem; cursor: pointer; min-height: 36px; }
 
   .result-card{
     display: none;
@@ -830,6 +839,11 @@
 
         <p class="listen-status" id="listen-status" data-i18n-html="listen_idle">Toca el círculo y di qué necesitas. Por ejemplo: <b>"busco aguja e hilo"</b>.</p>
         <p class="transcript" id="transcript"></p>
+        <div class="isa-msg" id="isa-msg" hidden aria-live="polite">
+          <span class="isa-quien">Isa</span>
+          <p id="isa-txt"></p>
+          <div class="isa-ops" id="isa-ops"></div>
+        </div>
       </div>
 
       <div class="otras" id="otras">
@@ -2613,8 +2627,13 @@ async function cargarCenso(){
 }
 const RANGO_ZONA = { pie: 0, t10: 1, t20: 2, lejos: 3 };
 
-async function searchNearestProduct(userSpeech, userZone, base){
-  const words = tokensDe(userSpeech).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
+async function searchNearestProduct(userSpeech, userZone, base, ia){
+  // Con Isa: se buscan también sus palabras y el nombre correcto del lugar.
+  const extraIA = ia ? [(ia.terminos || []).join(" "), ia.lugar || ""].join(" ") : "";
+  const words = tokensDe(userSpeech + " " + extraIA).concat(palabrasTraducidas(userSpeech), palabrasCatalanas(userSpeech));
+  // Con Isa: solo los TIPOS de local que venden eso (ibuprofeno → farmacia, nunca una empanadería).
+  const tiposIA = ia && Array.isArray(ia.tipos) && ia.tipos.length ? new Set(ia.tipos) : null;
+  const gruposIA = tiposIA ? new Set([...tiposIA].map(t0 => grupoDe({ censo: true, star_product_name: t0 }))) : null;
   if (!supabaseClient) return { error: true };
 
   const [{ data, error }, mapaProductos, censo] = await Promise.all([
@@ -2651,7 +2670,8 @@ async function searchNearestProduct(userSpeech, userZone, base){
       return { pyme: p, mp, mn, extra: suyos.length + (cartaHit ? 1 : 0), producto: suyos.find(r => r.precio) || suyos[0] || null, cartaHit,
                productos: mapaProductos.get(p.id) || [], conPrecio };
     })
-    .filter(c => c.conPrecio);
+    .filter(c => c.conPrecio)
+    .filter(c => !tiposIA || (c.pyme.censo ? tiposIA.has(c.pyme.star_product_name) : gruposIA.has(grupoDe(c.pyme))));
   // Cada palabra vale según lo rara que es: «comida» la tienen cientos de locales y vale poco;
   // «china» la tienen pocos y manda. El nombre del local cuenta un poco menos que lo que vende.
   const N = candidatos0.length || 1;
@@ -2665,7 +2685,8 @@ async function searchNearestProduct(userSpeech, userZone, base){
   // (así «Farmacia … Pie» no gana a la farmacia de al lado por llamarse «Pie»).
   const hayVenta = candidatos0.some(c => c.extra > 0 || [...c.mp].length > 0);
   candidatos0.forEach(c => {
-    let sc = c.extra * maxIdf;
+    // Con Isa, todo local del tipo correcto ya es una respuesta válida (base 1); las palabras ordenan.
+    let sc = c.extra * maxIdf + (tiposIA ? 1 : 0);
     Object.keys(idf).forEach(w => {
       if (c.mp.has(w)) sc += idf[w];
       else if (c.mn.has(w)) sc += hayVenta ? 0 : 0.8 * idf[w];
@@ -2957,6 +2978,42 @@ async function entenderNecesidad(q){
   } catch (e) { return null; }
 }
 
+// Isa (IA generativa) entiende la necesidad y dice qué tipo de local la vende. Lo aprendido responde al instante.
+async function preguntarIsa(q){
+  if (!navigator.onLine) return null;
+  try {
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/isa-busca`, { method: "POST", signal: ctl.signal,
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY, "Authorization": "Bearer " + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ q: String(q).slice(0, 120), idioma: lang }) });
+    clearTimeout(timer);
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d && Array.isArray(d.tipos) && (d.tipos.length || (d.terminos || []).length || d.mensaje) ? d : null;
+  } catch (e) { return null; }
+}
+
+// Isa le contesta al turista en su idioma (corto y claro) y, si la petición es ambigua, le da opciones para afinar.
+function mostrarIsa(ia, speech){
+  const box = document.getElementById("isa-msg");
+  const txt = ia && typeof ia.mensaje === "string" ? ia.mensaje.trim() : "";
+  box.hidden = !txt;
+  if (!txt) return;
+  document.getElementById("isa-txt").textContent = txt;
+  const ops = document.getElementById("isa-ops");
+  ops.innerHTML = "";
+  (Array.isArray(ia.opciones) ? ia.opciones : []).slice(0, 3).forEach(o => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = o;
+    b.addEventListener("click", () => {
+      const inp = document.getElementById("manual-input");
+      const q = `${speech || ""} ${o}`.trim();
+      inp.value = q;
+      handleSpeechResult(q);
+    });
+    ops.appendChild(b);
+  });
+}
+
 // Cada búsqueda lleva un número: si el turista busca otra cosa, la ampliación vieja se descarta.
 let busquedaN = 0;
 async function handleSpeechResult(speech){
@@ -2967,11 +3024,17 @@ async function handleSpeechResult(speech){
   const zone = zoneSelect.value;
   // Isa amplía SIEMPRE la búsqueda (sinónimos, otros idiomas, otras formas de decirlo), en paralelo.
   // Lo que ya aprendió responde al instante y sin gastar IA.
-  const pIsa = navigator.onLine ? entenderNecesidad(speech) : Promise.resolve(null);
-  let res = await searchNearestProduct(speech, zone);
-  let entendido = null;
-  // Si no encontró todo lo que pidió (o nada), se espera a Isa y se busca con sus palabras.
-  if (!res.error && (!res.match || res.cobertura < 0.99) && navigator.onLine){
+  // Primero pregunta a Isa (IA): qué es y qué tipo de local lo vende.
+  document.getElementById("isa-msg").hidden = true;
+  const ia = await preguntarIsa(speech);
+  if (miN !== busquedaN) return;
+  mostrarIsa(ia, speech);
+  let res = ia ? await searchNearestProduct(speech, zone, speech, ia) : { match: null };
+  let entendido = (ia && res.match) ? { terminos: [...(ia.tipos || []), ...(ia.terminos || [])].slice(0, 6).join(" · ") } : null;
+  // Sin Isa (sin red o sin respuesta): el buscador de palabras de siempre.
+  const pIsa = (!entendido && navigator.onLine) ? entenderNecesidad(speech) : Promise.resolve(null);
+  if (!entendido) res = await searchNearestProduct(speech, zone);
+  if (!entendido && !res.error && (!res.match || res.cobertura < 0.99) && navigator.onLine){
     const alt = await Promise.race([pIsa, new Promise(r => setTimeout(() => r(null), 6000))]);
     if (miN !== busquedaN) return;
     if (alt && alt.terminos){
